@@ -3,10 +3,10 @@ Author:			Mimma @ <EU-Pyrewood Village>
 Create Date:	2015-05-10 17:50:57
 
 The latest version of Thaliz can always be found at:
-https://armory.digam.dk/thaliz
+(tbd)
 
 The source code can be found at Github:
-https://github.com/Sentilix/thaliz
+https://github.com/Sentilix/thaliz-classic
 
 Please see the ReadMe.txt for addon details.
 ]]
@@ -24,7 +24,7 @@ local COLOUR_CHAT							= COLOUR_BEGINMARK.."40A0F8"
 local COLOUR_INTRO							= COLOUR_BEGINMARK.."B040F0"
 local THALIZ_NAME							= "Thaliz"
 local THALIZ_TITAN_TITLE					= "Thaliz - Ress dem deads!"
-local THALIZ_PREFIX							= "Thalizv1"
+local THALIZ_MESSAGE_PREFIX					= "Thalizv1"
 local CTRA_PREFIX							= "CTRA"
 local THALIZ_MAX_MESSAGES					= 200
 local THALIZ_MAX_VISIBLE_MESSAGES			= 20
@@ -40,16 +40,17 @@ local EMOTE_GROUP_CLASS						= "Class";
 local EMOTE_GROUP_RACE						= "Race";
 
 --	List of valid class names with priority and resurrection spell name (if any)
+--	classname, priority, ress spellname
 local classInfo = {
-	{ "Druid",   40, "Rebirth",				"FF7D0A" },
-	{ "Hunter",  30, nil,					"ABD473" },
-	{ "Mage",    40, nil,					"69CCF0" },
-	{ "Paladin", 50, "Redemption",			"F58CBA" },
-	{ "Priest",  50, "Resurrection",		"FFFFFF" },
-	{ "Rogue",   10, nil,					"FFF569" },
-	{ "Shaman",  50, "Ancestral Spirit",	"F58CBA" },
-	{ "Warlock", 30, nil,					"9482C9" },
-	{ "Warrior", 20, nil,					"C79C6E" }
+	{ "Druid",   40, "Rebirth"			},
+	{ "Hunter",  30, nil				},
+	{ "Mage",    40, nil				},
+	{ "Paladin", 50, "Redemption"		},
+	{ "Priest",  50, "Resurrection"		},
+	{ "Rogue",   10, nil				},
+	{ "Shaman",  50, "Ancestral Spirit"	},
+	{ "Warlock", 30, nil				},
+	{ "Warrior", 20, nil				}
 };
 
 
@@ -135,7 +136,7 @@ end
 	Echo in raid chat (if in raid) or party chat (if not)
 ]]
 local function partyEcho(msg)
-	if Thaliz_IsInRaid() then
+	if IsInRaid() then
 		SendChatMessage(msg, RAID_CHANNEL)
 	elseif Thaliz_IsInParty() then
 		SendChatMessage(msg, PARTY_CHANNEL)
@@ -209,7 +210,7 @@ end
 ]]
 SLASH_THALIZ_VERSION1 = "/thalizversion"
 SlashCmdList["THALIZ_VERSION"] = function(msg)
-	if Thaliz_IsInRaid() or Thaliz_IsInParty() then
+	if IsInRaid() or Thaliz_IsInParty() then
 		Thaliz_SendAddonMessage("TX_VERSION##");
 	else
 		Thaliz_Echo(string.format("%s is using Thaliz version %s", UnitName("player"), GetAddOnMetadata("Thaliz", "Version")));
@@ -1117,7 +1118,12 @@ TODO: Take already ressed people into account!
 --]]
 function Thaliz_ScanRaid()
 	if not ThalizDoScanRaid then 
-		RezButton:Hide();
+		Thaliz_HideResurrectionButton();
+		return;
+	end;
+
+	if UnitIsDeadOrGhost("player") then
+		Thaliz_HideResurrectionButton();
 		return;
 	end;
 
@@ -1127,16 +1133,11 @@ function Thaliz_ScanRaid()
 	if not spellname then
 		-- Class cannot ress!
 		ThalizDoScanRaid = false;
-		RezButton:Hide();
+		Thaliz_HideResurrectionButton();
 		return;
 	end
 
-	if UnitAffectingCombat("player") then
-		RezButton:Hide();
-		return;
-	end;
-
-	RezButton:Show();
+--	RezButton:Show();
 
 	local groupsize = GetNumGroupMembers();
 	if groupsize == 0 then
@@ -1210,7 +1211,9 @@ function Thaliz_ScanRaid()
 	-- Sort the corpses with highest priority in top:
 	Thaliz_SortTableDescending(corpseTable, 2);
 
-	corpse = UnitName(unitid)
+	corpse = UnitName(corpseTable[1][1]);
+
+--	echo(string.format("Attempting to target player=%s, unitid=%s", corpse, unitid));
 
 	RezButton:SetAttribute("type", "spell");
     RezButton:SetAttribute("spell", spellname);
@@ -1230,11 +1233,6 @@ function Thaliz_HideResurrectionButton()
 	RezButton:SetNormalTexture("Interface\\Icons\\spell_holy_spirit");
 end;
 
-
-function Thaliz_RessButton_OnClick()
-	--	TODO: Send en besked om at jeg resser til andre ressers
-	echo("Ressing ...!");
-end;
 
 
 
@@ -1382,8 +1380,10 @@ end
 function Thaliz_ChooseCorpse(corpseTable)
 	local currentTarget = UnitName("playertarget");
 
-	for key, val in corpseTable do	
+	for key, val in next, corpseTable do
+		echo("Checking unit="..val[1]);
 		if SpellCanTargetUnit(val[1]) then
+			echo("Ack!");
 			return val[1];
 		end
 		-- spellCanTarget does not work if we already target the unit:		
@@ -1477,15 +1477,10 @@ function Thaliz_GetPlayerName(nameAndRealm)
 end;
 
 function Thaliz_IsInParty()
-	if not Thaliz_IsInRaid() then
+	if not IsInRaid() then
 		return ( GetNumGroupMembers() > 0 );
 	end
 	return false
-end
-
-
-function Thaliz_IsInRaid()
-	return ( GetNumGroupMembers() > 0 );
 end
 
 
@@ -1517,9 +1512,9 @@ end
 	Broadcast my version if this is not a beta (CurrentVersion > 0) and
 	my version has not been identified as being too low (MessageShown = false)
 ]]
-function Thaliz_OnRaidRosterUpdate(event, arg1, arg2, arg3, arg4, arg5)
+function Thaliz_OnRaidRosterUpdate(event, ...)
 	if THALIZ_CURRENT_VERSION > 0 and not THALIZ_UPDATE_MESSAGE_SHOWN then
-		if Thaliz_IsInRaid() or Thaliz_IsInParty() then
+		if IsInRaid() or Thaliz_IsInParty() then
 			local versionstring = GetAddOnMetadata("Thaliz", "Version");
 			Thaliz_SendAddonMessage(string.format("TX_VERCHECK#%s#", versionstring));
 		end
@@ -1594,17 +1589,16 @@ end
 --  *******************************************************
 
 function Thaliz_SendAddonMessage(message)
-	local channel = nil
-	
-	if Thaliz_IsInRaid() then
-		channel = "RAID";
-	elseif Thaliz_IsInParty() then
-		channel = "PARTY";
-	else
-		return;
-	end
-
-	SendAddonMessage(THALIZ_PREFIX, message, channel);
+	local memberCount = GetNumGroupMembers();
+	if memberCount > 0 then
+		local channel = nil;
+		if IsInRaid() then
+			channel = "RAID";
+		elseif Thaliz_IsInParty() then
+			channel = "PARTY";
+		end;
+		C_ChatInfo.SendAddonMessage(THALIZ_MESSAGE_PREFIX, message, channel);
+	end;
 end
 
 
@@ -1641,21 +1635,16 @@ function Thaliz_HandleTXVerCheck(message, sender)
 	Thalix_CheckIsNewVersion(message);
 end
 
-function Thaliz_OnChatMsgAddon(event, prefix, msg, channel, sender)
-	if prefix == THALIZ_PREFIX then
-		Thaliz_HandleThalizMessage(msg, sender);	
-	end
-	if prefix == CTRA_PREFIX then
-		Thaliz_HandleCTRAMessage(msg, sender);
+function Thaliz_OnChatMsgAddon(event, ...)
+	local prefix, msg, channel, sender = ...;
+	if prefix == THALIZ_MESSAGE_PREFIX then
+		Thaliz_HandleThalizMessage(msg, Thaliz_GetPlayerName(sender));
 	end
 end
 
-function Thaliz_HandleThalizMessage(msg, ...)
+function Thaliz_HandleThalizMessage(msg, sender)
 --	echo(sender.." --> "..msg);
 	local _, _, cmd, message, recipient = string.find(msg, "([^#]*)#([^#]*)#([^#]*)");	
-	local sender = ...
-
-	sender = Thaliz_GetPlayerName(sender);
 
 
 	
@@ -1748,51 +1737,18 @@ function Thaliz_OnEvent(self, event, ...)
 		end		
 	elseif (event == "INCOMING_RESURRECT_CHANGED") then
 		echo("INCOMING_RESURRECT_CHANGED - YEEHAAA!!");
---	elseif (event == "UNIT_SPELLCAST_START") then
---		echo("UNIT_SPELLCAST_START - YEEHAAA!!");
---		local a,b,c,d,e,f,g,h = ...
---		if a then echo("a="..a); end;	--a: resurrecter (unitname, "player" for self)
---		if b then echo("b="..b); end;	--b: some kind of spell guid
---		if c then echo("c="..c); end;	--c: SpellID: 20770 for Priest spell
 	elseif (event == "UNIT_SPELLCAST_SENT") then
 		local resser, target, _, spellId = ...;
-
---		echo("UNIT_SPELLCAST_SENT - YEEHAAA!!");
---		if resser then echo("resser="..resser); end;
---		if target then echo("target="..target); end;
---		if spellId then echo("spellId="..spellId); end;
-
 		if(resser == "player") and (target ~= "Unknown") then	--Unknown: fanger ikke released corpses :-(
 			-- Priest resurrection spell (max rank)
 			if spellId == 20770 then
 				Thaliz_AnnounceResurrection(target);
 			end;
 		end;
-
-	elseif (event == "COMBAT_LOG_EVENT_UNFILTERED") then
-		echo("Event: "..event);
-		local timestamp, type, hideCaster, sourceGUID, sourceName, sourceFlags, sourceFlags2, destGUID, destName, destFlags, destFlags2 = CombatLogGetCurrentEventInfo()
-		if(type == "SPELL_CAST_START") then
-			if not destName then destName = "Foobar"; end;
-
-			if hideCaster then echo("hideCaster: "..hideCaster); end;
-			if sourceGUID then echo("sourceGUID: "..sourceGUID); end;
-			if sourceFlags then echo("sourceFlags: "..sourceFlags); end;
-			if sourceFlags2 then echo("sourceFlags2: "..sourceFlags2); end;
-			if destGUID then echo("destGUID: "..destGUID); end;
-			if destName then echo("destName: "..destName); end;
-			if destFlags then echo("destFlags: "..destFlags); end;
-			if destFlags2 then echo("destFlags2: "..destFlags2); end;
-
-			echo("Type: "..type..". srcName:"..sourceName);
-		end;
-
-
-
 	elseif (event == "CHAT_MSG_ADDON") then
-		Thaliz_OnChatMsgAddon(event, arg1, arg2, arg3, arg4, arg5)
+		Thaliz_OnChatMsgAddon(event, ...)
 	elseif (event == "RAID_ROSTER_UPDATE") then
-		Thaliz_OnRaidRosterUpdate()
+		Thaliz_OnRaidRosterUpdate(event, ...)
 	else
 		echo("Unknown event: "..event);
 	end
@@ -1811,7 +1767,9 @@ function Thaliz_OnLoad()
     --ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_START")			-- Provide no TARGET name
 
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SENT")				-- Virker på "targetted" resses
-    --ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");	--kaldes hvis en "direkte" ress ændres/cancles
+    --ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");		--kaldes hvis en "direkte" ress ændres/cancles
+
+	C_ChatInfo.RegisterAddonMessagePrefix(THALIZ_MESSAGE_PREFIX);
 
     Thaliz_InitializeListElements();
 end

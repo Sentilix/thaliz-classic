@@ -712,7 +712,7 @@
 			</EdgeSize>
 		</Backdrop>
 		<Frames>
-			<Button name="RezButton" inherits="SecureActionButtonTemplate" movable="true" text="Ress">
+			<Button name="RezButton" inherits="SecureActionButtonTemplate" text="Ress" movable="true">
 				<Size>
 					<AbsDimension x="32" y="32" />
 				</Size>
@@ -732,10 +732,12 @@
 					--self:SetScript("PostClick", SMARTBUFF_OnPostClick);
 				</OnLoad>
 				<OnDragStart>
-					self:StartMoving()
+					if (button == "LeftButton" and IsShiftKeyDown()) then
+						self:StartMoving();
+					end
 				</OnDragStart>
 				<OnDragStop>
-					self:StopMovingOrSizing()
+					self:StopMovingOrSizing();
 				</OnDragStop>
 			</Scripts>
 		</Frames>
