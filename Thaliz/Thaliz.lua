@@ -54,6 +54,17 @@ local classInfo = {
 };
 
 
+local THALIZ_ICON_OTHER_PASSIVE		= "Interface\\Icons\\INV_Misc_Gear_01";
+local THALIZ_ICON_DRUID_PASSIVE		= "Interface\\Icons\\INV_Misc_Monsterclaw_04";
+local THALIZ_ICON_DRUID_ACTIVE		= "Interface\\Icons\\spell_holy_resurrection";
+local THALIZ_ICON_PALADIN_PASSIVE	= "Interface\\Icons\\INV_Hammer_01";
+local THALIZ_ICON_PALADIN_ACTIVE	= "Interface\\Icons\\spell_holy_resurrection";
+local THALIZ_ICON_PRIEST_PASSIVE	= "Interface\\Icons\\INV_Staff_30";
+local THALIZ_ICON_PRIEST_ACTIVE		= "Interface\\Icons\\spell_holy_resurrection";
+local THALIZ_ICON_SHAMAN_PASSIVE	= "Interface\\Icons\\INV_Jewelry_Talisman_04";
+local THALIZ_ICON_SHAMAN_ACTIVE		= "Interface\\Icons\\spell_holy_resurrection";
+
+
 local PriorityToFirstWarlock  = 45;     -- Prio below ressers if no warlocks are alive
 local PriorityToGroupLeader   = 45;     -- Prio below ressers if raid leader or assistant
 local PriorityToCurrentTarget = 100;	-- Prio over all if target is selected
@@ -80,14 +91,13 @@ local Thaliz_ConfigurationLevel							= Thaliz_Configuration_Default_Level;
 local Thaliz_ROOT_OPTION_CharacterBasedSettings			= "CharacterBasedSettings";
 local Thaliz_OPTION_ResurrectionMessageTargetChannel	= "ResurrectionMessageTargetChannel";
 local Thaliz_OPTION_ResurrectionMessageTargetWhisper	= "ResurrectionMessageTargetWhisper";
---local Thaliz_OPTION_ResurrectionMessageTargetColours	= "ResurrectionMessageTargetColours";
 local Thaliz_OPTION_AlwaysIncludeDefaultGroup			= "AlwaysIncludeDefaultGroup";
 local Thaliz_OPTION_ResurrectionWhisperMessage			= "ResurrectionWhisperMessage";
 local Thaliz_OPTION_ResurrectionMessages				= "ResurrectionMessages";
 
 
 -- Persisted information:
-Thaliz_Options = {}
+Thaliz_Options = { }
 
 
 -- List of resurrection messages
@@ -271,29 +281,6 @@ SlashCmdList["THALIZ_HELP"] = function(msg)
 	Thaliz_Echo("    Version      Request version info from all clients.");
 end
 
-
-
-
---  *******************************************************
---
---	Titan Panel integration
---
---  *******************************************************
-function TitanPanelThalizButton_OnLoad()
-    self.registry = {
-        id = THALIZ_NAME,
-        menuText = THALIZ_TITAN_TITLE,
-        buttonTextFunction = nil,
-        tooltipTitle = THALIZ_NAME .. " Options",
-        tooltipTextFunction = "TitanPanelThalizButton_GetTooltipText",
-        frequency = 0,
-	    icon = "Interface\\Icons\\Spell_Holy_Resurrection"
-    };
-end
-
-function TitanPanelThalizButton_GetTooltipText()
-    return "Click to toggle option panel";
-end
 
 
 --  *******************************************************
@@ -598,12 +585,6 @@ function Thaliz_HandleCheckbox(checkbox)
 	else
 		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, 0);
 	end	
-
-	--if ThalizFrameCheckbuttonColours:GetChecked() then
-	--	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetColours, 1);
-	--else
-	--	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetColours, 0);
-	--end	
 	
 	if ThalizFrameCheckbuttonIncludeDefault:GetChecked() then
 		Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, 1);
@@ -723,8 +704,7 @@ function Thaliz_SetOption(parameter, value)
 			Thaliz_Options[realmname][playername] = {};
 		end
 		
-		Thaliz_Options[realmname][playername][parameter] = value;
-		
+		Thaliz_Options[realmname][playername][parameter] = value;		
 	else
 		-- Realm level:
 		if not Thaliz_Options[realmname] then
@@ -745,7 +725,6 @@ function Thaliz_InitializeConfigSettings()
 	
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_Target_Channel_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_Target_Whisper_Default))
-	--Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetColours, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetColours, Thaliz_Target_Colours_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_Resurrection_Whisper_Message_Default))
 
 
@@ -761,9 +740,6 @@ function Thaliz_InitializeConfigSettings()
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
 		ThalizFrameCheckbuttonWhisper:SetChecked(1)
 	end
-	--if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetColours) == 1 then
-	--	ThalizFrameCheckbuttonColours:SetChecked(1)
-	--end
 	if Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings) == "Character" then
 		ThalizFrameCheckbuttonPerCharacter:SetChecked(1)
 	end    
@@ -969,18 +945,9 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	message = string.gsub(message, "%%r", Thaliz_UCFirst(race));
 	message = string.gsub(message, "%%g", guildname);
 
-	-- Apply colours (if enabled and Raid is used. YELL and SAY doesn't work):
---	local clsInfo = Thaliz_GetClassinfo(Thaliz_UCFirst(class));	
 	local targetChannel = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel);
 	local targetname = playername;
 		
---	if clsInfo and
---			(targetChannel == "RAID") and
---			(Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetColours) == 1)
---	then
---		targetname = COLOUR_BEGINMARK..clsInfo[4].."["..playername.."]"..CHAT_END;
---	end;
-
 	message = string.gsub(message, "%%s", targetname);
 
 
@@ -1219,20 +1186,56 @@ function Thaliz_ScanRaid()
     RezButton:SetAttribute("spell", spellname);
 	RezButton:SetAttribute("unit", corpse);
 
---    RezButton:SetAttribute("item", nil);
---    RezButton:SetAttribute("target-slot", nil);
---    RezButton:SetAttribute("target-item", nil);
---    RezButton:SetAttribute("macrotext", nil);
---    RezButton:SetAttribute("action", nil);
+	local textureName = THALIZ_ICON_SHAMAN_ACTIVE;
+	if classname == "Druid" then
+		textureName = THALIZ_ICON_DRUID_ACTIVE;
+	elseif classname == "Paladin" then
+		textureName = THALIZ_ICON_PALADIN_ACTIVE;
+	elseif classname == "Priest" then
+		textureName = THALIZ_ICON_PRIEST_ACTIVE;
+	end;
 
-	RezButton:SetNormalTexture("Interface\\Icons\\spell_holy_resurrection");
+	Thaliz_SetButtonTexture(textureName);
 end;
-
 
 function Thaliz_HideResurrectionButton()
-	RezButton:SetNormalTexture("Interface\\Icons\\spell_holy_spirit");
+	local classname = UnitClass("player");
+
+	local textureName = THALIZ_ICON_OTHER_PASSIVE;
+	if classname == "Druid" then
+		textureName = THALIZ_ICON_DRUID_PASSIVE;
+	elseif classname == "Paladin" then
+		textureName = THALIZ_ICON_PALADIN_PASSIVE;
+	elseif classname == "Priest" then
+		textureName = THALIZ_ICON_PRIEST_PASSIVE;
+	elseif classname == "Shaman" then
+		textureName = THALIZ_ICON_SHAMAN_PASSIVE;
+	end;
+	
+	Thaliz_SetButtonTexture(textureName);
+
+    RezButton:SetAttribute("item", nil);
+    RezButton:SetAttribute("target-slot", nil);
+    RezButton:SetAttribute("target-item", nil);
+    RezButton:SetAttribute("macrotext", nil);
+    RezButton:SetAttribute("action", nil);
 end;
 
+local RezButtonLastTexture = "";
+function Thaliz_SetButtonTexture(textureName)
+	if RezButtonLastTexture ~= textureName then	
+		RezButtonLastTexture = textureName;
+		RezButton:SetNormalTexture(textureName);		
+	end;
+end;
+
+
+
+-- Other (non-healer): 
+-- Druid: inv_misc_monsterclaw_04
+-- Paladin: inv_hammer_01
+-- Priest: inv_staff_30
+-- Shaman: inv_jewelry_talisman_04
 
 
 
@@ -1732,15 +1735,19 @@ end
 function Thaliz_OnEvent(self, event, ...)
 
 	if (event == "ADDON_LOADED") then
-		if arg1 == "Thaliz" then
+		local addonname = ...;
+		if addonname == "Thaliz" then
 		    Thaliz_InitializeConfigSettings();
 		end		
-	elseif (event == "INCOMING_RESURRECT_CHANGED") then
-		echo("INCOMING_RESURRECT_CHANGED - YEEHAAA!!");
+--	elseif (event == "INCOMING_RESURRECT_CHANGED") then
+--		echo("INCOMING_RESURRECT_CHANGED - YEEHAAA!!");
 	elseif (event == "UNIT_SPELLCAST_SENT") then
 		local resser, target, _, spellId = ...;
-		if(resser == "player") and (target ~= "Unknown") then	--Unknown: fanger ikke released corpses :-(
+		if(resser == "player") and (target ~= "Unknown") then
 			-- Priest resurrection spell (max rank)
+			-- Paladin spell:
+			-- Shaman spell:
+			-- Druid spell:
 			if spellId == 20770 then
 				Thaliz_AnnounceResurrection(target);
 			end;
@@ -1761,17 +1768,19 @@ function Thaliz_OnLoad()
 	Thaliz_Echo(string.format("version %s by %s", GetAddOnMetadata("Thaliz", "Version"), GetAddOnMetadata("Thaliz", "Author")));
     ThalizEventFrame:RegisterEvent("ADDON_LOADED");
     ThalizEventFrame:RegisterEvent("CHAT_MSG_ADDON");
-    ThalizEventFrame:RegisterEvent("RAID_ROSTER_UPDATE")
-
-    --ThalizEventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")		-- Fires when ressing released corpse. No target infor though :-(
-    --ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_START")			-- Provide no TARGET name
-
-    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SENT")				-- Virker på "targetted" resses
-    --ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");		--kaldes hvis en "direkte" ress ændres/cancles
-
+    ThalizEventFrame:RegisterEvent("RAID_ROSTER_UPDATE");
+    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
+    --ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");		// Called if a ress is cancelled.
 	C_ChatInfo.RegisterAddonMessagePrefix(THALIZ_MESSAGE_PREFIX);
 
     Thaliz_InitializeListElements();
+end
+
+function Thaliz_RepositionateButton(self)
+	local x, y = self:GetLeft(), self:GetTop() - UIParent:GetHeight();
+--	Save to settings!
+--  O.ActionBtnX = x;
+--  O.ActionBtnY = y;
 end
 
 function Thaliz_OKButton_OnClick()

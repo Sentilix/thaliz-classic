@@ -668,80 +668,41 @@
 		</Scripts>
 	</Frame>
 
-	<!-- Titan Panel Button (optional) -->
-	<!--<Frame parent="UIParent" hide="true">
-		<Frames>
-			<Button name="TitanPanelThalizButton" inherits="TitanPanelIconTemplate" frameStrata="FULLSCREEN" toplevel="true">
-				<Scripts>
-					<OnLoad>
-						if TitanPanelButton_OnLoad then
-						TitanPanelThalizButton_OnLoad();
-						TitanPanelButton_OnLoad();
-						end
-					</OnLoad>
-					<OnClick>
-						if arg1 == "LeftButton" then
-						Thaliz_ToggleConfigurationDialogue();
-						end
-						TitanPanelButton_OnClick(arg1);
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-	</Frame>-->
-
-	<!-- Thaliz Ress button (experimental) -->
-	<Frame name="ThalizButton" parent="UIParent" toplevel="true" hidden="false">
+	<Button name="RezButton" inherits="SecureActionButtonTemplate" parent="UIParent" toplevel="true" hidden="false" frameStrata="LOW" movable="true">
 		<Size>
-			<AbsDimension x="40" y="40" />
+			<AbsDimension x="32" y="32" />
 		</Size>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset x="750" y="-700" />
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="100" />
+				</Offset>
 			</Anchor>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="4" right="4" top="4" bottom="4" />
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32" />
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32" />
-			</EdgeSize>
-		</Backdrop>
-		<Frames>
-			<Button name="RezButton" inherits="SecureActionButtonTemplate" text="Ress" movable="true">
-				<Size>
-					<AbsDimension x="32" y="32" />
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="4" y="-4" />
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Scripts>
-				<OnLoad>
-					self:SetMovable(true)
-					self:SetUserPlaced(true)
-					self:RegisterForDrag("LeftButton")
-					self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-					--self:SetScript("PreClick", SMARTBUFF_OnPreClick);
-					--self:SetScript("PostClick", SMARTBUFF_OnPostClick);
-				</OnLoad>
-				<OnDragStart>
-					if (button == "LeftButton" and IsShiftKeyDown()) then
-						self:StartMoving();
-					end
-				</OnDragStart>
-				<OnDragStop>
-					self:StopMovingOrSizing();
-				</OnDragStop>
-			</Scripts>
-		</Frames>
-	</Frame>
+		<Scripts>
+			<OnLoad>
+				self:EnableMouse(true);
+				self:EnableKeyboard(false);
+				self:RegisterForDrag("LeftButton");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+
+				self:SetAttribute("type", "spell");
+				self:SetAttribute("unit", nil);
+				self:SetAttribute("spell", nil);
+				self:SetAttribute("item", nil);
+				self:SetAttribute("target-slot", nil);
+			</OnLoad>
+			<OnDragStart>
+				if (button == "LeftButton" and IsShiftKeyDown()) then
+				self:StartMoving();
+				end
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing();
+				Thaliz_RepositionateButton(self);
+			</OnDragStop>
+		</Scripts>
+	</Button>
 
 
 	<!-- Dummy event frame -->
