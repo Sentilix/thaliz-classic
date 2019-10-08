@@ -54,6 +54,10 @@ local classInfo = {
 };
 
 
+
+local THALIZ_RezBtn_Passive = "";
+local THALIZ_RezBtn_Active = "";
+
 local THALIZ_ICON_OTHER_PASSIVE		= "Interface\\Icons\\INV_Misc_Gear_01";
 local THALIZ_ICON_DRUID_PASSIVE		= "Interface\\Icons\\INV_Misc_Monsterclaw_04";
 local THALIZ_ICON_DRUID_ACTIVE		= "Interface\\Icons\\spell_holy_resurrection";
@@ -83,7 +87,6 @@ local ThalizScanFrequency = 1;			-- Scan every second;
 local Thaliz_Configuration_Default_Level				= "Character";	-- Can be "Character" or "Realm"
 local Thaliz_Target_Channel_Default						= "RAID";
 local Thaliz_Target_Whisper_Default						= "0";
-local Thaliz_Target_Colours_Default						= "0";
 local Thaliz_Resurrection_Whisper_Message_Default		= "Resurrection incoming in 10 seconds!";
 
 local Thaliz_ConfigurationLevel							= Thaliz_Configuration_Default_Level;
@@ -94,6 +97,8 @@ local Thaliz_OPTION_ResurrectionMessageTargetWhisper	= "ResurrectionMessageTarge
 local Thaliz_OPTION_AlwaysIncludeDefaultGroup			= "AlwaysIncludeDefaultGroup";
 local Thaliz_OPTION_ResurrectionWhisperMessage			= "ResurrectionWhisperMessage";
 local Thaliz_OPTION_ResurrectionMessages				= "ResurrectionMessages";
+local Thaliz_OPTION_RezButtonPosX						= "RezButtonPosX";
+local Thaliz_OPTION_RezButtonPosY						= "RezButtonPosY";
 
 
 -- Persisted information:
@@ -184,9 +189,7 @@ SlashCmdList["THALIZ_THALIZ"] = function(msg)
 	end
 	option = string.upper(option);
 		
-	if (option == "RES" or option == "RESURRECT") then
-		SlashCmdList["THALIZ_RES"]();
-	elseif (option == "CFG" or option == "CONFIG") then
+	if (option == "CFG" or option == "CONFIG") then
 		SlashCmdList["THALIZ_CONFIG"]();
 	elseif option == "DISABLE" then
 		SlashCmdList["THALIZ_DISABLE"]();
@@ -199,17 +202,6 @@ SlashCmdList["THALIZ_THALIZ"] = function(msg)
 	else
 		Thaliz_Echo(string.format("Unknown command: %s", option));
 	end
-end
-
---[[
-	Resurrect highest priority target.
-	Syntax: /thalizres
-	Alternative: /thaliz res
-	Added in: 0.3.0
-]]
-SLASH_THALIZ_RES1 = "/thalizres"
-SlashCmdList["THALIZ_RES"] = function(msg)
-	Thaliz_StartResurrectionOnPriorityTarget();
 end
 
 --[[
@@ -727,6 +719,9 @@ function Thaliz_InitializeConfigSettings()
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_Target_Whisper_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_Resurrection_Whisper_Message_Default))
 
+	local x,y = RezButton:GetPoint();
+	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosX, x))
+	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosY, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosY, y))
 
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "RAID" then
 		ThalizFrameCheckbuttonRaid:SetChecked(1)
@@ -1104,8 +1099,6 @@ function Thaliz_ScanRaid()
 		return;
 	end
 
---	RezButton:Show();
-
 	local groupsize = GetNumGroupMembers();
 	if groupsize == 0 then
 		Thaliz_HideResurrectionButton();
@@ -1154,6 +1147,7 @@ function Thaliz_ScanRaid()
 			if targetname and targetname == playername then
 				targetprio = PriorityToCurrentTarget;
 			end
+--	IsRaidLeader(): removed in wow 5.0 and thereby Classic!
 --			if IsRaidLeader(playername) and targetprio < PriorityToGroupLeader then
 --				targetprio = PriorityToGroupLeader;
 --			end
@@ -1180,45 +1174,35 @@ function Thaliz_ScanRaid()
 
 	corpse = UnitName(corpseTable[1][1]);
 
---	echo(string.format("Attempting to target player=%s, unitid=%s", corpse, unitid));
-
 	RezButton:SetAttribute("type", "spell");
     RezButton:SetAttribute("spell", spellname);
 	RezButton:SetAttribute("unit", corpse);
 
-	local textureName = THALIZ_ICON_SHAMAN_ACTIVE;
-	if classname == "Druid" then
-		textureName = THALIZ_ICON_DRUID_ACTIVE;
-	elseif classname == "Paladin" then
-		textureName = THALIZ_ICON_PALADIN_ACTIVE;
-	elseif classname == "Priest" then
-		textureName = THALIZ_ICON_PRIEST_ACTIVE;
-	end;
-
-	Thaliz_SetButtonTexture(textureName);
+	Thaliz_SetButtonTexture(THALIZ_RezBtn_Active);
 end;
 
 function Thaliz_HideResurrectionButton()
+	Thaliz_SetButtonTexture(THALIZ_RezBtn_Passive);
+end;
+
+function Thaliz_InitTextures()
 	local classname = UnitClass("player");
 
-	local textureName = THALIZ_ICON_OTHER_PASSIVE;
+	THALIZ_RezBtn_Passive = THALIZ_ICON_OTHER_PASSIVE;
+	THALIZ_RezBtn_Active = THALIZ_ICON_OTHER_PASSIVE;
 	if classname == "Druid" then
-		textureName = THALIZ_ICON_DRUID_PASSIVE;
+		THALIZ_RezBtn_Passive = THALIZ_ICON_DRUID_PASSIVE;
+		THALIZ_RezBtn_Active = THALIZ_ICON_DRUID_ACTIVE;
 	elseif classname == "Paladin" then
-		textureName = THALIZ_ICON_PALADIN_PASSIVE;
+		THALIZ_RezBtn_Passive = THALIZ_ICON_PALADIN_PASSIVE;
+		THALIZ_RezBtn_Active = THALIZ_ICON_PALADIN_ACTIVE;
 	elseif classname == "Priest" then
-		textureName = THALIZ_ICON_PRIEST_PASSIVE;
+		THALIZ_RezBtn_Passive = THALIZ_ICON_PRIEST_PASSIVE;
+		THALIZ_RezBtn_Active = THALIZ_ICON_PRIEST_ACTIVE;
 	elseif classname == "Shaman" then
-		textureName = THALIZ_ICON_SHAMAN_PASSIVE;
+		THALIZ_RezBtn_Passive = THALIZ_ICON_SHAMAN_PASSIVE;
+		THALIZ_RezBtn_Active = THALIZ_ICON_SHAMAN_ACTIVE;
 	end;
-	
-	Thaliz_SetButtonTexture(textureName);
-
-    RezButton:SetAttribute("item", nil);
-    RezButton:SetAttribute("target-slot", nil);
-    RezButton:SetAttribute("target-item", nil);
-    RezButton:SetAttribute("macrotext", nil);
-    RezButton:SetAttribute("action", nil);
 end;
 
 local RezButtonLastTexture = "";
@@ -1229,156 +1213,6 @@ function Thaliz_SetButtonTexture(textureName)
 	end;
 end;
 
-
-
--- Other (non-healer): 
--- Druid: inv_misc_monsterclaw_04
--- Paladin: inv_hammer_01
--- Priest: inv_staff_30
--- Shaman: inv_jewelry_talisman_04
-
-
-
---[[
-	Scan the party / raid for dead people, and prioritize those.
-	Ignore blacklisted people.
-	Only do this if the current player is a resser!
-]]
-function Thaliz_StartResurrectionOnPriorityTarget()
-
-	-- Check by spell: no need to update death list if player cannot resurrect!
-	local classinfo = Thaliz_GetClassinfo(UnitClass("player"));
-	local targetname;
-	local spellname = classinfo[3];
-	if not spellname then
-		return;
-	end
-
-	local groupsize, grouptype;
-	
-	grouptype = "party";
-	if IsInRaid() then
-		grouptype = "raid";
-	end;
-
-	groupsize = GetNumGroupMembers();
-
-	if groupsize == 0 then
-		-- SOLO mode: Just cast a "normal" ress
-		targetname = UnitName("playertarget");
-		if targetname then	
---[[
-Message: [ADDON_ACTION_FORBIDDEN] AddOn 'Thaliz' tried to call the protected function 'UNKNOWN()'.
-Time: Mon Sep 30 21:05:01 2019
-Count: 1
-Stack: [ADDON_ACTION_FORBIDDEN] AddOn 'Thaliz' tried to call the protected function 'UNKNOWN()'.
-
-Locals: <none>
---]]
-			CastSpellByName(spellname);	
-			if SpellIsTargeting() then
-				-- Out of range
-				SpellStopTargeting();
-			end
-		end
-		return;
-	end
-	
-	local warlocksAlive = false;
-	for n=1, groupsize, 1 do
-		unitid = grouptype..n
-		if not UnitIsDead(unitid) and UnitIsConnected(unitid) and UnitIsVisible(unitid) and UnitClass(unitid) == "Warlock" then
-			warlocksAlive = true;
-			break;
-		end
-	end
-	
-	Thaliz_CleanupBlacklistedPlayers();
-
-	local targetprio;
-		
-	local corpseTable = {};
-	local playername, unitid, classinfo;
-	for n=1, groupsize, 1 do
-		unitid = grouptype..n
-		playername = UnitName(unitid)
-		
-		local isBlacklisted = false;
-		for b=1, table.getn(blacklistedTable), 1 do
-			blacklistInfo = blacklistedTable[b];
-			blacklistTick = blacklistInfo[2];					
-			if blacklistInfo[1] == playername then
-				isBlacklisted = true;
-				break;
-			end
-		end
-		
-		targetname = UnitName("playertarget");
-		if not isBlacklisted and UnitIsDead(unitid) and UnitIsConnected(unitid) and UnitIsVisible(unitid) then
-			classinfo = Thaliz_GetClassinfo(UnitClass(unitid));
-			targetprio = classinfo[2];
-			if targetname and targetname == playername then
-				targetprio = PriorityToCurrentTarget;
-			end
---			if IsRaidLeader(playername) and targetprio < PriorityToGroupLeader then
---				targetprio = PriorityToGroupLeader;
---			end
-			if not warlocksAlive and classinfo[1] == "Warlock" then
-				targetprio = PriorityToFirstWarlock;				
-			end
-			
-			-- Add a random decimal factor to priority to spread ressings out.
-			-- Random is a float between 0 and 1:
-			targetprio = targetprio + random();		
-			--echo(string.format("%s added, priority=%f", playername, targetprio));			
-			corpseTable[ table.getn(corpseTable) + 1 ] = { unitid, targetprio } ;
-		end
-	end	
-
-	if (table.getn(corpseTable) == 0) then
-		if (table.getn(blacklistedTable) == 0) then
-			Thaliz_Echo("There is no one to resurrect.");
-		else
-			Thaliz_Echo("All targets have received a res.");
-		end
-		return;
-	end
-
-	-- Sort the corpses with highest priority in top:
-	Thaliz_SortTableDescending(corpseTable, 2);
-
-	playername = UnitName(unitid)
-
-	echo("I am gonna resurrect ".. playername);
-
---	partyEcho(string.format("/target %s", playername));
---	TargetUnit(unitid);
-
---	DEFAULT_CHAT_FRAME.editBox:SetText(string.format("/target %s", playername)) 
---	ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
-
-
-	--[[
-	-- Start casting the spell:	
-	CastSpellByName(spellname);
-	local unitid = Thaliz_ChooseCorpse(corpseTable);	
-	if unitid then
-		playername = UnitName(unitid)
-		
-		SpellTargetUnit(unitid);
-		if not SpellIsTargeting() then
-			Thaliz_SendAddonMessage("TX_RESBEGIN#"..playername.."#");
-			Thaliz_BlacklistPlayer(playername);
-			Thaliz_AnnounceResurrection(playername, unitid);
-		else
-			SpellStopTargeting();
-		end
-	else
-		SpellStopTargeting();
-		--Not in range. UI already write that, we dont need to also!
-	end
-	--]]
-end
 
 function Thaliz_ChooseCorpse(corpseTable)
 	local currentTarget = UnitName("playertarget");
@@ -1544,7 +1378,7 @@ function Thalix_CheckIsNewVersion(versionstring)
 			if not THALIZ_UPDATE_MESSAGE_SHOWN then
 				THALIZ_UPDATE_MESSAGE_SHOWN = true;
 				Thaliz_Echo(string.format("NOTE: A newer version of ".. COLOUR_INTRO .."THALIZ"..COLOUR_CHAT.."! is available (version %s)!", versionstring));
-				Thaliz_Echo("NOTE: Go to https://armory.digam.dk/thaliz to download latest version.");
+				Thaliz_Echo("NOTE: Go to https://github.com/Sentilix/thaliz-classic to download latest version.");
 			end
 		end	
 	end
@@ -1646,10 +1480,7 @@ function Thaliz_OnChatMsgAddon(event, ...)
 end
 
 function Thaliz_HandleThalizMessage(msg, sender)
---	echo(sender.." --> "..msg);
 	local _, _, cmd, message, recipient = string.find(msg, "([^#]*)#([^#]*)#([^#]*)");	
-
-
 	
 	--	Ignore message if it is not for me. 
 	--	Receipient can be blank, which means it is for everyone.
@@ -1773,14 +1604,17 @@ function Thaliz_OnLoad()
     --ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");		// Called if a ress is cancelled.
 	C_ChatInfo.RegisterAddonMessagePrefix(THALIZ_MESSAGE_PREFIX);
 
+	Thaliz_InitTextures();
     Thaliz_InitializeListElements();
+
+	Thaliz_RepositionateButton(RezButton);
 end
 
 function Thaliz_RepositionateButton(self)
 	local x, y = self:GetLeft(), self:GetTop() - UIParent:GetHeight();
---	Save to settings!
---  O.ActionBtnX = x;
---  O.ActionBtnY = y;
+
+	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, x);
+	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosY, y);
 end
 
 function Thaliz_OKButton_OnClick()
