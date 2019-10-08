@@ -55,8 +55,10 @@ local classInfo = {
 
 
 
-local THALIZ_RezBtn_Passive = "";
-local THALIZ_RezBtn_Active = "";
+local THALIZ_RezBtn_Passive			= "";
+local THALIZ_RezBtn_Active			= "";
+local THALIZ_RezBtn_Combat			= "Interface\\Icons\\Ability_dualwield";
+local THALIZ_RezBtn_Dead			= "Interface\\Icons\\Ability_rogue_feigndeath";
 
 local THALIZ_ICON_OTHER_PASSIVE		= "Interface\\Icons\\INV_Misc_Gear_01";
 local THALIZ_ICON_DRUID_PASSIVE		= "Interface\\Icons\\INV_Misc_Monsterclaw_04";
@@ -1084,16 +1086,23 @@ function Thaliz_ScanRaid()
 		return;
 	end;
 
+	-- Doh, 1! Can't ress while dead!
 	if UnitIsDeadOrGhost("player") then
-		Thaliz_HideResurrectionButton();
+		Thaliz_SetButtonTexture(THALIZ_RezBtn_Dead);
 		return;
 	end;
 
-	--	Check if this user can use Thaliz at all!!
+	-- Doh, 2! Can't ress while in combat!
+	if UnitAffectingCombat("player") then
+		Thaliz_SetButtonTexture(THALIZ_RezBtn_Combat);
+		return;
+	end;
+
+
+	--	Jesus, this class can't even ress!! Disable event
 	local classinfo = Thaliz_GetClassinfo(UnitClass("player"));
 	local spellname = classinfo[3];
 	if not spellname then
-		-- Class cannot ress!
 		ThalizDoScanRaid = false;
 		Thaliz_HideResurrectionButton();
 		return;
@@ -1123,7 +1132,6 @@ function Thaliz_ScanRaid()
 	Thaliz_CleanupBlacklistedPlayers();
 
 	local targetprio;
-		
 	local corpseTable = { };
 	local playername, unitid, classinfo;
 	for n=1, groupsize, 1 do
@@ -1147,6 +1155,7 @@ function Thaliz_ScanRaid()
 			if targetname and targetname == playername then
 				targetprio = PriorityToCurrentTarget;
 			end
+
 --	IsRaidLeader(): removed in wow 5.0 and thereby Classic!
 --			if IsRaidLeader(playername) and targetprio < PriorityToGroupLeader then
 --				targetprio = PriorityToGroupLeader;
