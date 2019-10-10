@@ -55,6 +55,12 @@ local classInfo = {
 
 
 
+local IsPaladin = false;
+local IsPriest = false;
+local IsShaman = false;
+local IsDruid = false;
+local IsResser = false;
+
 local THALIZ_RezBtn_Passive			= "";
 local THALIZ_RezBtn_Active			= "";
 local THALIZ_RezBtn_Combat			= "Interface\\Icons\\Ability_dualwield";
@@ -83,7 +89,7 @@ local Thaliz_Blacklist_Timeout = 25;
 local Thaliz_Enabled = true;
 local ThalizConfigDialogOpen = false;
 local ThalizDoScanRaid = true;
-local ThalizScanFrequency = 1;			-- Scan every second;
+local ThalizScanFrequency = 0.2;		-- Scan 5 times per second
 
 -- Configuration constants:
 local Thaliz_Configuration_Default_Level				= "Character";	-- Can be "Character" or "Realm"
@@ -1086,6 +1092,13 @@ function Thaliz_ScanRaid()
 		return;
 	end;
 
+	--	Jesus, this class can't even ress!! Disable event
+	if not IsResser then
+		ThalizDoScanRaid = false;
+		Thaliz_HideResurrectionButton();
+		return;
+	end
+
 	-- Doh, 1! Can't ress while dead!
 	if UnitIsDeadOrGhost("player") then
 		Thaliz_SetButtonTexture(THALIZ_RezBtn_Dead);
@@ -1097,16 +1110,6 @@ function Thaliz_ScanRaid()
 		Thaliz_SetButtonTexture(THALIZ_RezBtn_Combat);
 		return;
 	end;
-
-
-	--	Jesus, this class can't even ress!! Disable event
-	local classinfo = Thaliz_GetClassinfo(UnitClass("player"));
-	local spellname = classinfo[3];
-	if not spellname then
-		ThalizDoScanRaid = false;
-		Thaliz_HideResurrectionButton();
-		return;
-	end
 
 	local groupsize = GetNumGroupMembers();
 	if groupsize == 0 then
@@ -1194,21 +1197,29 @@ function Thaliz_HideResurrectionButton()
 	Thaliz_SetButtonTexture(THALIZ_RezBtn_Passive);
 end;
 
-function Thaliz_InitTextures()
+function Thaliz_InitClassSpecificStuff()
 	local classname = UnitClass("player");
 
 	THALIZ_RezBtn_Passive = THALIZ_ICON_OTHER_PASSIVE;
 	THALIZ_RezBtn_Active = THALIZ_ICON_OTHER_PASSIVE;
 	if classname == "Druid" then
+		IsDruid = true;
+		IsResser = true;
 		THALIZ_RezBtn_Passive = THALIZ_ICON_DRUID_PASSIVE;
 		THALIZ_RezBtn_Active = THALIZ_ICON_DRUID_ACTIVE;
 	elseif classname == "Paladin" then
+		IsPaladin = true;
+		IsResser = true;
 		THALIZ_RezBtn_Passive = THALIZ_ICON_PALADIN_PASSIVE;
 		THALIZ_RezBtn_Active = THALIZ_ICON_PALADIN_ACTIVE;
 	elseif classname == "Priest" then
+		IsPriest = true;
+		IsResser = true;
 		THALIZ_RezBtn_Passive = THALIZ_ICON_PRIEST_PASSIVE;
 		THALIZ_RezBtn_Active = THALIZ_ICON_PRIEST_ACTIVE;
 	elseif classname == "Shaman" then
+		IsShaman = true;
+		IsResser = true;
 		THALIZ_RezBtn_Passive = THALIZ_ICON_SHAMAN_PASSIVE;
 		THALIZ_RezBtn_Active = THALIZ_ICON_SHAMAN_ACTIVE;
 	end;
@@ -1584,11 +1595,30 @@ function Thaliz_OnEvent(self, event, ...)
 	elseif (event == "UNIT_SPELLCAST_SENT") then
 		local resser, target, _, spellId = ...;
 		if(resser == "player") and (target ~= "Unknown") then
-			-- Priest resurrection spell (max rank)
-			-- Paladin spell:
-			-- Shaman spell:
-			-- Druid spell:
-			if spellId == 20770 then
+			local resSpell = false;
+			if IsPriest then
+				--Resurrection, rank 1=2006, 2=2010, 3=10880, 4=10881, 5=20770:
+				if (spellId == 2006) or (spellId == 2010) or (spellId == 10880) or (spellId == 10881) or (spellId == 20770) then
+					resSpell = true;
+				end;
+			elseif IsPaladin then
+				--Redemption, rank 1=(574,)7329, 2=10323, 3=10325, 4=20774, 5=20775:
+				if (spellId == 7329) or (spellId == 10323) or (spellId == 10325) or (spellId == 20774) or (spellId == 20775) then
+					resSpell = true;
+				end;
+			elseif IsShaman then
+				--Ancestral Spirit, rank 1=2008, 2=20609, 3=20610, 4=20776, 5=20777:
+				if (spellId == 2008) or (spellId == 20609) or (spellId == 20610) or (spellId == 20776) or (spellId == 20777) then
+					resSpell = true;
+				end;
+			elseif IsDruid then
+				--Rebirth, rank 1=20484, 2=20739, 3=20742, 4=20747, 5=20748:
+				if (spellId == 20484) or (spellId == 20739) or (spellId == 20742) or (spellId == 20747) or (spellId == 20748) then
+					resSpell = true;
+				end;
+			end;
+
+			if resSpell then
 				Thaliz_AnnounceResurrection(target);
 			end;
 		end;
@@ -1596,8 +1626,8 @@ function Thaliz_OnEvent(self, event, ...)
 		Thaliz_OnChatMsgAddon(event, ...)
 	elseif (event == "RAID_ROSTER_UPDATE") then
 		Thaliz_OnRaidRosterUpdate(event, ...)
-	else
-		echo("Unknown event: "..event);
+	--else
+	--	echo("Unknown event: "..event);
 	end
 end
 
@@ -1613,7 +1643,7 @@ function Thaliz_OnLoad()
     --ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");		// Called if a ress is cancelled.
 	C_ChatInfo.RegisterAddonMessagePrefix(THALIZ_MESSAGE_PREFIX);
 
-	Thaliz_InitTextures();
+	Thaliz_InitClassSpecificStuff();
     Thaliz_InitializeListElements();
 
 	Thaliz_RepositionateButton(RezButton);
