@@ -275,9 +275,11 @@ SlashCmdList["THALIZ_DEBUG"] = function(msg)
 
 	if dbgfunc and dbgfunc ~= '' then
 		Thaliz_Echo(string.format("Enabling debug for %s", dbgfunc));
+		ThalizScanFrequency = 1.0;
 		Thaliz_DebugFunction = dbgfunc;
 	else
 		Thaliz_Echo("Disabling debug");
+		ThalizScanFrequency = 0.2;
 		Thaliz_DebugFunction = nil;
 	end;
 end
@@ -1578,6 +1580,7 @@ function Thaliz_HandleThalizMessage(msg, sender)
 	end
 end
 
+--[[
 function Thaliz_HandleCTRAMessage(msg, sender)	
 	-- "RESSED" is received when a res LANDS on the target.
 	-- Add the target to the blacklist, so we don't ress him again
@@ -1631,7 +1634,7 @@ function Thaliz_HandleCTRAMessage(msg, sender)
 	-- "NORESSED" is received when res timeout OR res is accepted!
 	-- Do nothing (the blacklist expires soon anyway)
 end
-
+--]]
 
 
 --  *******************************************************
@@ -1641,6 +1644,7 @@ end
 --  *******************************************************
 
 function Thaliz_OnEvent(self, event, ...)
+	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_OnEvent");
 
 	if (event == "ADDON_LOADED") then
 		local addonname = ...;
@@ -1651,32 +1655,38 @@ function Thaliz_OnEvent(self, event, ...)
 --		echo("INCOMING_RESURRECT_CHANGED - YEEHAAA!!");
 	elseif (event == "UNIT_SPELLCAST_SENT") then
 		local resser, target, _, spellId = ...;
-		if(resser == "player") and (target ~= "Unknown") then
-			local resSpell = false;
-			if IsPriest then
-				--Resurrection, rank 1=2006, 2=2010, 3=10880, 4=10881, 5=20770:
-				if (spellId == 2006) or (spellId == 2010) or (spellId == 10880) or (spellId == 10881) or (spellId == 20770) then
-					resSpell = true;
+		if(resser == "player") then
+			if (target ~= "Unknown") then
+				local resSpell = false;
+				if IsPriest then
+					--Resurrection, rank 1=2006, 2=2010, 3=10880, 4=10881, 5=20770:
+					if (spellId == 2006) or (spellId == 2010) or (spellId == 10880) or (spellId == 10881) or (spellId == 20770) then
+						resSpell = true;
+					end;
+				elseif IsPaladin then
+					--Redemption, rank 1=(574,)7329, 2=10323, 3=10325, 4=20774, 5=20775:
+					if (spellId == 7329) or (spellId == 10323) or (spellId == 10325) or (spellId == 20774) or (spellId == 20775) then
+						resSpell = true;
+					end;
+				elseif IsShaman then
+					--Ancestral Spirit, rank 1=2008, 2=20609, 3=20610, 4=20776, 5=20777:
+					if (spellId == 2008) or (spellId == 20609) or (spellId == 20610) or (spellId == 20776) or (spellId == 20777) then
+						resSpell = true;
+					end;
+				elseif IsDruid then
+					--Rebirth, rank 1=20484, 2=20739, 3=20742, 4=20747, 5=20748:
+					if (spellId == 20484) or (spellId == 20739) or (spellId == 20742) or (spellId == 20747) or (spellId == 20748) then
+						resSpell = true;
+					end;
 				end;
-			elseif IsPaladin then
-				--Redemption, rank 1=(574,)7329, 2=10323, 3=10325, 4=20774, 5=20775:
-				if (spellId == 7329) or (spellId == 10323) or (spellId == 10325) or (spellId == 20774) or (spellId == 20775) then
-					resSpell = true;
-				end;
-			elseif IsShaman then
-				--Ancestral Spirit, rank 1=2008, 2=20609, 3=20610, 4=20776, 5=20777:
-				if (spellId == 2008) or (spellId == 20609) or (spellId == 20610) or (spellId == 20776) or (spellId == 20777) then
-					resSpell = true;
-				end;
-			elseif IsDruid then
-				--Rebirth, rank 1=20484, 2=20739, 3=20742, 4=20747, 5=20748:
-				if (spellId == 20484) or (spellId == 20739) or (spellId == 20742) or (spellId == 20747) or (spellId == 20748) then
-					resSpell = true;
+
+				if resSpell then
+					Thaliz_AnnounceResurrection(target);
 				end;
 			end;
-
-			if resSpell then
-				Thaliz_AnnounceResurrection(target);
+		else
+			if(debug) then 
+				echo(string.format("**DEBUG**: Resser=%s", resser));
 			end;
 		end;
 	elseif (event == "CHAT_MSG_ADDON") then
