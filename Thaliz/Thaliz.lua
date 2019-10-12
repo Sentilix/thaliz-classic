@@ -108,6 +108,7 @@ local Thaliz_OPTION_ResurrectionMessages				= "ResurrectionMessages";
 local Thaliz_OPTION_RezButtonPosX						= "RezButtonPosX";
 local Thaliz_OPTION_RezButtonPosY						= "RezButtonPosY";
 
+local Thaliz_DebugFunction = nil;
 
 -- Persisted information:
 Thaliz_Options = { }
@@ -260,6 +261,28 @@ SlashCmdList["THALIZ_ENABLE"] = function(msg)
 	Thaliz_Enabled = true;
 	Thaliz_Echo("Resurrection announcements has been enabled.");
 end
+
+
+
+--[[
+	Set DEBUG level for Thaliz.
+	Syntax: /thaliz debug <method>
+	Added in: classic-0.2.1
+]]
+SLASH_THALIZ_DEBUG1 = "/thalizdebug"
+SlashCmdList["THALIZ_DEBUG"] = function(msg)
+	local _, _, dbgfunc = string.find(msg, "(%S*)");
+
+	if dbgfunc and dbgfunc ~= '' then
+		Thaliz_Echo(string.format("Enabling debug for %s", dbgfunc));
+		Thaliz_DebugFunction = dbgfunc;
+	else
+		Thaliz_Echo("Disabling debug");
+		Thaliz_DebugFunction = nil;
+	end;
+end
+
+
 
 --[[
 	Show HELP options
@@ -1087,8 +1110,14 @@ ress button if anyone found.
 TODO: Take already ressed people into account!
 --]]
 function Thaliz_ScanRaid()
+	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_ScanRaid");
+
 	if not ThalizDoScanRaid then 
 		Thaliz_HideResurrectionButton();
+
+		if(debug) then 
+			echo("**DEBUG**: ThalizDoScanRaid=false");
+		end;
 		return;
 	end;
 
@@ -1096,24 +1125,40 @@ function Thaliz_ScanRaid()
 	if not IsResser then
 		ThalizDoScanRaid = false;
 		Thaliz_HideResurrectionButton();
+
+		if(debug) then 
+			echo("**DEBUG**: IsResser=false");
+		end;
 		return;
 	end
 
 	-- Doh, 1! Can't ress while dead!
 	if UnitIsDeadOrGhost("player") then
 		Thaliz_SetButtonTexture(THALIZ_RezBtn_Dead);
+
+		if(debug) then 
+			echo("**DEBUG**: UnitIsDeadOrGhost=true");
+		end;
 		return;
 	end;
 
 	-- Doh, 2! Can't ress while in combat!
 	if UnitAffectingCombat("player") then
 		Thaliz_SetButtonTexture(THALIZ_RezBtn_Combat);
+
+		if(debug) then 
+			echo("**DEBUG**: UnitAffectingCombat=true");
+		end;
 		return;
 	end;
 
 	local groupsize = GetNumGroupMembers();
 	if groupsize == 0 then
 		Thaliz_HideResurrectionButton();
+
+		if(debug) then 
+			echo("**DEBUG**: GetNumGroupMembers=0");
+		end;
 		return;
 	end
 
@@ -1122,7 +1167,7 @@ function Thaliz_ScanRaid()
 		grouptype = "raid";
 	end;
 
-	
+	local unitid;
 	local warlocksAlive = false;
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
@@ -1136,7 +1181,7 @@ function Thaliz_ScanRaid()
 
 	local targetprio;
 	local corpseTable = { };
-	local playername, unitid, classinfo;
+	local playername, classinfo;
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
 		playername = UnitName(unitid)
@@ -1169,14 +1214,19 @@ function Thaliz_ScanRaid()
 			
 			-- Add a random decimal factor to priority to spread ressings out.
 			-- Random is a float between 0 and 1:
-			targetprio = targetprio + random();		
-			--echo(string.format("%s added, priority=%f", playername, targetprio));			
+			targetprio = targetprio + random();	
+
+			--echo(string.format("%s added, unitid=%s, priority=%f", playername, unitid, targetprio));			
 			corpseTable[ table.getn(corpseTable) + 1 ] = { unitid, targetprio } ;
 		end
 	end	
 
 	if (table.getn(corpseTable) == 0) then
 		Thaliz_HideResurrectionButton();
+
+		if(debug) then 
+			echo("**DEBUG**: corpseTable=(empty)");
+		end;
 		return;
 	end
 
@@ -1184,11 +1234,18 @@ function Thaliz_ScanRaid()
 	-- Sort the corpses with highest priority in top:
 	Thaliz_SortTableDescending(corpseTable, 2);
 
-	corpse = UnitName(corpseTable[1][1]);
+	unitid = corpseTable[1][1];
+	classinfo = Thaliz_GetClassinfo(UnitClass("player"));
+	local spellname = classinfo[3];
+
+	if(debug) then 
+		if not spellname then spellname = "nil"; end;
+		echo(string.format("**DEBUG**: corpse=%s, unitid=%s, spell=%s", UnitName(unitid), unitid, spellname));
+	end;
 
 	RezButton:SetAttribute("type", "spell");
     RezButton:SetAttribute("spell", spellname);
-	RezButton:SetAttribute("unit", corpse);
+	RezButton:SetAttribute("unit", unitid);
 
 	Thaliz_SetButtonTexture(THALIZ_RezBtn_Active);
 end;
