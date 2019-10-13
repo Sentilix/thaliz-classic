@@ -686,6 +686,9 @@
 				self:RegisterForDrag("LeftButton");
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 
+				self:SetScript("PreClick", Thaliz_BroadcastResurrection);
+				--self:SetScript("PostClick", SMARTBUFF_OnPostClick);
+
 				self:SetAttribute("type", "spell");
 				self:SetAttribute("unit", nil);
 				self:SetAttribute("spell", nil);

@@ -83,8 +83,8 @@ local PriorityToCurrentTarget = 100;	-- Prio over all if target is selected
 
 -- List of blacklisted (already ressed) people
 local blacklistedTable = {}
--- Corpses are blacklisted for 25 seconds (10 seconds cast time + 15 seconds waiting) as default
-local Thaliz_Blacklist_Timeout = 25;
+-- Corpses are blacklisted for 40 seconds (10 seconds cast time + 30 seconds waiting) as default
+local Thaliz_Blacklist_Timeout = 40;
 
 local Thaliz_Enabled = true;
 local ThalizConfigDialogOpen = false;
@@ -1109,7 +1109,7 @@ end
 Scan the entire raid / group for corpses, and activate
 ress button if anyone found.
 
-TODO: Take already ressed people into account!
+TODO: Take already ressed people into account! (check blacklisting works!)
 --]]
 function Thaliz_ScanRaid()
 	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_ScanRaid");
@@ -1191,15 +1191,20 @@ function Thaliz_ScanRaid()
 		local isBlacklisted = false;
 		for b=1, table.getn(blacklistedTable), 1 do
 			blacklistInfo = blacklistedTable[b];
-			blacklistTick = blacklistInfo[2];					
+			blacklistTick = blacklistInfo[2];		
+			
+			--echo(string.format("Comparing '%s' with '%s'", blacklistInfo[1], playername));
 			if blacklistInfo[1] == playername then
 				isBlacklisted = true;
+				if(debug) then 
+					echo(string.format("**DEBUG**: Player %s is blacklisted ...", playername));
+				end;
 				break;
 			end
 		end
 		
 		targetname = UnitName("playertarget");
-		if not isBlacklisted and UnitIsDead(unitid) and UnitIsConnected(unitid) and UnitIsVisible(unitid) then
+		if (isBlacklisted == false) and UnitIsDead(unitid) and UnitIsConnected(unitid) and UnitIsVisible(unitid) then
 			classinfo = Thaliz_GetClassinfo(UnitClass(unitid));
 			targetprio = classinfo[2];
 			if targetname and targetname == playername then
@@ -1252,9 +1257,22 @@ function Thaliz_ScanRaid()
 	Thaliz_SetButtonTexture(THALIZ_RezBtn_Active);
 end;
 
+
+function Thaliz_BroadcastResurrection(self)
+	local unitid = self:GetAttribute("unit");
+	local playername = UnitName(unitid);
+
+	--echo("Sending TX_RESBEGIN telegram");
+	Thaliz_SendAddonMessage(string.format("TX_RESBEGIN#%s#", playername));
+end;
+
+
 function Thaliz_HideResurrectionButton()
 	Thaliz_SetButtonTexture(THALIZ_RezBtn_Passive);
+	RezButton:SetAttribute("type", nil);
+	RezButton:SetAttribute("unit", nil);
 end;
+
 
 function Thaliz_InitClassSpecificStuff()
 	local classname = UnitClass("player");
@@ -1536,6 +1554,7 @@ end
 function Thaliz_HandleTXResBegin(message, sender)
 	-- Blacklist target unless ress was initated by me
 	if not (sender == UnitName("player")) then
+		--echo(string.format("*** Remote blacklisting %s (%s is ressing)", message, sender));
 		Thaliz_BlacklistPlayer(message);
 	end
 end
@@ -1580,61 +1599,6 @@ function Thaliz_HandleThalizMessage(msg, sender)
 	end
 end
 
---[[
-function Thaliz_HandleCTRAMessage(msg, sender)	
-	-- "RESSED" is received when a res LANDS on the target.
-	-- Add the target to the blacklist, so we don't ress him again
-	if msg == "RESSED" then
-		Thaliz_BlacklistPlayer(sender);
-		return;
-	end
-	
-	-- "RES <name>" is received when a manual res is CASTED
-	-- Add to blacklist.
-	local _, _, ctra_command, ctra_player = string.find(msg, "(%S*) (%S*)");
-	if ctra_command and ctra_player then
-		if ctra_command == "RES" then
-			-- If sender is from ME, it is ME doing a manual (ressing a released 
-			-- corpse) ress. Announce the ressurection!
-			if sender == UnitName("player") then
-				-- Check if player is online; for this we need the unit id!
-				local unitid = Thaliz_GetUnitID(ctra_player);
-				if unitid then
-					if UnitIsConnected(unitid) then
-						-- If unit is blacklisted we should NOT display the ress. message.
-						-- Unfortunately we cannot cancel the spell cast.
-						if Thaliz_IsPlayerBlacklisted(ctra_player) then
-							Thaliz_Echo(string.format("NOTE: Someone already ressed %s!", ctra_player));
-							return;
-						else
-							Thaliz_AnnounceResurrection(ctra_player);
-						end
-					else
-						Thaliz_Echo(string.format("NOTE: %s is offline!", ctra_player));
-					end
-				end				
-			end
-			
-			Thaliz_BlacklistPlayer(ctra_player);
-			return;
-		end
-	end
-
-	-- Other ress events received:
-	-- "RESNO" is received when a res is cancelled/interrupted.
-	-- Do nothing.
-	-- Question: should we remove from blacklist in that case?
-	-- The cancellation could happen for two reasons (possibly more)
-	--	- Target is out of LOS for one resser (but maybe not for me!)
-	--	- Res was cancelled by movement or combat.
-	--		In this case we SHOULD remove from blacklist, but if in combat we cant ress anyway.
-	--	The problem here is we do not know WHO we were attempting to ress!!
-	--	We only have the SENDER name which is the name of the RESSER!
-	
-	-- "NORESSED" is received when res timeout OR res is accepted!
-	-- Do nothing (the blacklist expires soon anyway)
-end
---]]
 
 
 --  *******************************************************
@@ -1651,8 +1615,6 @@ function Thaliz_OnEvent(self, event, ...)
 		if addonname == "Thaliz" then
 		    Thaliz_InitializeConfigSettings();
 		end		
---	elseif (event == "INCOMING_RESURRECT_CHANGED") then
---		echo("INCOMING_RESURRECT_CHANGED - YEEHAAA!!");
 	elseif (event == "UNIT_SPELLCAST_SENT") then
 		local resser, target, _, spellId = ...;
 		if(resser == "player") then
@@ -1681,6 +1643,7 @@ function Thaliz_OnEvent(self, event, ...)
 				end;
 
 				if resSpell then
+					Thaliz_BlacklistPlayer(target);
 					Thaliz_AnnounceResurrection(target);
 				end;
 			end;
@@ -1689,6 +1652,12 @@ function Thaliz_OnEvent(self, event, ...)
 				echo(string.format("**DEBUG**: Resser=%s", resser));
 			end;
 		end;
+	--elseif (event == "INCOMING_RESURRECT_CHANGED") then
+		-- This is called when a ress is started or ended.
+		--local resser, target = ...;
+		--echo("INCOMING_RESURRECT_CHANGED - YEEHAAA!!");
+		--echo(string.format("**DEBUG**: resser=%s", resser));
+		--echo(string.format("**DEBUG**: target=%s", target));
 	elseif (event == "CHAT_MSG_ADDON") then
 		Thaliz_OnChatMsgAddon(event, ...)
 	elseif (event == "RAID_ROSTER_UPDATE") then
@@ -1707,7 +1676,7 @@ function Thaliz_OnLoad()
     ThalizEventFrame:RegisterEvent("CHAT_MSG_ADDON");
     ThalizEventFrame:RegisterEvent("RAID_ROSTER_UPDATE");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
-    --ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");		// Called if a ress is cancelled.
+--    ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");		-- Called if a ress is startedn stopped or cancelled
 	C_ChatInfo.RegisterAddonMessagePrefix(THALIZ_MESSAGE_PREFIX);
 
 	Thaliz_InitClassSpecificStuff();
