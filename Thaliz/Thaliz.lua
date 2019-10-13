@@ -1260,6 +1260,10 @@ end;
 
 function Thaliz_BroadcastResurrection(self)
 	local unitid = self:GetAttribute("unit");
+	if not unitid then 
+			return; 
+	end;
+
 	local playername = UnitName(unitid);
 
 	--echo("Sending TX_RESBEGIN telegram");
