@@ -687,7 +687,12 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 
 				self:SetScript("PreClick", Thaliz_BroadcastResurrection);
-				--self:SetScript("PostClick", SMARTBUFF_OnPostClick);
+
+				self.title = self:CreateFontString(nil, "OVERLAY");
+				self.title:SetFont("Fonts\\ARIALN.ttf",8)
+				self.title:SetTextColor(1, 1, 0)
+				self.title:SetAllPoints(self);
+				self.title:SetText("");
 
 				self:SetAttribute("type", "spell");
 				self:SetAttribute("unit", nil);

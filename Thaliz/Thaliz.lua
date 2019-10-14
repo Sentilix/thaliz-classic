@@ -1115,8 +1115,6 @@ function Thaliz_ScanRaid()
 	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_ScanRaid");
 
 	if not ThalizDoScanRaid then 
-		Thaliz_HideResurrectionButton();
-
 		if(debug) then 
 			echo("**DEBUG**: ThalizDoScanRaid=false");
 		end;
@@ -1181,6 +1179,16 @@ function Thaliz_ScanRaid()
 	
 	Thaliz_CleanupBlacklistedPlayers();
 
+	--Fetch current assigned target (if any):
+	local currentPrio = 0;
+	local highestPrio = 0;
+	local currentIsValid = false;
+	local currentTarget = "";
+	unitid = RezButton:GetAttribute("unit");
+	if unitid then
+		currentTarget = UnitName(unitid);
+	end;
+
 	local targetprio;
 	local corpseTable = { };
 	local playername, classinfo;
@@ -1219,6 +1227,16 @@ function Thaliz_ScanRaid()
 				targetprio = PriorityToFirstWarlock;				
 			end
 			
+			-- Check if the current target is still eligible for ress:
+			if playername == currentTarget then
+				currentPrio = targetprio;
+				currentIsValid = true;
+			end;
+
+			if targetprio > highestPrio then
+				highestPrio = targetprio;
+			end;
+
 			-- Add a random decimal factor to priority to spread ressings out.
 			-- Random is a float between 0 and 1:
 			targetprio = targetprio + random();	
@@ -1237,23 +1255,32 @@ function Thaliz_ScanRaid()
 		return;
 	end
 
-	-- We found someone to ress.
-	-- Sort the corpses with highest priority in top:
-	Thaliz_SortTableDescending(corpseTable, 2);
-
-	unitid = corpseTable[1][1];
-	classinfo = Thaliz_GetClassinfo(UnitClass("player"));
-	local spellname = classinfo[3];
-
-	if(debug) then 
-		if not spellname then spellname = "nil"; end;
-		echo(string.format("**DEBUG**: corpse=%s, unitid=%s, spell=%s", UnitName(unitid), unitid, spellname));
+	if highestPrio > currentPrio then
+		currentIsValid = false;
 	end;
 
-	RezButton:SetAttribute("type", "spell");
-    RezButton:SetAttribute("spell", spellname);
-	RezButton:SetAttribute("unit", unitid);
+	if not currentIsValid then
+		-- We found someone (or a new person) to ress.
+		classinfo = Thaliz_GetClassinfo(UnitClass("player"));
+		local spellname = classinfo[3];
+		local restarget = UnitName(unitid);
 
+		if(debug) then 
+			if not spellname then spellname = "nil"; end;
+			echo(string.format("**DEBUG**: corpse=%s, unitid=%s, spell=%s", restarget, unitid, spellname));
+		end;
+
+		-- Sort the corpses with highest priority in top:
+		Thaliz_SortTableDescending(corpseTable, 2);
+
+		unitid = corpseTable[1][1];
+
+		RezButton:SetAttribute("type", "spell");
+		RezButton:SetAttribute("spell", spellname);
+		RezButton:SetAttribute("unit", unitid);
+		RezButton.title:SetText(restarget);
+	end;
+	
 	Thaliz_SetButtonTexture(THALIZ_RezBtn_Active);
 end;
 
@@ -1275,6 +1302,7 @@ function Thaliz_HideResurrectionButton()
 	Thaliz_SetButtonTexture(THALIZ_RezBtn_Passive);
 	RezButton:SetAttribute("type", nil);
 	RezButton:SetAttribute("unit", nil);
+	RezButton.title:SetText("");
 end;
 
 
