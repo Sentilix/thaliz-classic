@@ -1,4 +1,14 @@
 
+
+classic-0.3.0:
+* Fixed lua bug when not in raid/party
+* Fixed nil player names
+* Added target name to button (lets see if it works out)
+* Bugfix: Blacklisting of players works now.
+
+
+
+
 TODO list:
 Ability to import/export macros (postponded due to issues with EditBox)
 
