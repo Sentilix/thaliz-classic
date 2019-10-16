@@ -1651,6 +1651,11 @@ function Thaliz_OnEvent(self, event, ...)
 		local resser, target, _, spellId = ...;
 		if(resser == "player") then
 			if (target ~= "Unknown") then
+
+				if(debug) then 
+					echo(string.format("**DEBUG**: SpellId=%s", spellId));
+				end;
+
 				local resSpell = false;
 				if IsPriest then
 					--Resurrection, rank 1=2006, 2=2010, 3=10880, 4=10881, 5=20770:
@@ -1658,8 +1663,7 @@ function Thaliz_OnEvent(self, event, ...)
 						resSpell = true;
 					end;
 				elseif IsPaladin then
-					--Redemption, rank 1=(574,)7329, 2=10323, 3=10325, 4=20774, 5=20775:
-					if (spellId == 7329) or (spellId == 10323) or (spellId == 10325) or (spellId == 20774) or (spellId == 20775) then
+					if (spellId == 7328) or (spellId == 10322) or (spellId == 10324) or (spellId == 20772) or (spellId == 20773) then
 						resSpell = true;
 					end;
 				elseif IsShaman then
