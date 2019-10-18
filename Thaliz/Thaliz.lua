@@ -824,13 +824,19 @@ end
 	Convert a msg so first letter is uppercase, and rest as lower case.
 ]]
 function Thaliz_UCFirst(msg)
-	if not msg then
+	if not playername then
 		return ""
 	end	
 
-	local f = string.sub(msg, 1, 1)
-	local r = string.sub(msg, 2)
-	return string.upper(f) .. string.lower(r)
+	-- Handles utf8 characters in beginning.. Ugly, but works:
+	local offset = 2;
+	local firstletter = string.sub(playername, 1, 1);
+	if(not string.find(firstletter, '[a-zA-Z]')) then
+		firstletter = string.sub(playername, 1, 2);
+		offset = 3;
+	end;
+
+	return string.upper(firstletter) .. string.lower(string.sub(playername, offset));
 end
 
 
