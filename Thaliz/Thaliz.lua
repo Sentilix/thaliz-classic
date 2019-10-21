@@ -823,7 +823,7 @@ end
 --[[
 	Convert a msg so first letter is uppercase, and rest as lower case.
 ]]
-function Thaliz_UCFirst(msg)
+function Thaliz_UCFirst(playername)
 	if not playername then
 		return ""
 	end	
@@ -1121,6 +1121,7 @@ function Thaliz_ScanRaid()
 	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_ScanRaid");
 
 	if not ThalizDoScanRaid then 
+		RezButton.title:SetText("");
 		if(debug) then 
 			echo("**DEBUG**: ThalizDoScanRaid=false");
 		end;
@@ -1140,6 +1141,7 @@ function Thaliz_ScanRaid()
 
 	-- Doh, 1! Can't ress while dead!
 	if UnitIsDeadOrGhost("player") then
+		RezButton.title:SetText("");
 		Thaliz_SetButtonTexture(THALIZ_RezBtn_Dead);
 
 		if(debug) then 
@@ -1148,8 +1150,9 @@ function Thaliz_ScanRaid()
 		return;
 	end;
 
-	-- Doh, 2! Can't ress while in combat!
-	if UnitAffectingCombat("player") then
+	-- Doh, 2! Can't ress while in combat, except if you're a druid:
+	if (not IsDruid) and UnitAffectingCombat("player") then
+		RezButton.title:SetText("");
 		Thaliz_SetButtonTexture(THALIZ_RezBtn_Combat);
 
 		if(debug) then 
@@ -1294,7 +1297,7 @@ end;
 function Thaliz_BroadcastResurrection(self)
 	local unitid = self:GetAttribute("unit");
 	if not unitid then 
-			return; 
+		return; 
 	end;
 
 	local playername = UnitName(unitid);
