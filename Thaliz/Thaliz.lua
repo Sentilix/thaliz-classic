@@ -1121,7 +1121,7 @@ function Thaliz_ScanRaid()
 	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_ScanRaid");
 
 	if not ThalizDoScanRaid then 
-		RezButton.title:SetText("");
+		Thaliz_SetRezTargetText();
 		if(debug) then 
 			echo("**DEBUG**: ThalizDoScanRaid=false");
 		end;
@@ -1141,7 +1141,7 @@ function Thaliz_ScanRaid()
 
 	-- Doh, 1! Can't ress while dead!
 	if UnitIsDeadOrGhost("player") then
-		RezButton.title:SetText("");
+		Thaliz_SetRezTargetText();
 		Thaliz_SetButtonTexture(THALIZ_RezBtn_Dead);
 
 		if(debug) then 
@@ -1152,7 +1152,7 @@ function Thaliz_ScanRaid()
 
 	-- Doh, 2! Can't ress while in combat, except if you're a druid:
 	if (not IsDruid) and UnitAffectingCombat("player") then
-		RezButton.title:SetText("");
+		Thaliz_SetRezTargetText();
 		Thaliz_SetButtonTexture(THALIZ_RezBtn_Combat);
 
 		if(debug) then 
@@ -1268,11 +1268,13 @@ function Thaliz_ScanRaid()
 		currentIsValid = false;
 	end;
 
+
+	local restarget = UnitName(unitid);
+
 	if not currentIsValid then
 		-- We found someone (or a new person) to ress.
 		classinfo = Thaliz_GetClassinfo(UnitClass("player"));
 		local spellname = classinfo[3];
-		local restarget = UnitName(unitid);
 
 		if(debug) then 
 			if not spellname then spellname = "nil"; end;
@@ -1287,9 +1289,9 @@ function Thaliz_ScanRaid()
 		RezButton:SetAttribute("type", "spell");
 		RezButton:SetAttribute("spell", spellname);
 		RezButton:SetAttribute("unit", unitid);
-		RezButton.title:SetText(restarget);
 	end;
-	
+
+	Thaliz_SetRezTargetText(restarget);	
 	Thaliz_SetButtonTexture(THALIZ_RezBtn_Active);
 end;
 
@@ -1307,11 +1309,20 @@ function Thaliz_BroadcastResurrection(self)
 end;
 
 
+function Thaliz_SetRezTargetText(playername)
+	if not playername then
+		playername = "";
+	end;
+
+	RezButton.title:SetText(playername);
+end;
+
+
 function Thaliz_HideResurrectionButton()
 	Thaliz_SetButtonTexture(THALIZ_RezBtn_Passive);
 	RezButton:SetAttribute("type", nil);
 	RezButton:SetAttribute("unit", nil);
-	RezButton.title:SetText("");
+	Thaliz_SetRezTargetText();
 end;
 
 
@@ -1698,11 +1709,14 @@ function Thaliz_OnEvent(self, event, ...)
 			end;
 		end;
 	--elseif (event == "INCOMING_RESURRECT_CHANGED") then
-		-- This is called when a ress is started or ended.
-		--local resser, target = ...;
-		--echo("INCOMING_RESURRECT_CHANGED - YEEHAAA!!");
-		--echo(string.format("**DEBUG**: resser=%s", resser));
-		--echo(string.format("**DEBUG**: target=%s", target));
+	--	-- This is called when a ress is started or ended.
+	--	local resser, target = ...;
+	--	if (UnitName(resser) == UnitName("player")) then
+	--		echo("INCOMING_RESURRECT_CHANGED - by me");
+	--		echo(string.format("**DEBUG**: resser=%s", resser));
+	--	end;
+	--	--echo(string.format("**DEBUG**: target=%s", target));
+
 	elseif (event == "CHAT_MSG_ADDON") then
 		Thaliz_OnChatMsgAddon(event, ...)
 	elseif (event == "RAID_ROSTER_UPDATE") then
@@ -1721,7 +1735,7 @@ function Thaliz_OnLoad()
     ThalizEventFrame:RegisterEvent("CHAT_MSG_ADDON");
     ThalizEventFrame:RegisterEvent("RAID_ROSTER_UPDATE");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
---    ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");		-- Called if a ress is startedn stopped or cancelled
+    --ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");		-- Called if a ress is startedn stopped or cancelled
 	C_ChatInfo.RegisterAddonMessagePrefix(THALIZ_MESSAGE_PREFIX);
 
 	Thaliz_InitClassSpecificStuff();
