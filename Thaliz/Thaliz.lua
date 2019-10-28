@@ -96,6 +96,7 @@ local Thaliz_Configuration_Default_Level				= "Character";	-- Can be "Character"
 local Thaliz_Target_Channel_Default						= "RAID";
 local Thaliz_Target_Whisper_Default						= "0";
 local Thaliz_Resurrection_Whisper_Message_Default		= "Resurrection incoming in 10 seconds!";
+local Thaliz_Include_Default_Group_Default				= "1";
 
 local Thaliz_ConfigurationLevel							= Thaliz_Configuration_Default_Level;
 
@@ -751,6 +752,7 @@ function Thaliz_InitializeConfigSettings()
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_Target_Channel_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_Target_Whisper_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_Resurrection_Whisper_Message_Default))
+	Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_GetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_Include_Default_Group_Default))
 
 	local x,y = RezButton:GetPoint();
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosX, x))
@@ -767,6 +769,9 @@ function Thaliz_InitializeConfigSettings()
 	end
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
 		ThalizFrameCheckbuttonWhisper:SetChecked(1)
+	end
+	if Thaliz_GetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup) == 1 then
+		ThalizFrameCheckbuttonIncludeDefault:SetChecked(1)
 	end
 	if Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings) == "Character" then
 		ThalizFrameCheckbuttonPerCharacter:SetChecked(1)
