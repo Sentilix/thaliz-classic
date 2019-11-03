@@ -809,11 +809,11 @@ function Thaliz_GetUnitID(playername)
 	local groupsize, grouptype;
 		
 	groupsize = GetNumGroupMembers();
-	if groupsize > 5 then
+	if IsInRaid() then
 		grouptype = "raid";	
 	else
 		grouptype = "party";
-	end
+	end;
 
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
@@ -1401,10 +1401,14 @@ end
 --	Blacklisting functions
 --
 --  *******************************************************
-function Thaliz_BlacklistPlayer(playername)
+function Thaliz_BlacklistPlayer(playername, blacklistTime)
 	if not Thaliz_IsPlayerBlacklisted(playername) then
 		--echo("Blacklisting "..playername);
-		blacklistedTable[ table.getn(blacklistedTable) + 1 ] = { playername, Thaliz_GetTimerTick() + Thaliz_Blacklist_Timeout };
+		if not blacklistTime then
+			blacklistTime = Thaliz_Blacklist_Timeout;
+		end;
+
+		blacklistedTable[ table.getn(blacklistedTable) + 1 ] = { playername, Thaliz_GetTimerTick() + blacklistTime };
 	end
 end
 
@@ -1656,6 +1660,63 @@ function Thaliz_HandleThalizMessage(msg, sender)
 	end
 end
 
+function Thaliz_BeginsWith(String, Start)
+   return string.sub(String, 1, string.len(Start)) == Start;
+end
+
+
+function Thaliz_AnnounceResurrectionUsingSpellId(target, spellId)
+	if Thaliz_SpellIsResurrect(spellId) then
+		Thaliz_BlacklistPlayer(target);
+		Thaliz_AnnounceResurrection(target);
+	end;
+end;
+
+function Thaliz_SpellIsResurrect(spellId)
+	local resSpell = false;
+
+	if spellId then
+		spellId = 1 * spellId;
+
+		if IsPriest then
+			--Resurrection, rank 1=2006, 2=2010, 3=10880, 4=10881, 5=20770:
+			if (spellId == 2006) or (spellId == 2010) or (spellId == 10880) or (spellId == 10881) or (spellId == 20770) then
+				resSpell = true;
+			end;
+		elseif IsPaladin then
+			if (spellId == 7328) or (spellId == 10322) or (spellId == 10324) or (spellId == 20772) or (spellId == 20773) then
+				resSpell = true;
+			end;
+		elseif IsShaman then
+			--Ancestral Spirit, rank 1=2008, 2=20609, 3=20610, 4=20776, 5=20777:
+			if (spellId == 2008) or (spellId == 20609) or (spellId == 20610) or (spellId == 20776) or (spellId == 20777) then
+				resSpell = true;
+			end;
+		elseif IsDruid then
+			--Rebirth, rank 1=20484, 2=20739, 3=20742, 4=20747, 5=20748:
+			if (spellId == 20484) or (spellId == 20739) or (spellId == 20742) or (spellId == 20747) or (spellId == 20748) then
+				resSpell = true;
+			end;
+		end;
+	end;
+
+	return resSpell;
+end;
+
+
+--[[
+	Return # of seconds left of blacklist timer, nil if not blacklisted
+--]]
+function Thaliz_IsPlayerBlacklisted(playername)
+
+	for b=1, table.getn(blacklistedTable), 1 do
+		local blacklistInfo = blacklistedTable[b];
+		if blacklistInfo[1] == playername then
+			return (blacklistInfo[2] - TimerTick);
+		end
+	end
+	return nil;
+end;
 
 
 --  *******************************************************
@@ -1664,6 +1725,7 @@ end
 --
 --  *******************************************************
 
+local SpellcastIsStarted = false;
 function Thaliz_OnEvent(self, event, ...)
 	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_OnEvent");
 
@@ -1676,58 +1738,69 @@ function Thaliz_OnEvent(self, event, ...)
 		local resser, target, _, spellId = ...;
 		if(resser == "player") then
 			if (target ~= "Unknown") then
-
 				if(debug) then 
 					echo(string.format("**DEBUG**: SpellId=%s", spellId));
 				end;
-
-				local resSpell = false;
-				if IsPriest then
-					--Resurrection, rank 1=2006, 2=2010, 3=10880, 4=10881, 5=20770:
-					if (spellId == 2006) or (spellId == 2010) or (spellId == 10880) or (spellId == 10881) or (spellId == 20770) then
-						resSpell = true;
-					end;
-				elseif IsPaladin then
-					if (spellId == 7328) or (spellId == 10322) or (spellId == 10324) or (spellId == 20772) or (spellId == 20773) then
-						resSpell = true;
-					end;
-				elseif IsShaman then
-					--Ancestral Spirit, rank 1=2008, 2=20609, 3=20610, 4=20776, 5=20777:
-					if (spellId == 2008) or (spellId == 20609) or (spellId == 20610) or (spellId == 20776) or (spellId == 20777) then
-						resSpell = true;
-					end;
-				elseif IsDruid then
-					--Rebirth, rank 1=20484, 2=20739, 3=20742, 4=20747, 5=20748:
-					if (spellId == 20484) or (spellId == 20739) or (spellId == 20742) or (spellId == 20747) or (spellId == 20748) then
-						resSpell = true;
-					end;
+				if not Thaliz_IsPlayerBlacklisted(target) then
+					Thaliz_BlacklistPlayer(target, 10);
+					Thaliz_AnnounceResurrectionUsingSpellId(target, spellId);
 				end;
-
-				if resSpell then
-					Thaliz_BlacklistPlayer(target);
-					Thaliz_AnnounceResurrection(target);
-				end;
-			end;
-		else
-			if(debug) then 
-				echo(string.format("**DEBUG**: Resser=%s", resser));
 			end;
 		end;
-	--elseif (event == "INCOMING_RESURRECT_CHANGED") then
-	--	-- This is called when a ress is started or ended.
-	--	local resser, target = ...;
-	--	if (UnitName(resser) == UnitName("player")) then
-	--		echo("INCOMING_RESURRECT_CHANGED - by me");
-	--		echo(string.format("**DEBUG**: resser=%s", resser));
-	--	end;
-	--	--echo(string.format("**DEBUG**: target=%s", target));
+
+	elseif (event == "UNIT_SPELLCAST_START") then
+		SpellcastIsStarted = true;
+	elseif (event == "UNIT_SPELLCAST_STOP") then
+		SpellcastIsStarted = false;
+
+	elseif (event == "INCOMING_RESURRECT_CHANGED") then
+		local arg1 = ...;
+		local target = nil;
+
+		-- Hack: we assume this is someone ressing; we can't see the spellId on the event!
+		if SpellcastIsStarted and UnitIsGhost(arg1) then
+			if IsInRaid() then
+				if Thaliz_BeginsWith(arg1, 'raid') then
+					target = UnitName(arg1);
+				end;
+			else
+				if Thaliz_BeginsWith(arg1, 'party') then
+					target = UnitName(arg1);
+				end;
+			end;
+
+			if target then
+				if not Thaliz_IsPlayerBlacklisted(target) then
+					Thaliz_BlacklistPlayer(target, 10);
+					Thaliz_AnnounceResurrection(target, arg1);
+				end;
+			end;
+		end;
 
 	elseif (event == "CHAT_MSG_ADDON") then
 		Thaliz_OnChatMsgAddon(event, ...)
+
 	elseif (event == "RAID_ROSTER_UPDATE") then
 		Thaliz_OnRaidRosterUpdate(event, ...)
-	--else
-	--	echo("Unknown event: "..event);
+
+	else
+		if(debug) then 
+			echo("**DEBUG**: Other event: "..event);
+
+			local arg1, arg2, arg3, arg4 = ...;
+			if arg1 then
+				echo(string.format("**DEBUG**: arg1=%s", arg1));
+			end;
+			if arg2 then				
+				echo(string.format("**DEBUG**: arg2=%s", arg2));
+			end;
+			if arg3 then				
+				echo(string.format("**DEBUG**: arg3=%s", arg3));
+			end;
+			if arg4 then				
+				echo(string.format("**DEBUG**: arg4=%s", arg4));
+			end;
+		end;
 	end
 end
 
@@ -1739,8 +1812,11 @@ function Thaliz_OnLoad()
     ThalizEventFrame:RegisterEvent("ADDON_LOADED");
     ThalizEventFrame:RegisterEvent("CHAT_MSG_ADDON");
     ThalizEventFrame:RegisterEvent("RAID_ROSTER_UPDATE");
+    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_START");
+    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
-    --ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");		-- Called if a ress is startedn stopped or cancelled
+	ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");
+
 	C_ChatInfo.RegisterAddonMessagePrefix(THALIZ_MESSAGE_PREFIX);
 
 	Thaliz_InitClassSpecificStuff();
