@@ -84,7 +84,9 @@ local PriorityToCurrentTarget = 100;	-- Prio over all if target is selected
 -- List of blacklisted (already ressed) people
 local blacklistedTable = {}
 -- Corpses are blacklisted for 40 seconds (10 seconds cast time + 30 seconds waiting) as default
-local Thaliz_Blacklist_Timeout = 40;
+local Thaliz_Blacklist_Spellcast = 10;
+local Thaliz_Blacklist_Resurrect = 30;
+local Thaliz_Blacklist_Timeout = Thaliz_Blacklist_Spellcast + Thaliz_Blacklist_Resurrect;
 
 local Thaliz_Enabled = true;
 local ThalizConfigDialogOpen = false;
@@ -1226,7 +1228,12 @@ function Thaliz_ScanRaid()
 		end
 		
 		targetname = UnitName("playertarget");
-		if (isBlacklisted == false) and UnitIsDead(unitid) and UnitIsConnected(unitid) and UnitIsVisible(unitid) then
+
+		if (isBlacklisted == false) and 
+			UnitIsDead(unitid) and 
+			(UnitHasIncomingResurrection(unitid) == false) and 
+			UnitIsConnected(unitid) and 
+			UnitIsVisible(unitid) then
 			classinfo = Thaliz_GetClassinfo(UnitClass(unitid));
 			targetprio = classinfo[2];
 			if targetname and targetname == playername then
@@ -1297,7 +1304,16 @@ function Thaliz_ScanRaid()
 	end;
 
 	Thaliz_SetRezTargetText(restarget);	
-	Thaliz_SetButtonTexture(THALIZ_RezBtn_Active);
+	Thaliz_SetButtonTexture(THALIZ_RezBtn_Active, true);
+end;
+
+
+function Thaliz_OnRezClick(self)
+	local unitid = RezButton:GetAttribute("unit");
+	if unitid then
+		Thaliz_BlacklistPlayer(UnitName(unitid), Thaliz_Blacklist_Spellcast);
+		Thaliz_BroadcastResurrection(self);
+	end;
 end;
 
 
@@ -1360,30 +1376,19 @@ function Thaliz_InitClassSpecificStuff()
 end;
 
 local RezButtonLastTexture = "";
-function Thaliz_SetButtonTexture(textureName)
+function Thaliz_SetButtonTexture(textureName, isEnabled)
+	local alphaValue = 0.5;
+	if isEnabled then
+		alphaValue = 1.0;
+	end;
+
 	if RezButtonLastTexture ~= textureName then	
 		RezButtonLastTexture = textureName;
+		RezButton:SetAlpha(alphaValue);
 		RezButton:SetNormalTexture(textureName);		
 	end;
 end;
 
-
-function Thaliz_ChooseCorpse(corpseTable)
-	local currentTarget = UnitName("playertarget");
-
-	for key, val in next, corpseTable do
-		echo("Checking unit="..val[1]);
-		if SpellCanTargetUnit(val[1]) then
-			echo("Ack!");
-			return val[1];
-		end
-		-- spellCanTarget does not work if we already target the unit:		
-		if UnitName(val[1]) == currentTarget then
-			return val[1];
-		end;		
-	end
-	return nil;
-end
 
 function Thaliz_GetClassinfo(classname)
 	for key, val in next, classInfo do 
@@ -1402,13 +1407,28 @@ end
 --
 --  *******************************************************
 function Thaliz_BlacklistPlayer(playername, blacklistTime)
-	if not Thaliz_IsPlayerBlacklisted(playername) then
-		--echo("Blacklisting "..playername);
-		if not blacklistTime then
-			blacklistTime = Thaliz_Blacklist_Timeout;
-		end;
+	if not blacklistTime then
+		blacklistTime = Thaliz_Blacklist_Timeout;
+	end;
 
-		blacklistedTable[ table.getn(blacklistedTable) + 1 ] = { playername, Thaliz_GetTimerTick() + blacklistTime };
+	local timerTick = Thaliz_GetTimerTick();
+
+	if Thaliz_IsPlayerBlacklisted(playername) then
+		-- Player is already blacklisted; if the current blacklist time is higher than 
+		-- the remaining blacklist value, we need to replace the current time with the
+		-- requested time.
+		for b=1, table.getn(blacklistedTable), 1 do
+			local blacklistInfo = blacklistedTable[b];
+			if blacklistInfo[1] == playername then
+				local remainingTime = blacklistInfo[2] - timerTick;
+				if remainingTime < blacklistTime then
+					blacklistedTable[b][2] = timerTick + blacklistTime;
+				end;
+				break;
+			end
+		end
+	else
+		blacklistedTable[ table.getn(blacklistedTable) + 1 ] = { playername, timerTick + blacklistTime };
 	end
 end
 
@@ -1783,6 +1803,13 @@ function Thaliz_OnEvent(self, event, ...)
 	elseif (event == "RAID_ROSTER_UPDATE") then
 		Thaliz_OnRaidRosterUpdate(event, ...)
 
+	elseif (event == "COMBAT_LOG_EVENT_UNFILTERED") then
+		local _, subevent, _, _, sourceName, _, _, _, destName = CombatLogGetCurrentEventInfo();
+
+		if subevent == "SPELL_RESURRECT" then
+			Thaliz_BlacklistPlayer(destName, Thaliz_Blacklist_Resurrect);
+		end
+
 	else
 		if(debug) then 
 			echo("**DEBUG**: Other event: "..event);
@@ -1816,6 +1843,7 @@ function Thaliz_OnLoad()
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
 	ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");
+	ThalizEventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 
 	C_ChatInfo.RegisterAddonMessagePrefix(THALIZ_MESSAGE_PREFIX);
 

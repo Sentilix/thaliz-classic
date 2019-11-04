@@ -208,23 +208,6 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<!--
-			<CheckButton name="$parentCheckbuttonColours" inherits="OptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="16" y="-450" />
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetText("Enable coloured player names")
-					</OnLoad>
-					<OnClick>
-						Thaliz_HandleCheckbox(self);
-					</OnClick>
-				</Scripts>
-			</CheckButton>
-			-->
 			<!-- Dummy input field to claim frame focus -->
 			<EditBox name="$parentDummy" letters="1" visible="false">
 				<Size>
@@ -248,20 +231,6 @@
 					</Anchor>
 				</Anchors>
 				<FontString inherits="GameFontNormal"/>
-				<!--
-				<Scripts>
-					<OnLoad>
-						self:RegisterEvent("OnEnterPressed")
-						self:RegisterEvent("OnEscapePressed")
-					</OnLoad>
-					<OnEnterPressed>
-						Thaliz_OKButton_OnClick()
-					</OnEnterPressed>
-					<OnEscapePressed>
-						Thaliz_CloseButton_OnClick()
-					</OnEscapePressed>
-				</Scripts>
-				-->
 			</EditBox>
 			<!-- OK button -->
 			<Button name="CloseButton" inherits="UIPanelButtonTemplate" movable="true" text="OK">
@@ -402,20 +371,6 @@
 					</Anchor>
 				</Anchors>
 				<FontString inherits="GameFontNormal"/>
-				<Scripts>
-					<!--
-					<OnLoad>
-						self:RegisterEvent("OnEnterPressed")
-						self:RegisterEvent("OnEscapePressed")
-					</OnLoad>
-					<OnEnterPressed>
-						Thaliz_SaveMessageButton_OnClick()
-					</OnEnterPressed>
-					<OnEscapePressed>
-						Thaliz_CloseMsgEditorButton_OnClick()
-					</OnEscapePressed>
-					-->
-				</Scripts>
 			</EditBox>
 			<!-- Parameter value input field  -->
 			<EditBox name="$parentGroupValue" letters="20">
@@ -428,20 +383,6 @@
 					</Anchor>
 				</Anchors>
 				<FontString inherits="GameFontNormal"/>
-				<Scripts>
-					<!--
-					<OnLoad>
-						self:RegisterEvent("OnEnterPressed")
-						self:RegisterEvent("OnEscapePressed")
-					</OnLoad>
-					<OnEnterPressed>
-						Thaliz_SaveMessageButton_OnClick()
-					</OnEnterPressed>
-					<OnEscapePressed>
-						Thaliz_CloseMsgEditorButton_OnClick()
-					</OnEscapePressed>
-					-->
-				</Scripts>
 			</EditBox>
 			<!-- OK button -->
 			<Button name="OkButton" inherits="UIPanelButtonTemplate" text="OK">
@@ -686,7 +627,7 @@
 				self:RegisterForDrag("LeftButton");
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 
-				self:SetScript("PreClick", Thaliz_BroadcastResurrection);
+				self:SetScript("PreClick", Thaliz_OnRezClick);
 
 				self.title = self:CreateFontString(nil, "OVERLAY");
 				self.title:SetFont("Fonts\\ARIALN.ttf",8)
