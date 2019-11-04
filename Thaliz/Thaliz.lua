@@ -1217,7 +1217,6 @@ function Thaliz_ScanRaid()
 			blacklistInfo = blacklistedTable[b];
 			blacklistTick = blacklistInfo[2];		
 			
-			--echo(string.format("Comparing '%s' with '%s'", blacklistInfo[1], playername));
 			if blacklistInfo[1] == playername then
 				isBlacklisted = true;
 				if(debug) then 
@@ -1230,10 +1229,10 @@ function Thaliz_ScanRaid()
 		targetname = UnitName("playertarget");
 
 		if (isBlacklisted == false) and 
-			UnitIsDead(unitid) and 
-			(UnitHasIncomingResurrection(unitid) == false) and 
-			UnitIsConnected(unitid) and 
-			UnitIsVisible(unitid) then
+				UnitIsDead(unitid) and 
+				(UnitHasIncomingResurrection(unitid) == false) and 
+				UnitIsConnected(unitid) and 
+				UnitIsVisible(unitid) then
 			classinfo = Thaliz_GetClassinfo(UnitClass(unitid));
 			targetprio = classinfo[2];
 			if targetname and targetname == playername then
@@ -1281,29 +1280,27 @@ function Thaliz_ScanRaid()
 	end;
 
 
-	local restarget = UnitName(unitid);
-
 	if not currentIsValid then
 		-- We found someone (or a new person) to ress.
 		classinfo = Thaliz_GetClassinfo(UnitClass("player"));
 		local spellname = classinfo[3];
-
-		if(debug) then 
-			if not spellname then spellname = "nil"; end;
-			echo(string.format("**DEBUG**: corpse=%s, unitid=%s, spell=%s", restarget, unitid, spellname));
-		end;
 
 		-- Sort the corpses with highest priority in top:
 		Thaliz_SortTableDescending(corpseTable, 2);
 
 		unitid = corpseTable[1][1];
 
+		if(debug) then 
+			if not spellname then spellname = "nil"; end;
+			echo(string.format("**DEBUG**: corpse=%s, unitid=%s, spell=%s", UnitName(unitid), unitid, spellname));
+		end;
+
 		RezButton:SetAttribute("type", "spell");
 		RezButton:SetAttribute("spell", spellname);
 		RezButton:SetAttribute("unit", unitid);
 	end;
 
-	Thaliz_SetRezTargetText(restarget);	
+	Thaliz_SetRezTargetText(UnitName(unitid));
 	Thaliz_SetButtonTexture(THALIZ_RezBtn_Active, true);
 end;
 
