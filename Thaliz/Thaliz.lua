@@ -1178,6 +1178,9 @@ function Thaliz_ScanRaid()
 		return;
 	end
 
+	classinfo = Thaliz_GetClassinfo(UnitClass("player"));
+	local spellname = classinfo[3];
+
 	local grouptype = "party";
 	if IsInRaid() then
 		grouptype = "raid";
@@ -1232,7 +1235,8 @@ function Thaliz_ScanRaid()
 				UnitIsDead(unitid) and 
 				(UnitHasIncomingResurrection(unitid) == false) and 
 				UnitIsConnected(unitid) and 
-				UnitIsVisible(unitid) then
+				UnitIsVisible(unitid) and
+				(IsSpellInRange(spellname, unitid) == 1) then
 			classinfo = Thaliz_GetClassinfo(UnitClass(unitid));
 			targetprio = classinfo[2];
 			if targetname and targetname == playername then
@@ -1282,9 +1286,6 @@ function Thaliz_ScanRaid()
 
 	if not currentIsValid then
 		-- We found someone (or a new person) to ress.
-		classinfo = Thaliz_GetClassinfo(UnitClass("player"));
-		local spellname = classinfo[3];
-
 		-- Sort the corpses with highest priority in top:
 		Thaliz_SortTableDescending(corpseTable, 2);
 
@@ -1306,11 +1307,13 @@ end;
 
 
 function Thaliz_OnRezClick(self)
-	local unitid = RezButton:GetAttribute("unit");
-	if unitid then
-		Thaliz_BlacklistPlayer(UnitName(unitid), Thaliz_Blacklist_Spellcast);
-		Thaliz_BroadcastResurrection(self);
-	end;
+
+	Thaliz_BroadcastResurrection(self);
+
+--	local unitid = RezButton:GetAttribute("unit");
+--	if unitid then
+--		Thaliz_BlacklistPlayer(UnitName(unitid), Thaliz_Blacklist_Spellcast);
+--	end;
 end;
 
 
@@ -1682,12 +1685,12 @@ function Thaliz_BeginsWith(String, Start)
 end
 
 
-function Thaliz_AnnounceResurrectionUsingSpellId(target, spellId)
-	if Thaliz_SpellIsResurrect(spellId) then
-		Thaliz_BlacklistPlayer(target);
-		Thaliz_AnnounceResurrection(target);
-	end;
-end;
+--function Thaliz_AnnounceResurrectionUsingSpellId(target, spellId)
+--	if Thaliz_SpellIsResurrect(spellId) then
+--		Thaliz_BlacklistPlayer(target);
+--		Thaliz_AnnounceResurrection(target);
+--	end;
+--end;
 
 function Thaliz_SpellIsResurrect(spellId)
 	local resSpell = false;
@@ -1759,8 +1762,10 @@ function Thaliz_OnEvent(self, event, ...)
 					echo(string.format("**DEBUG**: SpellId=%s", spellId));
 				end;
 				if not Thaliz_IsPlayerBlacklisted(target) then
-					Thaliz_BlacklistPlayer(target, 10);
-					Thaliz_AnnounceResurrectionUsingSpellId(target, spellId);
+					if Thaliz_SpellIsResurrect(spellId) then
+						Thaliz_BlacklistPlayer(target);
+						Thaliz_AnnounceResurrection(target);
+					end;
 				end;
 			end;
 		end;
@@ -1804,7 +1809,9 @@ function Thaliz_OnEvent(self, event, ...)
 		local _, subevent, _, _, sourceName, _, _, _, destName = CombatLogGetCurrentEventInfo();
 
 		if subevent == "SPELL_RESURRECT" then
-			Thaliz_BlacklistPlayer(destName, Thaliz_Blacklist_Resurrect);
+			if sourceName ~= UnitName("player") then
+				Thaliz_BlacklistPlayer(destName, Thaliz_Blacklist_Resurrect);
+			end;
 		end
 
 	else
