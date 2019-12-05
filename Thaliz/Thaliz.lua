@@ -870,7 +870,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 
 	local guildname = GetGuildInfo(unitid);
 	local race = string.upper(UnitRace(unitid));
-	local class = string.upper(UnitClass(unitid));
+	local _, class = UnitClass(unitid);
 	local charname = string.upper(playername);
 
 	if guildname then
@@ -1022,15 +1022,6 @@ function Thaliz_GetResurrectionMessages()
 	if (not messages) or not(type(messages) == "table") or (table.getn(messages) == 0) then
 		messages = Thaliz_ResetResurrectionMessages(); 
 	end
-
-	-- Check if messages contains tables; this is to keep backwards compatibility with Thaliz 1.3:
-	if not type(messages[1]) == "table" then
---		echo('Converting table from v1.3 to v1.4 ...');
-		for key, value in messages do
-			messages[key] = { messages[key], EMOTE_GROUP_DEFAULT, "" }
-		end
-		Thaliz_SetResurrectionMessages(messages);
-	end;
 	
 	return messages;
 end
@@ -1157,8 +1148,8 @@ function Thaliz_ScanRaid()
 		return;
 	end;
 
-	-- Doh, 2! Can't ress while in combat, except if you're a druid:
-	if (not IsDruid) and UnitAffectingCombat("player") then
+	-- Doh, 2! Can't ress while in combat. Sorry druids, you get a LUA error if you try :-(
+	if UnitAffectingCombat("player") then
 		Thaliz_SetRezTargetText();
 		Thaliz_SetButtonTexture(THALIZ_RezBtn_Combat);
 
@@ -1178,7 +1169,7 @@ function Thaliz_ScanRaid()
 		return;
 	end
 
-	classinfo = Thaliz_GetClassinfo(UnitClass("player"));
+	classinfo = Thaliz_GetClassinfo(Thaliz_UnitClass("player"));
 	local spellname = classinfo[3];
 
 	local grouptype = "party";
@@ -1190,7 +1181,7 @@ function Thaliz_ScanRaid()
 	local warlocksAlive = false;
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
-		if not UnitIsDead(unitid) and UnitIsConnected(unitid) and UnitIsVisible(unitid) and UnitClass(unitid) == "Warlock" then
+		if not UnitIsDead(unitid) and UnitIsConnected(unitid) and UnitIsVisible(unitid) and Thaliz_UnitClass(unitid) == "WARLOCK" then
 			warlocksAlive = true;
 			break;
 		end
@@ -1237,7 +1228,7 @@ function Thaliz_ScanRaid()
 				UnitIsConnected(unitid) and 
 				UnitIsVisible(unitid) and
 				(IsSpellInRange(spellname, unitid) == 1) then
-			classinfo = Thaliz_GetClassinfo(UnitClass(unitid));
+			classinfo = Thaliz_GetClassinfo(Thaliz_UnitClass(unitid));
 			targetprio = classinfo[2];
 			if targetname and targetname == playername then
 				targetprio = PriorityToCurrentTarget;
@@ -1348,26 +1339,26 @@ end;
 
 
 function Thaliz_InitClassSpecificStuff()
-	local classname = UnitClass("player");
+	local _, classname = UnitClass("player");
 
 	THALIZ_RezBtn_Passive = THALIZ_ICON_OTHER_PASSIVE;
 	THALIZ_RezBtn_Active = THALIZ_ICON_OTHER_PASSIVE;
-	if classname == "Druid" then
+	if classname == "DRUID" then
 		IsDruid = true;
 		IsResser = true;
 		THALIZ_RezBtn_Passive = THALIZ_ICON_DRUID_PASSIVE;
 		THALIZ_RezBtn_Active = THALIZ_ICON_DRUID_ACTIVE;
-	elseif classname == "Paladin" then
+	elseif classname == "PALADIN" then
 		IsPaladin = true;
 		IsResser = true;
 		THALIZ_RezBtn_Passive = THALIZ_ICON_PALADIN_PASSIVE;
 		THALIZ_RezBtn_Active = THALIZ_ICON_PALADIN_ACTIVE;
-	elseif classname == "Priest" then
+	elseif classname == "PRIEST" then
 		IsPriest = true;
 		IsResser = true;
 		THALIZ_RezBtn_Passive = THALIZ_ICON_PRIEST_PASSIVE;
 		THALIZ_RezBtn_Active = THALIZ_ICON_PRIEST_ACTIVE;
-	elseif classname == "Shaman" then
+	elseif classname == "SHAMAN" then
 		IsShaman = true;
 		IsResser = true;
 		THALIZ_RezBtn_Passive = THALIZ_ICON_SHAMAN_PASSIVE;
@@ -1391,6 +1382,7 @@ end;
 
 
 function Thaliz_GetClassinfo(classname)
+	classname = Thaliz_UCFirst(classname);
 	for key, val in next, classInfo do 
 		if val[1] == classname then
 			return val;
@@ -1497,6 +1489,11 @@ function Thaliz_IsInParty()
 	end
 	return false
 end
+
+function Thaliz_UnitClass(unitid)
+	local _, classname = UnitClass(unitid);
+	return classname;
+end;
 
 
 function Thaliz_SortTableDescending(sourcetable, index)
