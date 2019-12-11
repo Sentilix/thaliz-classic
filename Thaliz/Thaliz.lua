@@ -791,10 +791,6 @@ function Thaliz_ValidateResurrectionMessages()
 		
 		if type(macro) == "table" then
 			-- Macro is fine; do nothing
-		elseif type(macro) == "string" then
-			-- <v1.4 macro: convert to 1.4:
-			macros[n] = { macro, EMOTE_GROUP_DEFAULT, "" }
-			changed = True;
 		else
 			-- Macro is ... hmmm beyond repair?; reset it:
 			macros[n] = { "", EMOTE_GROUP_DEFAULT, "" }
@@ -1298,13 +1294,7 @@ end;
 
 
 function Thaliz_OnRezClick(self)
-
 	Thaliz_BroadcastResurrection(self);
-
---	local unitid = RezButton:GetAttribute("unit");
---	if unitid then
---		Thaliz_BlacklistPlayer(UnitName(unitid), Thaliz_Blacklist_Spellcast);
---	end;
 end;
 
 
@@ -1316,7 +1306,6 @@ function Thaliz_BroadcastResurrection(self)
 
 	local playername = UnitName(unitid);
 
-	--echo("Sending TX_RESBEGIN telegram");
 	Thaliz_SendAddonMessage(string.format("TX_RESBEGIN#%s#", playername));
 end;
 
@@ -1681,13 +1670,6 @@ function Thaliz_BeginsWith(String, Start)
    return string.sub(String, 1, string.len(Start)) == Start;
 end
 
-
---function Thaliz_AnnounceResurrectionUsingSpellId(target, spellId)
---	if Thaliz_SpellIsResurrect(spellId) then
---		Thaliz_BlacklistPlayer(target);
---		Thaliz_AnnounceResurrection(target);
---	end;
---end;
 
 function Thaliz_SpellIsResurrect(spellId)
 	local resSpell = false;
