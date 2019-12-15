@@ -14,8 +14,6 @@ Please see the ReadMe.txt for addon details.
 
 local PARTY_CHANNEL							= "PARTY"
 local RAID_CHANNEL							= "RAID"
-local YELL_CHANNEL							= "YELL"
-local SAY_CHANNEL							= "SAY"
 local WARN_CHANNEL							= "RAID_WARNING"
 local GUILD_CHANNEL							= "GUILD"
 local CHAT_END								= "|r"
@@ -103,7 +101,6 @@ local Thaliz_Include_Default_Group_Default				= "1";
 local Thaliz_ConfigurationLevel							= Thaliz_Configuration_Default_Level;
 
 local Thaliz_ROOT_OPTION_CharacterBasedSettings			= "CharacterBasedSettings";
-local Thaliz_OPTION_ResurrectionMessageTargetChannel	= "ResurrectionMessageTargetChannel";
 local Thaliz_OPTION_ResurrectionMessageTargetWhisper	= "ResurrectionMessageTargetWhisper";
 local Thaliz_OPTION_AlwaysIncludeDefaultGroup			= "AlwaysIncludeDefaultGroup";
 local Thaliz_OPTION_ResurrectionWhisperMessage			= "ResurrectionWhisperMessage";
@@ -189,7 +186,7 @@ end
 --[[
 	Main entry for Thaliz.
 	This will send the request to one of the sub slash commands.
-	Syntax: /thaliz [option, defaulting to "res"]
+	Syntax: /thaliz [option, defaulting to "cfg"]
 	Added in: 0.0.1
 ]]
 SLASH_THALIZ_THALIZ1 = "/thaliz"
@@ -197,7 +194,7 @@ SlashCmdList["THALIZ_THALIZ"] = function(msg)
 	local _, _, option = string.find(msg, "(%S*)")
 
 	if not option or option == "" then
-		option = "RES"
+		option = "CFG"
 	end
 	option = string.upper(option);
 		
@@ -301,8 +298,7 @@ SlashCmdList["THALIZ_HELP"] = function(msg)
 	Thaliz_Echo("Syntax:");
 	Thaliz_Echo("    /thaliz [option]");
 	Thaliz_Echo("Where options can be:");
-	Thaliz_Echo("    Res          (default) Resurrect next target.");
-	Thaliz_Echo("    Config       Open the configuration dialogue,");
+	Thaliz_Echo("    Config       (default) Open the configuration dialogue,");
 	Thaliz_Echo("    Disable      Disable Thaliz resurrection messages.");
 	Thaliz_Echo("    Enable       Enable Thaliz resurrection messages again.");
 	Thaliz_Echo("    Help         This help.");
@@ -583,30 +579,6 @@ end
 function Thaliz_HandleCheckbox(checkbox)
 	local checkboxname = checkbox:GetName();
 
-	--	If checked, then we need to uncheck others in same group:
-	if checkboxname == "ThalizFrameCheckbuttonRaid" or checkboxname == "ThalizFrameCheckbuttonYell" or checkboxname == "ThalizFrameCheckbuttonSay" then	
-		if checkbox:GetChecked() then
-			if checkboxname == "ThalizFrameCheckbuttonRaid" then
-				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "RAID");
-				ThalizFrameCheckbuttonSay:SetChecked();
-				ThalizFrameCheckbuttonYell:SetChecked();
-			elseif checkboxname == "ThalizFrameCheckbuttonYell" then
-				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "YELL");
-				ThalizFrameCheckbuttonSay:SetChecked();
-				ThalizFrameCheckbuttonRaid:SetChecked();
-			elseif checkboxname == "ThalizFrameCheckbuttonSay" then
-				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "SAY");
-				ThalizFrameCheckbuttonRaid:SetChecked();
-				ThalizFrameCheckbuttonYell:SetChecked();
-			end
-		else
-			Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "NONE");
-			ThalizFrameCheckbuttonRaid:SetChecked();
-			ThalizFrameCheckbuttonSay:SetChecked();
-			ThalizFrameCheckbuttonYell:SetChecked();
-		end
-	end
-
 	-- "single" checkboxes (checkboxes with no impact on other checkboxes):
 	if ThalizFrameCheckbuttonWhisper:GetChecked() then
 		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, 1);
@@ -751,7 +723,6 @@ function Thaliz_InitializeConfigSettings()
 	Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level))
 	Thaliz_ConfigurationLevel = Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level);
 	
-	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_Target_Channel_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_Target_Whisper_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_Resurrection_Whisper_Message_Default))
 	Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_GetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_Include_Default_Group_Default))
@@ -760,15 +731,6 @@ function Thaliz_InitializeConfigSettings()
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosX, x))
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosY, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosY, y))
 
-	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "RAID" then
-		ThalizFrameCheckbuttonRaid:SetChecked(1)
-	end
-	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "SAY" then
-		ThalizFrameCheckbuttonSay:SetChecked(1)
-	end
-	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "YELL" then
-		ThalizFrameCheckbuttonYell:SetChecked(1)
-	end
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
 		ThalizFrameCheckbuttonWhisper:SetChecked(1)
 	end
@@ -853,8 +815,6 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	if not Thaliz_Enabled then
 		return;
 	end
-
-	--echo("Announcing resurrection on "..playername);
 
 	if not unitid then
 		unitid = Thaliz_GetUnitID(playername);			
@@ -980,29 +940,10 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	local message = validMessages[ random(validCount) ];
 	message = string.gsub(message, "%%c", Thaliz_UCFirst(class));
 	message = string.gsub(message, "%%r", Thaliz_UCFirst(race));
-	message = string.gsub(message, "%%g", guildname);
+	message = string.gsub(message, "%%g", guildname);		
+	message = string.gsub(message, "%%s", playername);
 
-	local targetChannel = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel);
-	local targetname = playername;
-		
-	message = string.gsub(message, "%%s", targetname);
-
-
---[[
-	local guildname = GetGuildInfo(unitid);			--%g
-	local race = string.upper(UnitRace(unitid));	--%r
-	local class = string.upper(UnitClass(unitid));	--%c
---]]
-	
-	if targetChannel == "RAID" then
-		partyEcho(message);
-	elseif targetChannel == "SAY" then
-		SendChatMessage(message, SAY_CHANNEL)
-	elseif targetChannel == "YELL" then
-		SendChatMessage(message, YELL_CHANNEL)
-	else
-		echo(message);
-	end
+	partyEcho(message);
 	
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
 		local whisperMsg = Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage);
@@ -1108,8 +1049,6 @@ end
 --[[
 Scan the entire raid / group for corpses, and activate
 ress button if anyone found.
-
-TODO: Take already ressed people into account! (check blacklisting works!)
 --]]
 function Thaliz_ScanRaid()
 	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_ScanRaid");
@@ -1760,6 +1699,7 @@ function Thaliz_OnEvent(self, event, ...)
 
 		-- Hack: we assume this is someone ressing; we can't see the spellId on the event!
 		if SpellcastIsStarted and UnitIsGhost(arg1) then
+			SpellcastIsStarted = false;
 			if IsInRaid() then
 				if Thaliz_BeginsWith(arg1, 'raid') then
 					target = UnitName(arg1);
@@ -1817,6 +1757,8 @@ end
 function Thaliz_OnLoad()
 	msgEditorIsOpen = false;
 	THALIZ_CURRENT_VERSION = Thaliz_CalculateVersion( GetAddOnMetadata("Thaliz", "Version") );
+
+	_G["ThalizVersionString"]:SetText(string.format("Thaliz version %s by %s", GetAddOnMetadata("Thaliz", "Version"), GetAddOnMetadata("Thaliz", "Author")));
 
 	Thaliz_Echo(string.format("version %s by %s", GetAddOnMetadata("Thaliz", "Version"), GetAddOnMetadata("Thaliz", "Author")));
     ThalizEventFrame:RegisterEvent("ADDON_LOADED");

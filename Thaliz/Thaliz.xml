@@ -69,7 +69,7 @@
 	<!-- Main configuration frame -->
 	<Frame name="ThalizFrame" parent="UIParent" toplevel="true" hidden="true">
 		<Size>
-			<AbsDimension x="690" y="492" />
+			<AbsDimension x="690" y="480" />
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT">
@@ -117,52 +117,6 @@
 					</OnShow>
 				</Scripts>
 			</ScrollFrame>			
-			<!-- Radio buttons for chat destination -->
-			<CheckButton name="$parentCheckbuttonRaid" inherits="OptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="16" y="-354"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetText("Raid Chat")
-					</OnLoad>
-					<OnClick>
-						Thaliz_HandleCheckbox(self);
-					</OnClick>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentCheckbuttonSay" inherits="OptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="144" y="-354"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetText("Say")
-					</OnLoad>
-					<OnClick>
-						Thaliz_HandleCheckbox(self);
-					</OnClick>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentCheckbuttonYell" inherits="OptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="272" y="-354"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetText("Yell")
-					</OnLoad>
-					<OnClick>
-						Thaliz_HandleCheckbox(self);
-					</OnClick>
-				</Scripts>
-			</CheckButton>
 			<CheckButton name="$parentCheckbuttonIncludeDefault" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -181,7 +135,7 @@
 			<CheckButton name="$parentCheckbuttonPerCharacter" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="16" y="-386"/>
+						<Offset x="16" y="-354"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -196,7 +150,7 @@
 			<CheckButton name="$parentCheckbuttonWhisper" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="16" y="-418"/>
+						<Offset x="16" y="-386"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -227,7 +181,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="200" y="-422"/>
+						<Offset x="200" y="-386"/>
 					</Anchor>
 				</Anchors>
 				<FontString inherits="GameFontNormal"/>
@@ -239,7 +193,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="245" y="-456" />
+						<Offset x="245" y="-424" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -253,7 +207,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="350" y="-456" />
+						<Offset x="350" y="-424" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -284,6 +238,16 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString name="ThalizVersionString" inherits="GameFontNormal" text="Thaliz Classic x - by y">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeaderTexture">
+							<Offset>
+								<AbsDimension x="0" y="-464"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0.3" g="0.3" b="0.3" a="1.0"/>
+				</FontString>
 				<!-- Whisper EditBox border -->
 				<Texture name="$parentTextureLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left">
 					<Size>
@@ -292,7 +256,7 @@
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="188" y="-187"/>
+								<AbsDimension x="188" y="-157"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -305,7 +269,7 @@
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
-								<AbsDimension x="-42" y="-187"/>
+								<AbsDimension x="-42" y="-157"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
