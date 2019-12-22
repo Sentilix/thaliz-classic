@@ -101,6 +101,7 @@ local Thaliz_Include_Default_Group_Default				= "1";
 local Thaliz_ConfigurationLevel							= Thaliz_Configuration_Default_Level;
 
 local Thaliz_ROOT_OPTION_CharacterBasedSettings			= "CharacterBasedSettings";
+local Thaliz_OPTION_ResurrectionMessageTargetChannel	= "ResurrectionMessageTargetChannel";
 local Thaliz_OPTION_ResurrectionMessageTargetWhisper	= "ResurrectionMessageTargetWhisper";
 local Thaliz_OPTION_AlwaysIncludeDefaultGroup			= "AlwaysIncludeDefaultGroup";
 local Thaliz_OPTION_ResurrectionWhisperMessage			= "ResurrectionWhisperMessage";
@@ -579,6 +580,18 @@ end
 function Thaliz_HandleCheckbox(checkbox)
 	local checkboxname = checkbox:GetName();
 
+	--	If checked, then we need to uncheck others in same group:
+	if checkboxname == "ThalizFrameCheckbuttonRaid" or checkboxname == "ThalizFrameCheckbuttonYell" or checkboxname == "ThalizFrameCheckbuttonSay" then	
+		if checkbox:GetChecked() then
+			if checkboxname == "ThalizFrameCheckbuttonRaid" then
+				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "RAID");
+			end
+		else
+			Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "NONE");
+			ThalizFrameCheckbuttonRaid:SetChecked();
+		end
+	end
+
 	-- "single" checkboxes (checkboxes with no impact on other checkboxes):
 	if ThalizFrameCheckbuttonWhisper:GetChecked() then
 		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, 1);
@@ -723,6 +736,7 @@ function Thaliz_InitializeConfigSettings()
 	Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level))
 	Thaliz_ConfigurationLevel = Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level);
 	
+	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_Target_Channel_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_Target_Whisper_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_Resurrection_Whisper_Message_Default))
 	Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_GetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_Include_Default_Group_Default))
@@ -731,6 +745,9 @@ function Thaliz_InitializeConfigSettings()
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosX, x))
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosY, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosY, y))
 
+	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "RAID" then
+		ThalizFrameCheckbuttonRaid:SetChecked(1)
+	end
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
 		ThalizFrameCheckbuttonWhisper:SetChecked(1)
 	end
@@ -943,7 +960,13 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	message = string.gsub(message, "%%g", guildname);		
 	message = string.gsub(message, "%%s", playername);
 
-	partyEcho(message);
+	local targetChannel = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel);
+		
+	if targetChannel == "RAID" then
+		partyEcho(message);
+	else
+		echo(message);
+	end
 	
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
 		local whisperMsg = Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage);
@@ -1663,7 +1686,7 @@ end;
 --
 --  *******************************************************
 
-local SpellcastIsStarted = false;
+local SpellcastIsStarted = 0;
 function Thaliz_OnEvent(self, event, ...)
 	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_OnEvent");
 
@@ -1689,17 +1712,17 @@ function Thaliz_OnEvent(self, event, ...)
 		end;
 
 	elseif (event == "UNIT_SPELLCAST_START") then
-		SpellcastIsStarted = true;
+		SpellcastIsStarted = TimerTick;
 	elseif (event == "UNIT_SPELLCAST_STOP") then
-		SpellcastIsStarted = false;
+		SpellcastIsStarted = 0;
 
 	elseif (event == "INCOMING_RESURRECT_CHANGED") then
 		local arg1 = ...;
 		local target = nil;
 
 		-- Hack: we assume this is someone ressing; we can't see the spellId on the event!
-		if SpellcastIsStarted and UnitIsGhost(arg1) then
-			SpellcastIsStarted = false;
+		if (SpellcastIsStarted + 100 > TimerTick) and UnitIsGhost(arg1) then
+			SpellcastIsStarted = 0;
 			if IsInRaid() then
 				if Thaliz_BeginsWith(arg1, 'raid') then
 					target = UnitName(arg1);
