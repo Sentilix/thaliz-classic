@@ -14,6 +14,8 @@ Please see the ReadMe.txt for addon details.
 
 local PARTY_CHANNEL							= "PARTY"
 local RAID_CHANNEL							= "RAID"
+local YELL_CHANNEL							= "YELL"
+local SAY_CHANNEL							= "SAY"
 local WARN_CHANNEL							= "RAID_WARNING"
 local GUILD_CHANNEL							= "GUILD"
 local CHAT_END								= "|r"
@@ -585,10 +587,22 @@ function Thaliz_HandleCheckbox(checkbox)
 		if checkbox:GetChecked() then
 			if checkboxname == "ThalizFrameCheckbuttonRaid" then
 				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "RAID");
+				ThalizFrameCheckbuttonSay:SetChecked();
+				ThalizFrameCheckbuttonYell:SetChecked();
+			elseif checkboxname == "ThalizFrameCheckbuttonYell" then
+				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "YELL");
+				ThalizFrameCheckbuttonSay:SetChecked();
+				ThalizFrameCheckbuttonRaid:SetChecked();
+			elseif checkboxname == "ThalizFrameCheckbuttonSay" then
+				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "SAY");
+				ThalizFrameCheckbuttonRaid:SetChecked();
+				ThalizFrameCheckbuttonYell:SetChecked();
 			end
 		else
 			Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "NONE");
 			ThalizFrameCheckbuttonRaid:SetChecked();
+			ThalizFrameCheckbuttonSay:SetChecked();
+			ThalizFrameCheckbuttonYell:SetChecked();
 		end
 	end
 
@@ -747,6 +761,12 @@ function Thaliz_InitializeConfigSettings()
 
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "RAID" then
 		ThalizFrameCheckbuttonRaid:SetChecked(1)
+	end
+	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "SAY" then
+		ThalizFrameCheckbuttonSay:SetChecked(1)
+	end
+	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "YELL" then
+		ThalizFrameCheckbuttonYell:SetChecked(1)
 	end
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
 		ThalizFrameCheckbuttonWhisper:SetChecked(1)
@@ -957,13 +977,30 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	local message = validMessages[ random(validCount) ];
 	message = string.gsub(message, "%%c", Thaliz_UCFirst(class));
 	message = string.gsub(message, "%%r", Thaliz_UCFirst(race));
-	message = string.gsub(message, "%%g", guildname);		
+	message = string.gsub(message, "%%g", guildname);
 	message = string.gsub(message, "%%s", playername);
 
 	local targetChannel = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel);
-		
+
+--TODO BEGIN
+--[[
+	local guildname = GetGuildInfo(unitid);			--%g
+	local race = string.upper(UnitRace(unitid));	--%r
+	local class = string.upper(UnitClass(unitid));	--%c
+--]]
+
+	if not IsInInstance() then
+		if targetChannel == "SAY" or targetChannel == "YELL" then
+			targetChannel = "RAID";
+		end;
+	end;
+	
 	if targetChannel == "RAID" then
 		partyEcho(message);
+	elseif targetChannel == "SAY" then
+		SendChatMessage(message, SAY_CHANNEL)
+	elseif targetChannel == "YELL" then
+		SendChatMessage(message, YELL_CHANNEL)
 	else
 		echo(message);
 	end
@@ -974,6 +1011,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 			SendChatMessage(whisperMsg, "WHISPER", nil, playername);
 		end;
 	end
+--TODO END	
 end
 
 function Thaliz_GetResurrectionMessages()
@@ -1700,7 +1738,7 @@ function Thaliz_OnEvent(self, event, ...)
 		if(resser == "player") then
 			if (target ~= "Unknown") then
 				if(debug) then 
-					echo(string.format("**DEBUG**: SpellId=%s", spellId));
+					echo(string.format("**DEBUG**: UNIT_SPELLCAST_SENT, SpellId=%s", spellId));
 				end;
 				if not Thaliz_IsPlayerBlacklisted(target) then
 					if Thaliz_SpellIsResurrect(spellId) then
@@ -1713,15 +1751,31 @@ function Thaliz_OnEvent(self, event, ...)
 
 	elseif (event == "UNIT_SPELLCAST_START") then
 		SpellcastIsStarted = TimerTick;
+		if(debug) then 
+			echo(string.format("**DEBUG**: UNIT_SPELLCAST_START,sc=%d", SpellcastIsStarted));
+		end;
+
 	elseif (event == "UNIT_SPELLCAST_STOP") then
 		SpellcastIsStarted = 0;
+		if(debug) then 
+			echo(string.format("**DEBUG**: UNIT_SPELLCAST_STOP,sc=%d", SpellcastIsStarted));
+		end;
 
 	elseif (event == "INCOMING_RESURRECT_CHANGED") then
 		local arg1 = ...;
 		local target = nil;
 
 		-- Hack: we assume this is someone ressing; we can't see the spellId on the event!
-		if (SpellcastIsStarted + 100 > TimerTick) and UnitIsGhost(arg1) then
+		local timeDiff = TimerTick - SpellcastIsStarted;
+		if(debug) then 
+			echo(string.format("**DEBUG**: INCOMING_RESURRECT_CHANGED,sc=%d, td=%f", SpellcastIsStarted, timeDiff));
+		end;
+
+		if (timeDiff < 0.001) and UnitIsGhost(arg1) then
+			if(debug) then 
+				echo("**DEBUG**: INCOMING_RESURRECT_CHANGED,starting");
+			end;
+
 			SpellcastIsStarted = 0;
 			if IsInRaid() then
 				if Thaliz_BeginsWith(arg1, 'raid') then
@@ -1734,6 +1788,10 @@ function Thaliz_OnEvent(self, event, ...)
 			end;
 
 			if target then
+				if(debug) then 
+					echo(string.format("**DEBUG**: INCOMING_RESURRECT_CHANGED,casting, tg=%s", target));
+				end;
+
 				if not Thaliz_IsPlayerBlacklisted(target) then
 					Thaliz_BlacklistPlayer(target, 10);
 					Thaliz_AnnounceResurrection(target, arg1);

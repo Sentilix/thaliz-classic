@@ -69,7 +69,7 @@
 	<!-- Main configuration frame -->
 	<Frame name="ThalizFrame" parent="UIParent" toplevel="true" hidden="true">
 		<Size>
-			<AbsDimension x="690" y="480" />
+			<AbsDimension x="690" y="516" />
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT">
@@ -117,7 +117,7 @@
 					</OnShow>
 				</Scripts>
 			</ScrollFrame>			
-			<!-- Radio buttons for chat destination -->
+			<!-- 1st line options: Radio buttons for chat destination -->
 			<CheckButton name="$parentCheckbuttonRaid" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -126,28 +126,44 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						_G[self:GetName().."Text"]:SetText("Raid Chat")
+						_G[self:GetName().."Text"]:SetText("Raid/Party Chat")
 					</OnLoad>
 					<OnClick>
 						Thaliz_HandleCheckbox(self);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCheckbuttonPerCharacter" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonSay" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="164" y="-354"/>
+						<Offset x="144" y="-354"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						_G[self:GetName().."Text"]:SetText("Store macro's per Character")
+						_G[self:GetName().."Text"]:SetText("Say")
 					</OnLoad>
 					<OnClick>
 						Thaliz_HandleCheckbox(self);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentCheckbuttonYell" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="272" y="-354"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText("Yell")
+					</OnLoad>
+					<OnClick>
+						Thaliz_HandleCheckbox(self);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<!-- 2nd line options: msg options -->
 			<CheckButton name="$parentCheckbuttonIncludeDefault" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -163,7 +179,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCheckbuttonWhisper" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonPerCharacter" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-386"/>
@@ -171,7 +187,22 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						_G[self:GetName().."Text"]:SetText("Whisper the Target with ...")
+						_G[self:GetName().."Text"]:SetText("Store macro's per Character")
+					</OnLoad>
+					<OnClick>
+						Thaliz_HandleCheckbox(self);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckbuttonWhisper" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="16" y="-418"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText("Whisper the Target with:")
 					</OnLoad>
 					<OnClick>
 						Thaliz_HandleCheckbox(self);
@@ -197,7 +228,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="200" y="-390"/>
+						<Offset x="200" y="-420"/>
 					</Anchor>
 				</Anchors>
 				<FontString inherits="GameFontNormal"/>
@@ -209,7 +240,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="245" y="-424" />
+						<Offset x="245" y="-456" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -223,7 +254,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="350" y="-424" />
+						<Offset x="350" y="-456" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -258,7 +289,7 @@
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentHeaderTexture">
 							<Offset>
-								<AbsDimension x="0" y="-465"/>
+								<AbsDimension x="0" y="-500"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -272,7 +303,7 @@
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="188" y="-160"/>
+								<AbsDimension x="188" y="-173"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -285,7 +316,7 @@
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
-								<AbsDimension x="-42" y="-160"/>
+								<AbsDimension x="-42" y="-173"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
