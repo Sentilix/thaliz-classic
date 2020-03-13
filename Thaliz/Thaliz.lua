@@ -863,7 +863,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 
 	local guildname = GetGuildInfo(unitid);
 	local race = string.upper(UnitRace(unitid));
-	local _, class = UnitClass(unitid);
+	local classname = string.upper(Thaliz_UnitClass(unitid));
 	local charname = string.upper(playername);
 
 	if guildname then
@@ -913,7 +913,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 				nmacro[ nidx ] = macro;
 			end
 		elseif macro[2] == EMOTE_GROUP_CLASS then
-			if param == class then
+			if param == classname then
 				cidx = cidx + 1;
 				cmacro[ cidx ] = macro;
 			end
@@ -975,19 +975,12 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	end
 
 	local message = validMessages[ random(validCount) ];
-	message = string.gsub(message, "%%c", Thaliz_UCFirst(class));
+	message = string.gsub(message, "%%c", Thaliz_UCFirst(classname));
 	message = string.gsub(message, "%%r", Thaliz_UCFirst(race));
 	message = string.gsub(message, "%%g", guildname);
 	message = string.gsub(message, "%%s", playername);
 
 	local targetChannel = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel);
-
---TODO BEGIN
---[[
-	local guildname = GetGuildInfo(unitid);			--%g
-	local race = string.upper(UnitRace(unitid));	--%r
-	local class = string.upper(UnitClass(unitid));	--%c
---]]
 
 	if not IsInInstance() then
 		if targetChannel == "SAY" or targetChannel == "YELL" then
@@ -1011,7 +1004,6 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 			SendChatMessage(whisperMsg, "WHISPER", nil, playername);
 		end;
 	end
---TODO END	
 end
 
 function Thaliz_GetResurrectionMessages()
@@ -1328,7 +1320,14 @@ end;
 
 
 function Thaliz_InitClassSpecificStuff()
-	local _, classname = UnitClass("player");
+	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_Init");
+	local classname = Thaliz_UnitClass("player");
+
+	if(debug) then 
+		if not classname then classname = "nil"; end;
+		echo(string.format("**DEBUG**: [Thaliz_InitClassSpecificStuff] classname=%s", classname));
+	end;
+
 
 	THALIZ_RezBtn_Passive = THALIZ_ICON_OTHER_PASSIVE;
 	THALIZ_RezBtn_Active = THALIZ_ICON_OTHER_PASSIVE;
@@ -1371,12 +1370,25 @@ end;
 
 
 function Thaliz_GetClassinfo(classname)
+	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_GetClassinfo");
+
 	classname = Thaliz_UCFirst(classname);
 	for key, val in next, classInfo do 
 		if val[1] == classname then
+			if(debug) then 
+				if not classname then classname = "nil"; end;
+				echo(string.format("**DEBUG**: classname=%s, info=True", classname));
+			end;
+
 			return val;
 		end
 	end
+
+	if(debug) then 
+		if not classname then classname = "nil"; end;
+		echo(string.format("**DEBUG**: classname=%s, info=False", classname));
+	end;
+
 	return nil;
 end
 
