@@ -155,12 +155,57 @@ local function Thaliz_GetOptions()
 	return  {
 		type = "group",
 		args = {
-			output = {
-				name = "Output chat destination",
-				type = "select",
-				values = { NONE = "None", RAID = "Raid/party", SAY = "Say", YELL = "Yell" },
-				set = function(info,val) Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, val) end,
-				get = function(info) return Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) end
+			config = {
+				type = "toggle",
+				name = "Configuration",
+				desc = "Show/Hide configuration options",
+				set = Thaliz_ToggleConfigurationDialogue,
+				get = function (value) return ThalizConfigDialogOpen end,
+			},
+			debug = {
+				hidden = true,
+				type = "input",
+				pattern = "(%S*)",
+				name = "Debug",
+				desc = "Debug a Thaliz method",
+				set = function (info, value)
+					if value and value ~= '' then
+						Thaliz_Echo(string.format("Enabling debug for %s", value))
+						ThalizScanFrequency = 1.0
+						Thaliz_DebugFunction = value
+					else
+						Thaliz_Echo("Disabling debug")
+						ThalizScanFrequency = 0.2
+						Thaliz_DebugFunction = nil
+					end
+				end,
+			},
+			enabled = {
+				type = "toggle",
+				name = "Enabled",
+				desc = "Enable/Disable resurrection announcements",
+				set = function(info, value)
+					Thaliz_Enabled = not Thaliz_Enabled
+
+					if Thaliz_Enabled then
+						Thaliz_Echo("Resurrection announcements has been enabled.")
+					else
+						Thaliz_Echo("Resurrection announcements has been disabled.")
+					end
+				end,
+				get = function (value) return Thaliz_Enabled end,
+			},
+			version = {
+				type = "execute",
+				name = "Version",
+				desc = "Displays Thaliz version",
+				func = function()
+					if IsInRaid() or Thaliz_IsInParty() then
+						Thaliz_SendAddonMessage("TX_VERSION##")
+					else
+						Thaliz_Echo(string.format("%s is using Thaliz version %s", UnitName("player"), GetAddOnMetadata("Thaliz", "Version")))
+					end
+				end
 			}
 		}
 	}
@@ -168,8 +213,7 @@ end
 
 
 function Thaliz:OnInitialize()
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("Thaliz", Thaliz_GetOptions())
-	self:RegisterChatCommand("thaliz", "CommandDefault")
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("Thaliz", Thaliz_GetOptions(), { "thaliz" })
 end
 
 function Thaliz:OnEnable()
@@ -207,131 +251,6 @@ end
 function Thaliz_Echo(msg)
 	echo("<"..COLOUR_INTRO.."THALIZ"..COLOUR_CHAT.."> "..msg);
 end
-
-
-
-
---  *******************************************************
---
---	Slash commands
---
---  *******************************************************
-
---[[
-	Main entry for Thaliz.
-	This will send the request to one of the sub slash commands.
-	Syntax: /thaliz [option, defaulting to "cfg"]
-	Added in: 0.0.1
-]]
-function Thaliz:CommandDefault(msg)
-	local _, _, option = string.find(msg, "(%S*)")
-
-	if not option or option == "" then
-		option = "CFG"
-	end
-	option = string.upper(option);
-		
-	if (option == "CFG" or option == "CONFIG") then
-		self:CommandConfig();
-	elseif option == "DISABLE" then
-		self:CommandDisable();
-	elseif option == "ENABLE" then
-		self:CommandEnable();
-	elseif option == "HELP" then
-		self:CommandHelp();
-	elseif option == "VERSION" then
-		self:CommandVersion();
-	else
-		Thaliz_Echo(string.format("Unknown command: %s", option));
-	end
-end
-
---[[
-	Request client version information
-	Syntax: /thalizversion
-	Alternative: /thaliz version
-	Added in: 0.2.1
-]]
-function Thaliz:CommandVersion(msg)
-	if IsInRaid() or Thaliz_IsInParty() then
-		Thaliz_SendAddonMessage("TX_VERSION##");
-	else
-		Thaliz_Echo(string.format("%s is using Thaliz version %s", UnitName("player"), GetAddOnMetadata("Thaliz", "Version")));
-	end
-end
-
---[[
-	Show configuration options
-	Syntax: /thalizconfig
-	Alternative: /thaliz config
-	Added in: 0.3.0
-]]
-function Thaliz:CommandConfig(msg)
-	Thaliz_OpenConfigurationDialogue();
-end
-
---[[
-	Disable Thaliz' messages
-	Syntax: /thaliz disable
-	Added in: 0.3.2
-]]
-function Thaliz:CommandDisable(msg)
-	Thaliz_Enabled = false;
-	Thaliz_Echo("Resurrection announcements has been disabled.");
-end
-
---[[
-	Enable Thaliz' messages
-	Syntax: /thaliz enable
-	Added in: 0.3.2
-]]
-function Thaliz:CommandEnable(msg)
-	Thaliz_Enabled = true;
-	Thaliz_Echo("Resurrection announcements has been enabled.");
-end
-
-
-
---[[
-	Set DEBUG level for Thaliz.
-	Syntax: /thaliz debug <method>
-	Added in: classic-0.2.1
-]]
-SLASH_THALIZ_DEBUG1 = "/thalizdebug"
-SlashCmdList["THALIZ_DEBUG"] = function(msg)
-	local _, _, dbgfunc = string.find(msg, "(%S*)");
-
-	if dbgfunc and dbgfunc ~= '' then
-		Thaliz_Echo(string.format("Enabling debug for %s", dbgfunc));
-		ThalizScanFrequency = 1.0;
-		Thaliz_DebugFunction = dbgfunc;
-	else
-		Thaliz_Echo("Disabling debug");
-		ThalizScanFrequency = 0.2;
-		Thaliz_DebugFunction = nil;
-	end;
-end
-
-
-
---[[
-	Show HELP options
-	Syntax: /thalizhelp
-	Alternative: /thaliz help
-	Added in: 0.2.0
-]]
-function Thaliz:CommandHelp(msg)
-	Thaliz_Echo(string.format("Thaliz version %s options:", GetAddOnMetadata("Thaliz", "Version")));
-	Thaliz_Echo("Syntax:");
-	Thaliz_Echo("    /thaliz [option]");
-	Thaliz_Echo("Where options can be:");
-	Thaliz_Echo("    Config       (default) Open the configuration dialogue,");
-	Thaliz_Echo("    Disable      Disable Thaliz resurrection messages.");
-	Thaliz_Echo("    Enable       Enable Thaliz resurrection messages again.");
-	Thaliz_Echo("    Help         This help.");
-	Thaliz_Echo("    Version      Request version info from all clients.");
-end
-
 
 
 --  *******************************************************
