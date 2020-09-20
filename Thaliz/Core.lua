@@ -156,18 +156,19 @@ local function Thaliz_GetOptions()
 		type = "group",
 		args = {
 			config = {
-				type = "toggle",
 				name = "Configuration",
 				desc = "Show/Hide configuration options",
+				type = "toggle",
+				guiHidden = true,
 				set = Thaliz_ToggleConfigurationDialogue,
 				get = function (value) return ThalizConfigDialogOpen end,
 			},
 			debug = {
-				hidden = true,
-				type = "input",
-				pattern = "(%S*)",
 				name = "Debug",
 				desc = "Debug a Thaliz method",
+				type = "input",
+				pattern = "(%S*)",
+				hidden = true,
 				set = function (info, value)
 					if value and value ~= '' then
 						Thaliz_Echo(string.format("Enabling debug for %s", value))
@@ -181,9 +182,9 @@ local function Thaliz_GetOptions()
 				end,
 			},
 			enabled = {
-				type = "toggle",
-				name = "Enabled",
+				name = "Resurrection announcements",
 				desc = "Enable/Disable resurrection announcements",
+				type = "toggle",
 				set = function(info, value)
 					Thaliz_Enabled = not Thaliz_Enabled
 
@@ -196,9 +197,10 @@ local function Thaliz_GetOptions()
 				get = function (value) return Thaliz_Enabled end,
 			},
 			version = {
-				type = "execute",
 				name = "Version",
 				desc = "Displays Thaliz version",
+				type = "execute",
+				guiHidden = true,
 				func = function()
 					if IsInRaid() or Thaliz_IsInParty() then
 						Thaliz_SendAddonMessage("TX_VERSION##")
@@ -214,6 +216,7 @@ end
 
 function Thaliz:OnInitialize()
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("Thaliz", Thaliz_GetOptions(), { "thaliz" })
+	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Thaliz")
 end
 
 function Thaliz:OnEnable()
@@ -260,6 +263,7 @@ end
 --  *******************************************************
 
 function Thaliz_ToggleConfigurationDialogue()
+	-- LibStub("AceConfigDialog-3.0"):Open("Thaliz")
 	if ThalizConfigDialogOpen then
 		Thaliz_CloseButton_OnClick();
 	else
