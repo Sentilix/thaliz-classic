@@ -130,7 +130,7 @@ local Thaliz_DefaultResurrectionMessages = {
 	{ "(Ressing) Fleeing will do you no good, %s!",						EMOTE_GROUP_DEFAULT, "" },	-- Hakkar
 	-- AQ20
 	{ "(Ressing) Master %c %s, continue the fight!",					EMOTE_GROUP_DEFAULT, "" },	-- General Rajaxx
-	-- MC	
+	-- MC
 	{ "(Ressing) Perhaps you'll need another lesson in pain, %s!",		EMOTE_GROUP_DEFAULT, "" },	-- Majordomo Executus
 	{ "(Ressing) Too soon, %s - you have died too soon!",				EMOTE_GROUP_DEFAULT, "" },	-- Ragnaros
 	{ "(Ressing) You have failed me, %s! Justice is met, indeed!",		EMOTE_GROUP_DEFAULT, "" }, 	-- Ragnaros
@@ -138,7 +138,7 @@ local Thaliz_DefaultResurrectionMessages = {
 	{ "(Ressing) Forgive me %s, your death only adds to my failure.",	EMOTE_GROUP_DEFAULT, "" },	-- Vaelastrasz
 	-- AQ40
 	{ "(Ressing) Let your death serve as an example, %s!",				EMOTE_GROUP_DEFAULT, "" },	-- Prophet Skeram
-	{ "(Ressing) Only flesh and bone. %cs are such easy prey, %s!",		EMOTE_GROUP_DEFAULT, "" },	-- Emperor Vek'lor (Twins)	
+	{ "(Ressing) Only flesh and bone. %cs are such easy prey, %s!",		EMOTE_GROUP_DEFAULT, "" },	-- Emperor Vek'lor (Twins)
 	{ "(Ressing) Your friends will abandon you, %s!",					EMOTE_GROUP_DEFAULT, "" },	-- C'Thun
 	-- Naxx
 	{ "(Ressing) Shhh, %s... it will all be over soon.",				EMOTE_GROUP_DEFAULT, "" },	-- Anub'Rekhan
@@ -288,7 +288,7 @@ end
 function Thaliz_RefreshVisibleMessageList(offset)
 --	echo(string.format("Thaliz_RefreshVisibleMessageList: Offset=%d", offset));
 	local macros = Thaliz_GetResurrectionMessages();
-	
+
 	-- Set a priority on each spell, and then sort them accordingly:
 	local macro, grp, prm, prio
 	for n=1, table.getn(macros), 1 do
@@ -300,7 +300,7 @@ function Thaliz_RefreshVisibleMessageList(offset)
 			prio = 30
 		elseif grp == EMOTE_GROUP_CLASS then
 			-- Class names are listed alphabetically:
-			prio = 50		
+			prio = 50
 			if prm == "Druid" then
 				prio = 59
 			elseif prm == "Hunter" then
@@ -319,7 +319,7 @@ function Thaliz_RefreshVisibleMessageList(offset)
 				prio = 52
 			elseif prm == "Warrior" then
 				prio = 51
-			end;			
+			end;
 		elseif grp == EMOTE_GROUP_RACE then
 			prio = 40
 			-- Racess are listed by faction, race name:
@@ -339,27 +339,27 @@ function Thaliz_RefreshVisibleMessageList(offset)
 				prio = 43
 			elseif prm == "Undead" then
 				prio = 42
-			end;			
+			end;
 		elseif grp == EMOTE_GROUP_DEFAULT then
 			prio = 0
 		end
-		macros[n][4] = prio;		
+		macros[n][4] = prio;
 	end
-	
+
 	Thaliz_SortTableDescending(macros, 4);
-	
+
 	for n=1, THALIZ_MAX_VISIBLE_MESSAGES, 1 do
 		macro = macros[n + offset]
 		if not macro then
 			macro = { "", EMOTE_GROUP_DEFAULT, "" }
 		end
-		
+
 		local msg = Thaliz_CheckMessage(macro[1]);
 		local grp = Thaliz_CheckGroup(macro[2]);
 		local prm = Thaliz_CheckGroupValue(macro[3]);
-		
+
 		--echo(string.format("-> Msg=%s, Grp=%s, Value=%s", msg, grp, prm));
-		
+
 		local frame = _G["ThalizFrameTableListEntry"..n];
 		if(not frame) then
 			echo("*** Oops, frame is nil");
@@ -369,12 +369,12 @@ function Thaliz_RefreshVisibleMessageList(offset)
 		_G[frame:GetName().."Message"]:SetText(msg);
 		_G[frame:GetName().."Group"]:SetText(grp);
 		_G[frame:GetName().."Param"]:SetText(prm);
-		
+
 		local grpColor = { 0.5, 0.5, 0.5 }
 		local prmColor = { 0.5, 0.5, 0.5 }
-		
+
 		prm = string.upper(prm);
-		
+
 		if grp == EMOTE_GROUP_GUILD then
 			grpColor = { 0.0, 1.0, 0.0 }
 			prmColor = { 0.8, 0.8, 0.0 }
@@ -383,7 +383,7 @@ function Thaliz_RefreshVisibleMessageList(offset)
 			prmColor = { 0.8, 0.8, 0.0 }
 		elseif grp == EMOTE_GROUP_CLASS then
 			grpColor = { 0.8, 0.0, 1.0 }
-			
+
 			if prm == "DRUID" then
 				prmColor = { 1.00, 0.49, 0.04 }
 			elseif prm == "HUNTER" then
@@ -402,9 +402,9 @@ function Thaliz_RefreshVisibleMessageList(offset)
 				prmColor = { 0.58, 0.51, 0.79 }
 			elseif prm == "WARRIOR" then
 				prmColor = { 0.78, 0.61, 0.43 }
-			end;			
+			end;
 		elseif grp == EMOTE_GROUP_RACE then
-			grpColor = { 0.80, 0.80, 0.00 }			
+			grpColor = { 0.80, 0.80, 0.00 }
 			if prm == "DWARF" or prm == "GNOME" or prm == "HUMAN"  or prm == "NIGHT ELF" then
 				grpColor = { 0.00, 0.50, 1.00 }
 			elseif prm == "ORC" or prm == "TAUREN" or prm == "TROLL"  or prm == "UNDEAD" then
@@ -412,10 +412,10 @@ function Thaliz_RefreshVisibleMessageList(offset)
 			end
 			prmColor = grpColor;
 		end;
-		
+
 		_G[frame:GetName().."Group"]:SetTextColor(grpColor[1], grpColor[2], grpColor[3]);
 		_G[frame:GetName().."Param"]:SetTextColor(prmColor[1], prmColor[2], prmColor[3]);
-		
+
 		frame:Show();
 	end
 end
@@ -423,7 +423,7 @@ end
 function Thaliz_UpdateMessageList()
 	FauxScrollFrame_Update(ThalizFrameTableList, THALIZ_MAX_MESSAGES, 10, 20);
 	local offset = FauxScrollFrame_GetOffset(ThalizFrameTableList);
-	
+
 	Thaliz_RefreshVisibleMessageList(offset);
 end
 
@@ -445,14 +445,14 @@ function Thaliz_OnMessageClick(object)
 
 	currentObjectId = object:GetID();
 	local offset = FauxScrollFrame_GetOffset(ThalizFrameTableList);
-		
+
 	local msg = _G[object:GetName().."Message"]:GetText();
 	local grp = _G[object:GetName().."Group"]:GetText();
 	local prm = _G[object:GetName().."Param"]:GetText();
 	if not msg or msg == THALIZ_EMPTY_MESSAGE then
 		msg = "";
 	end
-	
+
 	grp = Thaliz_CheckGroup(grp);
 	prm = Thaliz_CheckGroupValue(prm);
 
@@ -460,24 +460,24 @@ function Thaliz_OnMessageClick(object)
 	_G[frame:GetName().."Message"]:SetText(msg);
 	_G[frame:GetName().."GroupValue"]:SetText(prm);
 
-	_G[frame:GetName().."CheckbuttonAlways"]:SetChecked();		
-	_G[frame:GetName().."CheckbuttonGuild"]:SetChecked();		
-	_G[frame:GetName().."CheckbuttonCharacter"]:SetChecked();		
-	_G[frame:GetName().."CheckbuttonClass"]:SetChecked();		
-	_G[frame:GetName().."CheckbuttonRace"]:SetChecked();		
+	_G[frame:GetName().."CheckbuttonAlways"]:SetChecked();
+	_G[frame:GetName().."CheckbuttonGuild"]:SetChecked();
+	_G[frame:GetName().."CheckbuttonCharacter"]:SetChecked();
+	_G[frame:GetName().."CheckbuttonClass"]:SetChecked();
+	_G[frame:GetName().."CheckbuttonRace"]:SetChecked();
 
 	if grp == EMOTE_GROUP_GUILD then
-		_G[frame:GetName().."CheckbuttonGuild"]:SetChecked(1);		
+		_G[frame:GetName().."CheckbuttonGuild"]:SetChecked(1);
 	elseif grp == EMOTE_GROUP_CHARACTER then
-		_G[frame:GetName().."CheckbuttonCharacter"]:SetChecked(1);		
+		_G[frame:GetName().."CheckbuttonCharacter"]:SetChecked(1);
 	elseif grp == EMOTE_GROUP_CLASS then
-		_G[frame:GetName().."CheckbuttonClass"]:SetChecked(1);		
+		_G[frame:GetName().."CheckbuttonClass"]:SetChecked(1);
 	elseif grp == EMOTE_GROUP_RACE then
-		_G[frame:GetName().."CheckbuttonRace"]:SetChecked(1);		
+		_G[frame:GetName().."CheckbuttonRace"]:SetChecked(1);
 	else
 		_G[frame:GetName().."CheckbuttonAlways"]:SetChecked(1);
 	end
-	
+
 	msgEditorIsOpen = true;
 	ThalizMsgEditorFrame:Show();
 	ThalizMsgEditorFrameMessage:SetFocus();
@@ -502,7 +502,7 @@ function Thaliz_SaveMessageButton_OnClick()
 		grp = EMOTE_GROUP_DEFAULT;
 	end;
 
-	if	grp == EMOTE_GROUP_CHARACTER or 
+	if	grp == EMOTE_GROUP_CHARACTER or
 		grp == EMOTE_GROUP_CLASS then
 		prm = Thaliz_UCFirst(prm)
 	elseif grp == EMOTE_GROUP_RACE then
@@ -516,7 +516,7 @@ function Thaliz_SaveMessageButton_OnClick()
 	end
 
 	--echo(string.format("Saving, ID=%d, Offset=%d, Msg=%s, Grp=%s, Val=%s", currentObjectId, offset, msg, grp, prm));
-	Thaliz_CloseMsgEditorButton_OnClick();	
+	Thaliz_CloseMsgEditorButton_OnClick();
 	Thaliz_UpdateResurrectionMessage(currentObjectId, offset, msg, grp, prm);
 	Thaliz_UpdateMessageList();
 end
@@ -526,7 +526,7 @@ function Thaliz_HandleCheckbox(checkbox)
 	local checkboxname = checkbox:GetName();
 
 	--	If checked, then we need to uncheck others in same group:
-	if checkboxname == "ThalizFrameCheckbuttonRaid" or checkboxname == "ThalizFrameCheckbuttonYell" or checkboxname == "ThalizFrameCheckbuttonSay" then	
+	if checkboxname == "ThalizFrameCheckbuttonRaid" or checkboxname == "ThalizFrameCheckbuttonYell" or checkboxname == "ThalizFrameCheckbuttonSay" then
 		if checkbox:GetChecked() then
 			if checkboxname == "ThalizFrameCheckbuttonRaid" then
 				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "RAID");
@@ -554,51 +554,50 @@ function Thaliz_HandleCheckbox(checkbox)
 		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, 1);
 	else
 		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, 0);
-	end	
-	
+	end
+
 	if ThalizFrameCheckbuttonIncludeDefault:GetChecked() then
 		Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, 1);
 	else
 		Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, 0);
-	end	
-		
+	end
+
 	if ThalizFrameCheckbuttonPerCharacter:GetChecked() then
 		Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, "Character");
 	else
 		Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, "Realm");
-	end	
+	end
 
-	
 	-- Emote Groups: Only one can be active:
-	if checkboxname == "ThalizMsgEditorFrameCheckbuttonAlways" then	
+	if checkboxname == "ThalizMsgEditorFrameCheckbuttonAlways" then
 		if checkbox:GetChecked() then
 			ThalizMsgEditorFrameCheckbuttonGuild:SetChecked();
 			ThalizMsgEditorFrameCheckbuttonCharacter:SetChecked();
 			ThalizMsgEditorFrameCheckbuttonClass:SetChecked();
 			ThalizMsgEditorFrameCheckbuttonRace:SetChecked();
 		end;
-	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonGuild" then	
+	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonGuild" then
 		if checkbox:GetChecked() then
 			ThalizMsgEditorFrameCheckbuttonAlways:SetChecked();
 			ThalizMsgEditorFrameCheckbuttonCharacter:SetChecked();
 			ThalizMsgEditorFrameCheckbuttonClass:SetChecked();
 			ThalizMsgEditorFrameCheckbuttonRace:SetChecked();
 		end;
-	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonCharacter" then	
+	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonCharacter" then
 		if checkbox:GetChecked() then
 			ThalizMsgEditorFrameCheckbuttonAlways:SetChecked();
 			ThalizMsgEditorFrameCheckbuttonGuild:SetChecked();
 			ThalizMsgEditorFrameCheckbuttonClass:SetChecked();
 			ThalizMsgEditorFrameCheckbuttonRace:SetChecked();
 		end;
-	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonClass" then	
+	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonClass" then
 		if checkbox:GetChecked() then
 			ThalizMsgEditorFrameCheckbuttonAlways:SetChecked();
 			ThalizMsgEditorFrameCheckbuttonGuild:SetChecked();
 			ThalizMsgEditorFrameCheckbuttonCharacter:SetChecked();
 			ThalizMsgEditorFrameCheckbuttonRace:SetChecked();
 		end;
-	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonRace" then	
+	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonRace" then
 		if checkbox:GetChecked() then
 			ThalizMsgEditorFrameCheckbuttonAlways:SetChecked();
 			ThalizMsgEditorFrameCheckbuttonGuild:SetChecked();
@@ -615,9 +614,9 @@ function Thaliz_GetRootOption(parameter, defaultValue)
 			if (type(value) == "table") or not(value == "") then
 				return value;
 			end
-		end		
+		end
 	end
-	
+
 	return defaultValue;
 end
 
@@ -625,7 +624,7 @@ function Thaliz_SetRootOption(parameter, value)
 	if not Thaliz_Options then
 		Thaliz_Options = {};
 	end
-	
+
 	Thaliz_Options[parameter] = value;
 end
 
@@ -642,7 +641,7 @@ function Thaliz_GetOption(parameter, defaultValue)
 					if (type(value) == "table") or not(value == "") then
 						return value;
 					end
-				end		
+				end
 			end
 		end
 	else
@@ -653,10 +652,10 @@ function Thaliz_GetOption(parameter, defaultValue)
 				if (type(value) == "table") or not(value == "") then
 					return value;
 				end
-			end		
+			end
 		end
 	end
-	
+
 	return defaultValue;
 end
 
@@ -669,18 +668,18 @@ function Thaliz_SetOption(parameter, value)
 		if not Thaliz_Options[realmname] then
 			Thaliz_Options[realmname] = {};
 		end
-		
+
 		if not Thaliz_Options[realmname][playername] then
 			Thaliz_Options[realmname][playername] = {};
 		end
-		
-		Thaliz_Options[realmname][playername][parameter] = value;		
+
+		Thaliz_Options[realmname][playername][parameter] = value;
 	else
 		-- Realm level:
 		if not Thaliz_Options[realmname] then
 			Thaliz_Options[realmname] = {};
-		end	
-		
+		end
+
 		Thaliz_Options[realmname][parameter] = value;
 	end
 end
@@ -692,7 +691,7 @@ function Thaliz_InitializeConfigSettings()
 
 	Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level))
 	Thaliz_ConfigurationLevel = Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level);
-	
+
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_Target_Channel_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_Target_Whisper_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_Resurrection_Whisper_Message_Default))
@@ -719,18 +718,18 @@ function Thaliz_InitializeConfigSettings()
 	end
 	if Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings) == "Character" then
 		ThalizFrameCheckbuttonPerCharacter:SetChecked(1)
-	end    
-	
+	end
+
 	Thaliz_ValidateResurrectionMessages();
 end
 
 function Thaliz_ValidateResurrectionMessages()
 	local macros = Thaliz_GetResurrectionMessages();
 	local changed = False;
-	
+
 	for n=1, table.getn( macros ), 1 do
 		local macro = macros[n];
-		
+
 		if type(macro) == "table" then
 			-- Macro is fine; do nothing
 		else
@@ -740,17 +739,17 @@ function Thaliz_ValidateResurrectionMessages()
 		end
 	end;
 
-	if changed then	
-		Thaliz_SetResurrectionMessages(macros);	
+	if changed then
+		Thaliz_SetResurrectionMessages(macros);
 	end;
 end;
 
 function Thaliz_GetUnitID(playername)
 	local groupsize, grouptype;
-		
+
 	groupsize = GetNumGroupMembers();
 	if IsInRaid() then
-		grouptype = "raid";	
+		grouptype = "raid";
 	else
 		grouptype = "party";
 	end;
@@ -771,7 +770,7 @@ end
 function Thaliz_UCFirst(playername)
 	if not playername then
 		return ""
-	end	
+	end
 
 	-- Handles utf8 characters in beginning.. Ugly, but works:
 	local offset = 2;
@@ -797,8 +796,8 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	end
 
 	if not unitid then
-		unitid = Thaliz_GetUnitID(playername);			
-		
+		unitid = Thaliz_GetUnitID(playername);
+
 		if not unitid then
 			return;
 		end
@@ -815,7 +814,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		-- Note: guildname is unfortunately not detected for released corpses.
 		guildname = "(No Guild)";
 		UCGuildname = "";
-	end;	
+	end;
 
 	--echo(string.format("Ressing: player=%s, unitid=%s", playername, unitid));
 	--echo(string.format("Guild=%s, class=%s, race=%s", guildname, class, race));
@@ -827,13 +826,13 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	local nmacro = { }		-- character Name macros
 	local cmacro = { }		-- Class macros
 	local rmacro = { }		-- Race macros
-	
+
 	local didx = 0;
 	local gidx = 0;
 	local nidx = 0;
 	local cidx = 0;
 	local ridx = 0;
-	
+
 	local macros = Thaliz_GetResurrectionMessages();
 	for n=1, table.getn( macros ), 1 do
 		local macro = macros[n];
@@ -841,7 +840,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		if macro[3] then
 			param = string.upper(macro[3]);
 		end
-		
+
 		if macro[2] == EMOTE_GROUP_DEFAULT then
 			didx = didx + 1;
 			dmacro[ didx ] = macro;
@@ -865,9 +864,9 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 				ridx = ridx + 1;
 				rmacro[ ridx ] = macro;
 			end
-		end;		
+		end;
 	end
-	
+
 	-- Now generate list, using the found criterias above:
 	local macros = { }
 	local index = 0;
@@ -887,12 +886,11 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		index = index + 1;
 		macros[index] = rmacro[n];
 	end;
-	
 
 	-- Include the default macro list if
 	-- * No macros matching group rules, or
 	-- * The "Include Default" option is selected.
-	if table.getn(macros) == 0 or 
+	if table.getn(macros) == 0 or
 		Thaliz_GetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup) == 1 then
 		for n=1, table.getn( dmacro ), 1 do
 			index = index + 1;
@@ -900,7 +898,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		end;
 	end;
 
-	
+
 	local validMessages = {}
 	local validCount = 0;
 	for n=1, table.getn( macros ), 1 do
@@ -910,7 +908,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 			validMessages[ validCount ] = msg;
 		end
 	end
-	
+
 	-- Fallback message if none are configured
 	if validCount == 0 then
 		validMessages[1] = "Resurrecting %s";
@@ -930,7 +928,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 			targetChannel = "RAID";
 		end;
 	end;
-	
+
 	if targetChannel == "RAID" then
 		partyEcho(message);
 	elseif targetChannel == "SAY" then
@@ -940,7 +938,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	else
 		echo(message);
 	end
-	
+
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
 		local whisperMsg = Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage);
 		if whisperMsg and not(whisperMsg == "") then
@@ -953,16 +951,16 @@ function Thaliz_GetResurrectionMessages()
 	local messages = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessages, nil);
 
 	if (not messages) or not(type(messages) == "table") or (table.getn(messages) == 0) then
-		messages = Thaliz_ResetResurrectionMessages(); 
+		messages = Thaliz_ResetResurrectionMessages();
 	end
-	
+
 	return messages;
 end
 
 function Thaliz_RenumberTable(sourcetable)
 	local index = 1;
 	local temptable = { };
-	
+
 	for key, value in next, sourcetable do
 		temptable[index] = value;
 		index = index + 1
@@ -976,7 +974,7 @@ end
 
 function Thaliz_ResetResurrectionMessages()
 	Thaliz_SetResurrectionMessages( Thaliz_DefaultResurrectionMessages );
-	
+
 	return Thaliz_DefaultResurrectionMessages;
 end
 
@@ -987,9 +985,9 @@ function Thaliz_AddResurrectionMessage(message, group, param)
 
 		--echo(string.format("Adding Res.Msg: msg=%s, grp=%s, val=%s", message, group, param));
 
-		local resMsgs = Thaliz_GetResurrectionMessages();		
+		local resMsgs = Thaliz_GetResurrectionMessages();
 		resMsgs[ table.getn(resMsgs) + 1] = { message, group, param }
-		
+
 		Thaliz_SetResurrectionMessages(resMsgs);
 	end
 end
@@ -1022,7 +1020,7 @@ function Thaliz_UpdateResurrectionMessage(index, offset, message, group, param)
 
 	local messages = Thaliz_GetResurrectionMessages();
 	messages[index + offset] = { message, group, param }
-	
+
 	Thaliz_SetResurrectionMessages( messages );
 
 	--	Update the frame UI:
@@ -1049,9 +1047,9 @@ ress button if anyone found.
 function Thaliz_ScanRaid()
 	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_ScanRaid");
 
-	if not ThalizDoScanRaid then 
+	if not ThalizDoScanRaid then
 		Thaliz_SetRezTargetText();
-		if(debug) then 
+		if(debug) then
 			echo("**DEBUG**: ThalizDoScanRaid=false");
 		end;
 		return;
@@ -1062,7 +1060,7 @@ function Thaliz_ScanRaid()
 		ThalizDoScanRaid = false;
 		Thaliz_HideResurrectionButton();
 
-		if(debug) then 
+		if(debug) then
 			echo("**DEBUG**: IsResser=false");
 		end;
 		return;
@@ -1073,7 +1071,7 @@ function Thaliz_ScanRaid()
 		Thaliz_SetRezTargetText();
 		Thaliz_SetButtonTexture(THALIZ_RezBtn_Dead);
 
-		if(debug) then 
+		if(debug) then
 			echo("**DEBUG**: UnitIsDeadOrGhost=true");
 		end;
 		return;
@@ -1084,7 +1082,7 @@ function Thaliz_ScanRaid()
 		Thaliz_SetRezTargetText();
 		Thaliz_SetButtonTexture(THALIZ_RezBtn_Combat);
 
-		if(debug) then 
+		if(debug) then
 			echo("**DEBUG**: UnitAffectingCombat=true");
 		end;
 		return;
@@ -1094,7 +1092,7 @@ function Thaliz_ScanRaid()
 	if groupsize == 0 then
 		Thaliz_HideResurrectionButton();
 
-		if(debug) then 
+		if(debug) then
 			echo("**DEBUG**: GetNumGroupMembers=0");
 		end;
 		return;
@@ -1117,7 +1115,7 @@ function Thaliz_ScanRaid()
 			break;
 		end
 	end
-	
+
 	Thaliz_CleanupBlacklistedPlayers();
 
 	--Fetch current assigned target (if any):
@@ -1136,27 +1134,27 @@ function Thaliz_ScanRaid()
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
 		playername = UnitName(unitid)
-		
+
 		local isBlacklisted = false;
 		for b=1, table.getn(blacklistedTable), 1 do
 			blacklistInfo = blacklistedTable[b];
-			blacklistTick = blacklistInfo[2];		
-			
+			blacklistTick = blacklistInfo[2];
+
 			if blacklistInfo[1] == playername then
 				isBlacklisted = true;
-				if(debug) then 
+				if(debug) then
 					echo(string.format("**DEBUG**: Player %s is blacklisted ...", playername));
 				end;
 				break;
 			end
 		end
-		
+
 		targetname = UnitName("playertarget");
 
-		if (isBlacklisted == false) and 
-				UnitIsDead(unitid) and 
-				(UnitHasIncomingResurrection(unitid) == false) and 
-				UnitIsConnected(unitid) and 
+		if (isBlacklisted == false) and
+				UnitIsDead(unitid) and
+				(UnitHasIncomingResurrection(unitid) == false) and
+				UnitIsConnected(unitid) and
 				UnitIsVisible(unitid) and
 				(IsSpellInRange(spellname, unitid) == 1) then
 			classinfo = Thaliz_GetClassinfo(Thaliz_UnitClass(unitid));
@@ -1170,9 +1168,9 @@ function Thaliz_ScanRaid()
 --				targetprio = PriorityToGroupLeader;
 --			end
 			if not warlocksAlive and classinfo[1] == "Warlock" then
-				targetprio = PriorityToFirstWarlock;				
+				targetprio = PriorityToFirstWarlock;
 			end
-			
+
 			-- Check if the current target is still eligible for ress:
 			if playername == currentTarget then
 				currentPrio = targetprio;
@@ -1185,17 +1183,17 @@ function Thaliz_ScanRaid()
 
 			-- Add a random decimal factor to priority to spread ressings out.
 			-- Random is a float between 0 and 1:
-			targetprio = targetprio + random();	
+			targetprio = targetprio + random();
 
-			--echo(string.format("%s added, unitid=%s, priority=%f", playername, unitid, targetprio));			
+			--echo(string.format("%s added, unitid=%s, priority=%f", playername, unitid, targetprio));
 			corpseTable[ table.getn(corpseTable) + 1 ] = { unitid, targetprio } ;
 		end
-	end	
+	end
 
 	if (table.getn(corpseTable) == 0) then
 		Thaliz_HideResurrectionButton();
 
-		if(debug) then 
+		if(debug) then
 			echo("**DEBUG**: corpseTable=(empty)");
 		end;
 		return;
@@ -1213,7 +1211,7 @@ function Thaliz_ScanRaid()
 
 		unitid = corpseTable[1][1];
 
-		if(debug) then 
+		if(debug) then
 			if not spellname then spellname = "nil"; end;
 			echo(string.format("**DEBUG**: corpse=%s, unitid=%s, spell=%s", UnitName(unitid), unitid, spellname));
 		end;
@@ -1235,8 +1233,8 @@ end;
 
 function Thaliz_BroadcastResurrection(self)
 	local unitid = self:GetAttribute("unit");
-	if not unitid then 
-		return; 
+	if not unitid then
+		return;
 	end;
 
 	local playername = UnitName(unitid);
@@ -1266,7 +1264,7 @@ function Thaliz_InitClassSpecificStuff()
 	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_Init");
 	local classname = Thaliz_UnitClass("player");
 
-	if(debug) then 
+	if(debug) then
 		if not classname then classname = "nil"; end;
 		echo(string.format("**DEBUG**: [Thaliz_InitClassSpecificStuff] classname=%s", classname));
 	end;
@@ -1304,10 +1302,10 @@ function Thaliz_SetButtonTexture(textureName, isEnabled)
 		alphaValue = 1.0;
 	end;
 
-	if RezButtonLastTexture ~= textureName then	
+	if RezButtonLastTexture ~= textureName then
 		RezButtonLastTexture = textureName;
 		RezButton:SetAlpha(alphaValue);
-		RezButton:SetNormalTexture(textureName);		
+		RezButton:SetNormalTexture(textureName);
 	end;
 end;
 
@@ -1316,9 +1314,9 @@ function Thaliz_GetClassinfo(classname)
 	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_GetClassinfo");
 
 	classname = Thaliz_UCFirst(classname);
-	for key, val in next, classInfo do 
+	for key, val in next, classInfo do
 		if val[1] == classname then
-			if(debug) then 
+			if(debug) then
 				if not classname then classname = "nil"; end;
 				echo(string.format("**DEBUG**: classname=%s, info=True", classname));
 			end;
@@ -1327,7 +1325,7 @@ function Thaliz_GetClassinfo(classname)
 		end
 	end
 
-	if(debug) then 
+	if(debug) then
 		if not classname then classname = "nil"; end;
 		echo(string.format("**DEBUG**: classname=%s, info=False", classname));
 	end;
@@ -1350,7 +1348,7 @@ function Thaliz_BlacklistPlayer(playername, blacklistTime)
 	local timerTick = Thaliz_GetTimerTick();
 
 	if Thaliz_IsPlayerBlacklisted(playername) then
-		-- Player is already blacklisted; if the current blacklist time is higher than 
+		-- Player is already blacklisted; if the current blacklist time is higher than
 		-- the remaining blacklist value, we need to replace the current time with the
 		-- requested time.
 		for b=1, table.getn(blacklistedTable), 1 do
@@ -1388,7 +1386,7 @@ end
 function Thaliz_IsPlayerBlacklisted(playername)
 	Thaliz_CleanupBlacklistedPlayers();
 
-	for n=1, table.getn(blacklistedTable), 1 do		 
+	for n=1, table.getn(blacklistedTable), 1 do
 		if blacklistedTable[n][1] == playername then
 			return true;
 		end
@@ -1399,9 +1397,9 @@ end
 
 function Thaliz_CleanupBlacklistedPlayers()
 	local BlacklistedTableNew = {}
-	local blacklistInfo;	
+	local blacklistInfo;
 	local timerTick = Thaliz_GetTimerTick();
-	
+
 	for n=1, table.getn(blacklistedTable), 1 do
 		blacklistInfo = blacklistedTable[n];
 		if timerTick < blacklistInfo[2] then
@@ -1485,7 +1483,7 @@ function Thaliz_CalculateVersion(versionString)
 		version = major * 100 + minor;
 		--echo(string.format("major=%s, minor=%s, patch=%s, version=%d", major, minor, patch, version));
 	end
-	
+
 	return version;
 end
 
@@ -1499,7 +1497,7 @@ function Thalix_CheckIsNewVersion(versionstring)
 				Thaliz_Echo(string.format("NOTE: A newer version of ".. COLOUR_INTRO .."THALIZ"..COLOUR_CHAT.."! is available (version %s)!", versionstring));
 				Thaliz_Echo("NOTE: Go to https://github.com/Sentilix/thaliz-classic to download latest version.");
 			end
-		end	
+		end
 	end
 end
 
@@ -1569,7 +1567,7 @@ end
 	Thaliz:<sender (which is actually the receiver!)>:<version number>
 ]]
 function Thaliz_HandleTXVersion(message, sender)
-	local response = GetAddOnMetadata("Thaliz", "Version")	
+	local response = GetAddOnMetadata("Thaliz", "Version")
 	Thaliz_SendAddonMessage("RX_VERSION#"..response.."#"..sender)
 end
 
@@ -1600,9 +1598,9 @@ function Thaliz_OnChatMsgAddon(event, ...)
 end
 
 function Thaliz_HandleThalizMessage(msg, sender)
-	local _, _, cmd, message, recipient = string.find(msg, "([^#]*)#([^#]*)#([^#]*)");	
-	
-	--	Ignore message if it is not for me. 
+	local _, _, cmd, message, recipient = string.find(msg, "([^#]*)#([^#]*)#([^#]*)");
+
+	--	Ignore message if it is not for me.
 	--	Receipient can be blank, which means it is for everyone.
 	if not (recipient == "") then
 		if not (recipient == UnitName("player")) then
@@ -1687,12 +1685,12 @@ function Thaliz_OnEvent(self, event, ...)
 		local addonname = ...;
 		if addonname == "Thaliz" then
 		    Thaliz_InitializeConfigSettings();
-		end		
+		end
 	elseif (event == "UNIT_SPELLCAST_SENT") then
 		local resser, target, _, spellId = ...;
 		if(resser == "player") then
 			if (target ~= "Unknown") then
-				if(debug) then 
+				if(debug) then
 					echo(string.format("**DEBUG**: UNIT_SPELLCAST_SENT, SpellId=%s", spellId));
 				end;
 				if not Thaliz_IsPlayerBlacklisted(target) then
@@ -1706,13 +1704,13 @@ function Thaliz_OnEvent(self, event, ...)
 
 	elseif (event == "UNIT_SPELLCAST_START") then
 		SpellcastIsStarted = TimerTick;
-		if(debug) then 
+		if(debug) then
 			echo(string.format("**DEBUG**: UNIT_SPELLCAST_START,sc=%d", SpellcastIsStarted));
 		end;
 
 	elseif (event == "UNIT_SPELLCAST_STOP") then
 		SpellcastIsStarted = 0;
-		if(debug) then 
+		if(debug) then
 			echo(string.format("**DEBUG**: UNIT_SPELLCAST_STOP,sc=%d", SpellcastIsStarted));
 		end;
 
@@ -1722,12 +1720,12 @@ function Thaliz_OnEvent(self, event, ...)
 
 		-- Hack: we assume this is someone ressing; we can't see the spellId on the event!
 		local timeDiff = TimerTick - SpellcastIsStarted;
-		if(debug) then 
+		if(debug) then
 			echo(string.format("**DEBUG**: INCOMING_RESURRECT_CHANGED,sc=%d, td=%f", SpellcastIsStarted, timeDiff));
 		end;
 
 		if (timeDiff < 0.001) and UnitIsGhost(arg1) then
-			if(debug) then 
+			if(debug) then
 				echo("**DEBUG**: INCOMING_RESURRECT_CHANGED,starting");
 			end;
 
@@ -1743,7 +1741,7 @@ function Thaliz_OnEvent(self, event, ...)
 			end;
 
 			if target then
-				if(debug) then 
+				if(debug) then
 					echo(string.format("**DEBUG**: INCOMING_RESURRECT_CHANGED,casting, tg=%s", target));
 				end;
 
@@ -1770,20 +1768,20 @@ function Thaliz_OnEvent(self, event, ...)
 		end
 
 	else
-		if(debug) then 
+		if(debug) then
 			echo("**DEBUG**: Other event: "..event);
 
 			local arg1, arg2, arg3, arg4 = ...;
 			if arg1 then
 				echo(string.format("**DEBUG**: arg1=%s", arg1));
 			end;
-			if arg2 then				
+			if arg2 then
 				echo(string.format("**DEBUG**: arg2=%s", arg2));
 			end;
-			if arg3 then				
+			if arg3 then
 				echo(string.format("**DEBUG**: arg3=%s", arg3));
 			end;
-			if arg4 then				
+			if arg4 then
 				echo(string.format("**DEBUG**: arg4=%s", arg4));
 			end;
 		end;
@@ -1824,10 +1822,10 @@ end
 function Thaliz_OKButton_OnClick()
 	Thaliz_CloseConfigurationDialogue();
 	msgEditorIsOpen = false;
-	
+
 	local whisperMsg = _G["ThalizFrameWhisper"]:GetText(whisperMsg);
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, whisperMsg);
-	
+
 	Thaliz_ConfigurationLevel = Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level);
 end
 
