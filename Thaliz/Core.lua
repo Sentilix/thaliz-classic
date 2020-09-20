@@ -11,6 +11,7 @@ https://github.com/Sentilix/thaliz-classic
 Please see the ReadMe.txt for addon details.
 ]]
 
+Thaliz = LibStub("AceAddon-3.0"):NewAddon("Thaliz", "AceConsole-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Thaliz", true)
 
 local PARTY_CHANNEL							= "PARTY"
@@ -150,32 +151,34 @@ local Thaliz_DefaultResurrectionMessages = {
 	{ "(Ressing) %s, you are too late... I... must... OBEY!",			EMOTE_GROUP_DEFAULT, "" } 	-- Thaddius
 }
 
--- local options = {
--- 	type = "group",
--- 	args = {
--- 		output = {
--- 			name = "Output chat destination",
--- 			type = "select",
--- 			values = { NONE = "None", RAID = "Raid/party", SAY = "Say", YELL = "Yell" },
--- 			set = function(info,val) Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, val),
--- 			get = function(info) Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel)
--- 		}
--- 	}
--- }
+local function Thaliz_GetOptions()
+	return  {
+		type = "group",
+		args = {
+			output = {
+				name = "Output chat destination",
+				type = "select",
+				values = { NONE = "None", RAID = "Raid/party", SAY = "Say", YELL = "Yell" },
+				set = function(info,val) Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, val) end,
+				get = function(info) return Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) end
+			}
+		}
+	}
+end
 
--- Thaliz::RegisterOptionsTable("Thaliz", options, {"thaliz2"})
 
--- function Thaliz:OnInitialize()
--- 	-- Code that you want to run when the addon is first loaded goes here.
--- end
+function Thaliz:OnInitialize()
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("Thaliz", Thaliz_GetOptions())
+	self:RegisterChatCommand("thaliz", "CommandDefault")
+end
 
--- function Thaliz:OnEnable()
---     -- Called when the addon is enabled
--- end
+function Thaliz:OnEnable()
+    -- Called when the addon is enabled
+end
 
--- function Thaliz:OnDisable()
---     -- Called when the addon is disabled
--- end
+function Thaliz:OnDisable()
+    -- Called when the addon is disabled
+end
 
 
 --[[
@@ -220,8 +223,7 @@ end
 	Syntax: /thaliz [option, defaulting to "cfg"]
 	Added in: 0.0.1
 ]]
-SLASH_THALIZ_THALIZ1 = "/thaliz"
-SlashCmdList["THALIZ_THALIZ"] = function(msg)
+function Thaliz:CommandDefault(msg)
 	local _, _, option = string.find(msg, "(%S*)")
 
 	if not option or option == "" then
@@ -230,15 +232,15 @@ SlashCmdList["THALIZ_THALIZ"] = function(msg)
 	option = string.upper(option);
 		
 	if (option == "CFG" or option == "CONFIG") then
-		SlashCmdList["THALIZ_CONFIG"]();
+		self:CommandConfig();
 	elseif option == "DISABLE" then
-		SlashCmdList["THALIZ_DISABLE"]();
+		self:CommandDisable();
 	elseif option == "ENABLE" then
-		SlashCmdList["THALIZ_ENABLE"]();
+		self:CommandEnable();
 	elseif option == "HELP" then
-		SlashCmdList["THALIZ_HELP"]();
+		self:CommandHelp();
 	elseif option == "VERSION" then
-		SlashCmdList["THALIZ_VERSION"]();
+		self:CommandVersion();
 	else
 		Thaliz_Echo(string.format("Unknown command: %s", option));
 	end
@@ -250,8 +252,7 @@ end
 	Alternative: /thaliz version
 	Added in: 0.2.1
 ]]
-SLASH_THALIZ_VERSION1 = "/thalizversion"
-SlashCmdList["THALIZ_VERSION"] = function(msg)
+function Thaliz:CommandVersion(msg)
 	if IsInRaid() or Thaliz_IsInParty() then
 		Thaliz_SendAddonMessage("TX_VERSION##");
 	else
@@ -265,9 +266,7 @@ end
 	Alternative: /thaliz config
 	Added in: 0.3.0
 ]]
-SLASH_THALIZ_CONFIG1 = "/thalizconfig"
-SLASH_THALIZ_CONFIG2 = "/thalizcfg"
-SlashCmdList["THALIZ_CONFIG"] = function(msg)
+function Thaliz:CommandConfig(msg)
 	Thaliz_OpenConfigurationDialogue();
 end
 
@@ -276,8 +275,7 @@ end
 	Syntax: /thaliz disable
 	Added in: 0.3.2
 ]]
-SLASH_THALIZ_DISABLE1 = "/thalizdisable"
-SlashCmdList["THALIZ_DISABLE"] = function(msg)
+function Thaliz:CommandDisable(msg)
 	Thaliz_Enabled = false;
 	Thaliz_Echo("Resurrection announcements has been disabled.");
 end
@@ -287,8 +285,7 @@ end
 	Syntax: /thaliz enable
 	Added in: 0.3.2
 ]]
-SLASH_THALIZ_ENABLE1 = "/thalizenable"
-SlashCmdList["THALIZ_ENABLE"] = function(msg)
+function Thaliz:CommandEnable(msg)
 	Thaliz_Enabled = true;
 	Thaliz_Echo("Resurrection announcements has been enabled.");
 end
@@ -323,8 +320,7 @@ end
 	Alternative: /thaliz help
 	Added in: 0.2.0
 ]]
-SLASH_THALIZ_HELP1 = "/thalizhelp"
-SlashCmdList["THALIZ_HELP"] = function(msg)
+function Thaliz:CommandHelp(msg)
 	Thaliz_Echo(string.format("Thaliz version %s options:", GetAddOnMetadata("Thaliz", "Version")));
 	Thaliz_Echo("Syntax:");
 	Thaliz_Echo("    /thaliz [option]");
