@@ -163,6 +163,14 @@ local function Thaliz_GetOptions()
 				set = Thaliz_ToggleConfigurationDialogue,
 				get = function (value) return ThalizConfigDialogOpen end,
 			},
+			channel = {
+				name = "Target channel",
+				desc = "Channel where the announcements will be send",
+				type = "select",
+				values = { NONE = "None", RAID = "Raid/Party", SAY = "Say", YELL = "Yell" },
+				set = function (info, value) Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, value) end,
+				get = function (value) return Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) end,
+			},
 			debug = {
 				name = "Debug",
 				desc = "Debug a Thaliz method",
