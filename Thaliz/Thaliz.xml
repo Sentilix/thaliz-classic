@@ -1,6 +1,4 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Script file="Thaliz.lua" />
-
 	<!-- template for Message list entries -->
 	<Button name="Thaliz_CellTemplate" hidden="true" virtual="true">
 		<Size>

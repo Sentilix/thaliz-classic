@@ -150,6 +150,33 @@ local Thaliz_DefaultResurrectionMessages = {
 	{ "(Ressing) %s, you are too late... I... must... OBEY!",			EMOTE_GROUP_DEFAULT, "" } 	-- Thaddius
 }
 
+-- local options = {
+-- 	type = "group",
+-- 	args = {
+-- 		output = {
+-- 			name = "Output chat destination",
+-- 			type = "select",
+-- 			values = { NONE = "None", RAID = "Raid/party", SAY = "Say", YELL = "Yell" },
+-- 			set = function(info,val) Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, val),
+-- 			get = function(info) Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel)
+-- 		}
+-- 	}
+-- }
+
+-- Thaliz::RegisterOptionsTable("Thaliz", options, {"thaliz2"})
+
+-- function Thaliz:OnInitialize()
+-- 	-- Code that you want to run when the addon is first loaded goes here.
+-- end
+
+-- function Thaliz:OnEnable()
+--     -- Called when the addon is enabled
+-- end
+
+-- function Thaliz:OnDisable()
+--     -- Called when the addon is disabled
+-- end
+
 
 --[[
 	Echo a message for the local user only.
