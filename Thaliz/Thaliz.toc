@@ -9,5 +9,5 @@ embeds.xml
 
 Locales\Locales.xml
 
-Thaliz.lua
-Thaliz.xml
+Core.lua
+Core.xml
