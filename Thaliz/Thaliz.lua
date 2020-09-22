@@ -11,6 +11,7 @@ https://github.com/Sentilix/thaliz-classic
 Please see the ReadMe.txt for addon details.
 ]]
 
+local L = LibStub("AceLocale-3.0"):GetLocale("Thaliz", true)
 
 local PARTY_CHANNEL							= "PARTY"
 local RAID_CHANNEL							= "RAID"
@@ -42,15 +43,15 @@ local EMOTE_GROUP_RACE						= "Race";
 --	List of valid class names with priority and resurrection spell name (if any)
 --	classname, priority, ress spellname
 local classInfo = {
-	{ "Druid",   40, "Rebirth"			},
-	{ "Hunter",  30, nil				},
-	{ "Mage",    40, nil				},
-	{ "Paladin", 50, "Redemption"		},
-	{ "Priest",  50, "Resurrection"		},
-	{ "Rogue",   10, nil				},
-	{ "Shaman",  50, "Ancestral Spirit"	},
-	{ "Warlock", 30, nil				},
-	{ "Warrior", 20, nil				}
+	{ "Druid",   40, L["Rebirth"]			},
+	{ "Hunter",  30, nil					},
+	{ "Mage",    40, nil					},
+	{ "Paladin", 50, L["Redemption"]		},
+	{ "Priest",  50, L["Resurrection"]		},
+	{ "Rogue",   10, nil					},
+	{ "Shaman",  50, L["Ancestral Spirit"]	},
+	{ "Warlock", 30, nil					},
+	{ "Warrior", 20, nil					}
 };
 
 
