@@ -11,6 +11,7 @@ https://github.com/Sentilix/thaliz-classic
 Please see the ReadMe.txt for addon details.
 ]]
 
+local L = LibStub("AceLocale-3.0"):GetLocale("Thaliz", true)
 
 local PARTY_CHANNEL							= "PARTY"
 local RAID_CHANNEL							= "RAID"
@@ -42,15 +43,15 @@ local EMOTE_GROUP_RACE						= "Race";
 --	List of valid class names with priority and resurrection spell name (if any)
 --	classname, priority, ress spellname
 local classInfo = {
-	{ "Druid",   40, "Rebirth"			},
-	{ "Hunter",  30, nil				},
-	{ "Mage",    40, nil				},
-	{ "Paladin", 50, "Redemption"		},
-	{ "Priest",  50, "Resurrection"		},
-	{ "Rogue",   10, nil				},
-	{ "Shaman",  50, "Ancestral Spirit"	},
-	{ "Warlock", 30, nil				},
-	{ "Warrior", 20, nil				}
+	{ "Druid",   40, L["Rebirth"]			},
+	{ "Hunter",  30, nil					},
+	{ "Mage",    40, nil					},
+	{ "Paladin", 50, L["Redemption"]		},
+	{ "Priest",  50, L["Resurrection"]		},
+	{ "Rogue",   10, nil					},
+	{ "Shaman",  50, L["Ancestral Spirit"]	},
+	{ "Warlock", 30, nil					},
+	{ "Warrior", 20, nil					}
 };
 
 
@@ -632,6 +633,7 @@ function Thaliz_HandleCheckbox(checkbox)
 			ThalizFrameCheckbuttonAuto:SetChecked();
 			ThalizFrameCheckbuttonAlways:SetChecked(1);
 		end
+		RezButtonLastTexture = THALIZ_RezBtn_Passive;
 	end
 
 
@@ -1327,6 +1329,7 @@ end;
 
 
 function Thaliz_UpdateActionButtonVisibility(isVisible)
+	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_ButtonVisibility");
 	local visibility = Thaliz_GetOption(Thaliz_OPTION_ActionButtonVisibility);
 	
 	if(visibility == "ALWAYS") then
@@ -1337,11 +1340,28 @@ function Thaliz_UpdateActionButtonVisibility(isVisible)
 		isVisible = false;
 	end;
 
-	if(isVisible) then
-		RezButton:Show();
-	else
-		RezButton:Hide();
+	if(debug) then 
+		local isVisStr = "False";
+		if(isVisible == true) then
+			isVisStr = "True";
+		end;
+		echo(string.format("**DEBUG**: visibility=%s, isVisible=%s", visibility, isVisStr));
 	end;
+
+	if(not UnitAffectingCombat('player')) then
+		if(debug) then 
+			echo("**DEBUG**: Not in combat, changing button visibility");
+		end;
+
+		if(isVisible == true) then
+			RezButton:SetNormalTexture(THALIZ_RezBtn_Passive);
+			RezButton:Show();
+		else
+			RezButton:Hide();
+		end;
+	end;
+
+	return isVisible;
 end;
 
 
@@ -1416,6 +1436,8 @@ end;
 
 local RezButtonLastTexture = "";
 function Thaliz_SetButtonTexture(textureName, isEnabled)
+	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_SetButtonTexture");
+
 	local alphaValue = 0.5;
 	if isEnabled then
 		alphaValue = 1.0;
@@ -1424,11 +1446,16 @@ function Thaliz_SetButtonTexture(textureName, isEnabled)
 	if(textureName == THALIZ_RezBtn_Active) then
 		Thaliz_UpdateActionButtonVisibility(true);
 	else
-		if(not UnitAffectingCombat('player')) then
-			Thaliz_UpdateActionButtonVisibility(false);
+		local isVisible = Thaliz_UpdateActionButtonVisibility(false);
+		if(not isVisible) then
+			textureName = "";
 		end;
-		RezButton:SetNormalTexture("");
 	end;
+
+	if(debug) then 
+		echo(string.format("**DEBUG**: [Thaliz_SetButtonTexture] textureName=%s, lastTexture=%s", textureName, RezButtonLastTexture));
+	end;
+
 
 	if RezButtonLastTexture ~= textureName then	
 		RezButtonLastTexture = textureName;
