@@ -69,7 +69,7 @@
 	<!-- Main configuration frame -->
 	<Frame name="ThalizFrame" parent="UIParent" toplevel="true" hidden="true">
 		<Size>
-			<AbsDimension x="690" y="516" />
+			<AbsDimension x="690" y="548" />
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT">
@@ -121,7 +121,7 @@
 			<CheckButton name="$parentCheckbuttonRaid" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="16" y="-354"/>
+						<Offset x="188" y="-354"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -136,7 +136,7 @@
 			<CheckButton name="$parentCheckbuttonSay" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="144" y="-354"/>
+						<Offset x="316" y="-354"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -151,7 +151,7 @@
 			<CheckButton name="$parentCheckbuttonYell" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="272" y="-354"/>
+						<Offset x="444" y="-354"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -163,26 +163,57 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<!-- 2nd line options: msg options -->
-			<CheckButton name="$parentCheckbuttonIncludeDefault" inherits="OptionsCheckButtonTemplate">
+			<!-- 2nd line: Action button -->
+			<CheckButton name="$parentCheckbuttonNever" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="428" y="-354"/>
+						<Offset x="188" y="-386"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						_G[self:GetName().."Text"]:SetText("Include Defaults in Filtered macros")
+						_G[self:GetName().."Text"]:SetText("Never")
 					</OnLoad>
 					<OnClick>
 						Thaliz_HandleCheckbox(self);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentCheckbuttonAuto" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="316" y="-386"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText("Automatic")
+					</OnLoad>
+					<OnClick>
+						Thaliz_HandleCheckbox(self);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckbuttonAlways" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="444" y="-386"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText("Always")
+					</OnLoad>
+					<OnClick>
+						Thaliz_HandleCheckbox(self);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<!-- 3rd line options: msg options -->
 			<CheckButton name="$parentCheckbuttonPerCharacter" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="16" y="-386"/>
+						<Offset x="16" y="-418"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -194,10 +225,26 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentCheckbuttonIncludeDefault" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="316" y="-418"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText("Include Defaults in Filtered macros")
+					</OnLoad>
+					<OnClick>
+						Thaliz_HandleCheckbox(self);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<!-- 4th line: Whisper -->
 			<CheckButton name="$parentCheckbuttonWhisper" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="16" y="-418"/>
+						<Offset x="16" y="-450"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -210,7 +257,7 @@
 				</Scripts>
 			</CheckButton>
 			<!-- Dummy input field to claim frame focus -->
-			<EditBox name="$parentDummy" letters="1" visible="false">
+			<EditBox name="$parentDummy" letters="1" hidden="true">
 				<Size>
 					<AbsDimension x="0" y="0"/>
 				</Size>
@@ -228,7 +275,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="200" y="-420"/>
+						<Offset x="200" y="-452"/>
 					</Anchor>
 				</Anchors>
 				<FontString inherits="GameFontNormal"/>
@@ -240,7 +287,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="245" y="-456" />
+						<Offset x="245" y="-488" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -254,7 +301,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="350" y="-456" />
+						<Offset x="350" y="-488" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -289,11 +336,25 @@
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentHeaderTexture">
 							<Offset>
-								<AbsDimension x="0" y="-500"/>
+								<AbsDimension x="0" y="-532"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
 					<Color r="0.3" g="0.3" b="0.3" a="1.0"/>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Show rez messages in ...">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="16" y="-360"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Show action button when ...">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="16" y="-392"/>
+						</Anchor>
+					</Anchors>
 				</FontString>
 				<!-- Whisper EditBox border -->
 				<Texture name="$parentTextureLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left">
@@ -303,7 +364,7 @@
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="188" y="-173"/>
+								<AbsDimension x="188" y="-188"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -316,7 +377,7 @@
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
-								<AbsDimension x="-42" y="-173"/>
+								<AbsDimension x="-42" y="-188"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

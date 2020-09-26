@@ -95,6 +95,7 @@ local ThalizScanFrequency = 0.2;		-- Scan 5 times per second
 
 -- Configuration constants:
 local Thaliz_Configuration_Default_Level				= "Character";	-- Can be "Character" or "Realm"
+local Thaliz_ActionButtonVisibility_Default				= "ALWAYS";
 local Thaliz_Target_Channel_Default						= "RAID";
 local Thaliz_Target_Whisper_Default						= "0";
 local Thaliz_Resurrection_Whisper_Message_Default		= "Resurrection incoming in 10 seconds!";
@@ -103,6 +104,7 @@ local Thaliz_Include_Default_Group_Default				= "1";
 local Thaliz_ConfigurationLevel							= Thaliz_Configuration_Default_Level;
 
 local Thaliz_ROOT_OPTION_CharacterBasedSettings			= "CharacterBasedSettings";
+local Thaliz_OPTION_ActionButtonVisibility				= "ActionButtonVisibility";
 local Thaliz_OPTION_ResurrectionMessageTargetChannel	= "ResurrectionMessageTargetChannel";
 local Thaliz_OPTION_ResurrectionMessageTargetWhisper	= "ResurrectionMessageTargetWhisper";
 local Thaliz_OPTION_AlwaysIncludeDefaultGroup			= "AlwaysIncludeDefaultGroup";
@@ -582,6 +584,7 @@ end
 function Thaliz_HandleCheckbox(checkbox)
 	local checkboxname = checkbox:GetName();
 
+	--	Chat selector:
 	--	If checked, then we need to uncheck others in same group:
 	if checkboxname == "ThalizFrameCheckbuttonRaid" or checkboxname == "ThalizFrameCheckbuttonYell" or checkboxname == "ThalizFrameCheckbuttonSay" then	
 		if checkbox:GetChecked() then
@@ -605,6 +608,32 @@ function Thaliz_HandleCheckbox(checkbox)
 			ThalizFrameCheckbuttonYell:SetChecked();
 		end
 	end
+
+	--	Action button selector:
+	--	If checked, then we need to uncheck others in same group:
+	if checkboxname == "ThalizFrameCheckbuttonNever" or checkboxname == "ThalizFrameCheckbuttonAuto" or checkboxname == "ThalizFrameCheckbuttonAlways" then	
+		if checkbox:GetChecked() then
+			if checkboxname == "ThalizFrameCheckbuttonNever" then
+				Thaliz_SetOption(Thaliz_OPTION_ActionButtonVisibility, "NEVER");
+				ThalizFrameCheckbuttonAuto:SetChecked();
+				ThalizFrameCheckbuttonAlways:SetChecked();
+			elseif checkboxname == "ThalizFrameCheckbuttonAuto" then
+				Thaliz_SetOption(Thaliz_OPTION_ActionButtonVisibility, "AUTO");
+				ThalizFrameCheckbuttonNever:SetChecked();
+				ThalizFrameCheckbuttonAlways:SetChecked();
+			elseif checkboxname == "ThalizFrameCheckbuttonAlways" then
+				Thaliz_SetOption(Thaliz_OPTION_ActionButtonVisibility, "ALWAYS");
+				ThalizFrameCheckbuttonNever:SetChecked();
+				ThalizFrameCheckbuttonAuto:SetChecked();
+			end
+		else
+			Thaliz_SetOption(Thaliz_OPTION_ActionButtonVisibility, "ALWAYS");
+			ThalizFrameCheckbuttonNever:SetChecked();
+			ThalizFrameCheckbuttonAuto:SetChecked();
+			ThalizFrameCheckbuttonAlways:SetChecked(1);
+		end
+	end
+
 
 	-- "single" checkboxes (checkboxes with no impact on other checkboxes):
 	if ThalizFrameCheckbuttonWhisper:GetChecked() then
@@ -749,7 +778,8 @@ function Thaliz_InitializeConfigSettings()
 
 	Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level))
 	Thaliz_ConfigurationLevel = Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level);
-	
+
+	Thaliz_SetOption(Thaliz_OPTION_ActionButtonVisibility, Thaliz_GetOption(Thaliz_OPTION_ActionButtonVisibility, Thaliz_ActionButtonVisibility_Default))	
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_Target_Channel_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_Target_Whisper_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_Resurrection_Whisper_Message_Default))
@@ -758,6 +788,16 @@ function Thaliz_InitializeConfigSettings()
 	local x,y = RezButton:GetPoint();
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosX, x))
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosY, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosY, y))
+
+	if Thaliz_GetOption(Thaliz_OPTION_ActionButtonVisibility) == "NEVER" then
+		ThalizFrameCheckbuttonNever:SetChecked(1)
+	end
+	if Thaliz_GetOption(Thaliz_OPTION_ActionButtonVisibility) == "AUTO" then
+		ThalizFrameCheckbuttonAuto:SetChecked(1)
+	end
+	if Thaliz_GetOption(Thaliz_OPTION_ActionButtonVisibility) == "ALWAYS" then
+		ThalizFrameCheckbuttonAlways:SetChecked(1)
+	end
 
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "RAID" then
 		ThalizFrameCheckbuttonRaid:SetChecked(1)
@@ -768,6 +808,7 @@ function Thaliz_InitializeConfigSettings()
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "YELL" then
 		ThalizFrameCheckbuttonYell:SetChecked(1)
 	end
+
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
 		ThalizFrameCheckbuttonWhisper:SetChecked(1)
 	end
@@ -1285,6 +1326,25 @@ function Thaliz_ScanRaid()
 end;
 
 
+function Thaliz_UpdateActionButtonVisibility(isVisible)
+	local visibility = Thaliz_GetOption(Thaliz_OPTION_ActionButtonVisibility);
+	
+	if(visibility == "ALWAYS") then
+		isVisible = true;
+	end;
+
+	if(visibility == "NEVER") then
+		isVisible = false;
+	end;
+
+	if(isVisible) then
+		RezButton:Show();
+	else
+		RezButton:Hide();
+	end;
+end;
+
+
 function Thaliz_OnRezClick(self)
 	Thaliz_BroadcastResurrection(self);
 end;
@@ -1361,10 +1421,19 @@ function Thaliz_SetButtonTexture(textureName, isEnabled)
 		alphaValue = 1.0;
 	end;
 
+	if(textureName == THALIZ_RezBtn_Active) then
+		Thaliz_UpdateActionButtonVisibility(true);
+	else
+		if(not UnitAffectingCombat('player')) then
+			Thaliz_UpdateActionButtonVisibility(false);
+		end;
+		RezButton:SetNormalTexture("");
+	end;
+
 	if RezButtonLastTexture ~= textureName then	
 		RezButtonLastTexture = textureName;
 		RezButton:SetAlpha(alphaValue);
-		RezButton:SetNormalTexture(textureName);		
+		RezButton:SetNormalTexture(textureName);
 	end;
 end;
 
