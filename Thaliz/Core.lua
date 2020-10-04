@@ -128,39 +128,6 @@ local Thaliz_DebugFunction = nil
 Thaliz_Options = { }
 
 
--- List of resurrection messages
---	{ "Message", "Group", "Group parameter value" }
-local Thaliz_DefaultResurrectionMessages = {
-	-- UBRS
-	{ "(Ressing) THIS CANNOT BE!!! %s, deal with these insects.",		EMOTE_GROUP_DEFAULT, "" },	-- Rend Blackhand (UBRS)
-	-- ZG
-	{ "(Ressing) I\'m keeping my eye on you, %s!",						EMOTE_GROUP_DEFAULT, "" },	-- Bloodlord Mandokir (Raptor boss)
-	{ "(Ressing) %s, fill me with your RAGE!",							EMOTE_GROUP_DEFAULT, "" },	-- High Priest Thekal (Tiger boss)
-	{ "(Ressing) Fleeing will do you no good, %s!",						EMOTE_GROUP_DEFAULT, "" },	-- Hakkar
-	-- AQ20
-	{ "(Ressing) Master %c %s, continue the fight!",					EMOTE_GROUP_DEFAULT, "" },	-- General Rajaxx
-	-- MC
-	{ "(Ressing) Perhaps you'll need another lesson in pain, %s!",		EMOTE_GROUP_DEFAULT, "" },	-- Majordomo Executus
-	{ "(Ressing) Too soon, %s - you have died too soon!",				EMOTE_GROUP_DEFAULT, "" },	-- Ragnaros
-	{ "(Ressing) You have failed me, %s! Justice is met, indeed!",		EMOTE_GROUP_DEFAULT, "" }, 	-- Ragnaros
-	-- BWL
-	{ "(Ressing) Forgive me %s, your death only adds to my failure.",	EMOTE_GROUP_DEFAULT, "" },	-- Vaelastrasz
-	-- AQ40
-	{ "(Ressing) Let your death serve as an example, %s!",				EMOTE_GROUP_DEFAULT, "" },	-- Prophet Skeram
-	{ "(Ressing) Only flesh and bone. %cs are such easy prey, %s!",		EMOTE_GROUP_DEFAULT, "" },	-- Emperor Vek'lor (Twins)
-	{ "(Ressing) Your friends will abandon you, %s!",					EMOTE_GROUP_DEFAULT, "" },	-- C'Thun
-	-- Naxx
-	{ "(Ressing) Shhh, %s... it will all be over soon.",				EMOTE_GROUP_DEFAULT, "" },	-- Anub'Rekhan
-	{ "(Ressing) Slay %s in the masters name!",							EMOTE_GROUP_DEFAULT, "" },	-- Grand Widow Faerlina
-	{ "(Ressing) Rise, %s! Rise and fight once more!",					EMOTE_GROUP_DEFAULT, "" },	-- Noth the Plaguebringer
-	{ "(Ressing) You should have stayed home, %s!",						EMOTE_GROUP_DEFAULT, "" },	-- Instructor Razuvious
-	{ "(Ressing) Death is the only escape, %s.",						EMOTE_GROUP_DEFAULT, "" },	-- Gothik the Harvester
-	{ "(Ressing) The first res goes to %s! Anyone care to wager?",		EMOTE_GROUP_DEFAULT, "" },	-- Lady Blaumeux (4HM)
-	{ "(Ressing) No more play, %s?",									EMOTE_GROUP_DEFAULT, "" },	-- Patchwerk
-	{ "(Ressing) %s, you are too late... I... must... OBEY!",			EMOTE_GROUP_DEFAULT, "" } 	-- Thaddius
-}
-
-
 -- Checks if a value (v) is in a numeric table (t)
 local function inNumericTable(v, t)
 	local tLength = table.getn(t)
@@ -1104,9 +1071,15 @@ function Thaliz_SetResurrectionMessage(messageIndex, propertyIndex, value)
 end
 
 function Thaliz_ResetResurrectionMessages()
-	Thaliz_SetResurrectionMessages( Thaliz_DefaultResurrectionMessages )
+	local messages = {}
 
-	return Thaliz_DefaultResurrectionMessages
+	for key, message in pairs(L["Default Messages"]) do
+		messages[key] = { message, EMOTE_GROUP_DEFAULT, "" }
+	end
+
+	Thaliz_SetResurrectionMessages( messages )
+
+	return Thaliz_GetResurrectionMessages()
 end
 
 function Thaliz_CheckMessage(msg)
