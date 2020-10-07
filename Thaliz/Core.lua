@@ -352,7 +352,7 @@ local function Thaliz_GetOptions()
 					if IsInRaid() or Thaliz_IsInParty() then
 						Thaliz_SendAddonMessage("TX_VERSION##")
 					else
-						Thaliz_Echo(string.format("Thaliz version %s by %s.", "a", "a"))
+						Thaliz_Echo(string.format("version %s by %s", GetAddOnMetadata(THALIZ_NAME, "Version"), GetAddOnMetadata(THALIZ_NAME, "Author")))
 					end
 				end
 			},
