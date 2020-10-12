@@ -306,7 +306,7 @@ local function Thaliz_GetOptions()
 					},
 					authors = {
 						type = "description",
-						name = string.format("\nBy %s", GetAddOnMetadata(THALIZ_NAME, "Author")),
+						name = string.format("\nBy %s, with the contribution of %s", GetAddOnMetadata(THALIZ_NAME, "Author"), GetAddOnMetadata(THALIZ_NAME, "X-Contributors")),
 						fontSize = "medium",
 						order = 3,
 					},
