@@ -1,12 +1,8 @@
-# thaliz-classic
-Thaliz - Resurrection addon
+# Thaliz - Resurrection addon for WoW classic
 
+## What is it
 
-# The Thaliz Project
- 
-
-## 1. About the Thaliz Project
-This addon will target a random friendly (unreleased) corpse, if there are many corpses, the target will be prioritized in the following order:
+This addon targets a friendly (unreleased) corpse. If there are many corpses, the target will be prioritized in the following order:
 
 - Highest priority to the corpse you are currently targetting (if any)
 
@@ -18,50 +14,49 @@ This addon will target a random friendly (unreleased) corpse, if there are many 
 
 - and last the rogues.
 
- 
-
 If no Warlocks are up, one Warlock will be ressed after ressers are up. The raid leader will get priority just below the ressers, as he is usually also the loot master.
-When a corpse is being resurrected (unreleased or not), a random message is displayed on the screen. This can be configured to be either a /SAY, /YELL or in /RAID chat, together with an optional whisper to the target.
 
+When a corpse is being resurrected (unreleased or not), a random message is displayed on the screen. This can be configured to be either a /SAY, /YELL or in /RAID chat, together with an optional whisper to the target.
  
-## 1.1. How Thaliz works 
+## How it works
+
 Thaliz scan the raid for corpses. If a corpse is found and eligible for a res, the Thaliz action button will change icon to your current class (Priest, Paladin, Shaman or even Druid for battle res). This means the button is ready for use.
 
-When you click the button, the actual res will begin. If there are more than just one corpse, the priorities listed above will be used.
+When you click the button, the actual res begins. If there are more than just one corpse, the priorities listed above is used.
 
-## 1.2. Messages
-Up to 200 random messages in total can be configured. The addon ships with 20 pre-configured messages, containing quotes from famous World of Warcraft bosses.
- 
+## Messages
 
-## 1.3. Advanced messages
-All messages - or macros - can be grouped into one of five different groups: GUILD, CHARACTER, CLASS, RACE and DEFAULT.
+When a resurrection begins, Thaliz sends messages to a public channel and the private channel (whisp) to indicates that the resurrection is occuring.
 
-When a macro is in the GUILD group, the macro can only be used if the target belongs to the guild name, configured together with that macro.
-Same goes for the CHARACTER group, where the macro can only be used if the configured name matches the target character's name. CLASS and RACE works in a similar way.
+By default, the public message is sent to the group or party channel.
 
-If the target being resurrected does not match any of the four above groups, the macro's in the DEFAULT group will be used instead.
+The addon ships with 20 pre-configured messages, containing quotes from famous World of Warcraft bosses.
 
-All pre-configured macros are in the DEFAULT group, but you can click on a macro and reconfigure it as you like.
+But you can add yours and entirely customize the way you're ressing people!
 
- 
+### Advanced message configuration
 
-If the "Include Defaults in filtered macros" option is checked, then the default macro list will always be considered, also even the target may match macros in one or more of the other groups.
+Each message can also be configured to be used only if the target being resurrected matches one of the following conditions:
+* a character
+* a guild
+* a class
+* a race
+
+If the target being resurrected does not match any of the four conditions above, the messages without conditions will be used instead.
+
+If the "Add messages for everyone to the list of targeted messages" option is checked, then the messages without conditions will always be considered, also even the target may match macros in one or more of the other groups.
 
 And last, the resurrection whisper can now also be customized.
 
+## About the Thaliz character
 
-
-## About Thaliz
 Thaliz was a raiding priest in <Goldshire Golfclub> on the VanillaGaming.org World of Warcraft server, famous for dying alot. To be honest, we all died while progressing but he just stood out :-)
-
- 
 
 To recover faster from wipes, I wrote this simple addon to attempt to block "duplicate" resurrections, and respond with random macros while ressing - and that addon was named after the death-seeking priest: Thaliz!
 
 Dying had never been funnier since that!
 
  
-
 Thaliz (the priest) ultimately died mid 2016 when he deleted his account.
 
 RIP Thaliz.
