@@ -227,7 +227,7 @@ SlashCmdList["THALIZ_VERSION"] = function(msg)
 	if IsInRaid() or Thaliz_IsInParty() then
 		Thaliz_SendAddonMessage("TX_VERSION##");
 	else
-		Thaliz_Echo(string.format("%s is using Thaliz version %s", UnitName("player"), GetAddOnMetadata("Thaliz", "Version")));
+		Thaliz_Echo(string.format("%s is using Thaliz version %s", UnitName("player"), GetAddOnMetadata(THALIZ_NAME, "Version")));
 	end
 end
 
@@ -297,7 +297,7 @@ end
 ]]
 SLASH_THALIZ_HELP1 = "/thalizhelp"
 SlashCmdList["THALIZ_HELP"] = function(msg)
-	Thaliz_Echo(string.format("Thaliz version %s options:", GetAddOnMetadata("Thaliz", "Version")));
+	Thaliz_Echo(string.format("Thaliz version %s options:", GetAddOnMetadata(THALIZ_NAME, "Version")));
 	Thaliz_Echo("Syntax:");
 	Thaliz_Echo("    /thaliz [option]");
 	Thaliz_Echo("Where options can be:");
@@ -347,11 +347,15 @@ function Thaliz_RefreshVisibleMessageList(offset)
 	local macros = Thaliz_GetResurrectionMessages();
 	
 	-- Set a priority on each spell, and then sort them accordingly:
-	local macro, grp, prm, prio
+	local macro, msg, grp, prm, prio
 	for n=1, table.getn(macros), 1 do
+		msg = macros[n][1];
 		grp = macros[n][2];
 		prm = macros[n][3];
-		if grp == EMOTE_GROUP_GUILD then
+
+		if msg == THALIZ_EMPTY_MESSAGE or msg == "" then
+			prio = -1
+		elseif grp == EMOTE_GROUP_GUILD then
 			prio = 20
 		elseif grp == EMOTE_GROUP_CHARACTER then
 			prio = 30
@@ -400,6 +404,7 @@ function Thaliz_RefreshVisibleMessageList(offset)
 		elseif grp == EMOTE_GROUP_DEFAULT then
 			prio = 0
 		end
+
 		macros[n][4] = prio;		
 	end
 	
@@ -1516,7 +1521,7 @@ end
 function Thaliz_OnRaidRosterUpdate(event, ...)
 	if THALIZ_CURRENT_VERSION > 0 and not THALIZ_UPDATE_MESSAGE_SHOWN then
 		if IsInRaid() or Thaliz_IsInParty() then
-			local versionstring = GetAddOnMetadata("Thaliz", "Version");
+			local versionstring = GetAddOnMetadata(THALIZ_NAME, "Version");
 			Thaliz_SendAddonMessage(string.format("TX_VERCHECK#%s#", versionstring));
 		end
 	end
@@ -1614,7 +1619,7 @@ end
 	Thaliz:<sender (which is actually the receiver!)>:<version number>
 ]]
 function Thaliz_HandleTXVersion(message, sender)
-	local response = GetAddOnMetadata("Thaliz", "Version")	
+	local response = GetAddOnMetadata(THALIZ_NAME, "Version");
 	Thaliz_SendAddonMessage("RX_VERSION#"..response.."#"..sender)
 end
 
@@ -1730,7 +1735,7 @@ function Thaliz_OnEvent(self, event, ...)
 
 	if (event == "ADDON_LOADED") then
 		local addonname = ...;
-		if addonname == "Thaliz" then
+		if addonname == THALIZ_NAME then
 		    Thaliz_InitializeConfigSettings();
 		end		
 	elseif (event == "UNIT_SPELLCAST_SENT") then
@@ -1837,11 +1842,11 @@ end
 
 function Thaliz_OnLoad()
 	msgEditorIsOpen = false;
-	THALIZ_CURRENT_VERSION = Thaliz_CalculateVersion( GetAddOnMetadata("Thaliz", "Version") );
+	THALIZ_CURRENT_VERSION = Thaliz_CalculateVersion( GetAddOnMetadata(THALIZ_NAME, "Version") );
 
-	_G["ThalizVersionString"]:SetText(string.format("Thaliz version %s by %s", GetAddOnMetadata("Thaliz", "Version"), GetAddOnMetadata("Thaliz", "Author")));
+	_G["ThalizVersionString"]:SetText(string.format("Thaliz version %s by %s", GetAddOnMetadata(THALIZ_NAME, "Version"), GetAddOnMetadata(THALIZ_NAME, "Author")));
 
-	Thaliz_Echo(string.format("version %s by %s", GetAddOnMetadata("Thaliz", "Version"), GetAddOnMetadata("Thaliz", "Author")));
+	Thaliz_Echo(string.format("version %s by %s", GetAddOnMetadata(THALIZ_NAME, "Version"), GetAddOnMetadata(THALIZ_NAME, "Author")));
     ThalizEventFrame:RegisterEvent("ADDON_LOADED");
     ThalizEventFrame:RegisterEvent("CHAT_MSG_ADDON");
     ThalizEventFrame:RegisterEvent("RAID_ROSTER_UPDATE");
