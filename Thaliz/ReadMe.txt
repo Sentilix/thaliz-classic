@@ -6,7 +6,7 @@ The latest version of Thaliz can always be found at:
 (TBD)
 
 The source code can be found at Github:
-https://github.com/Sentilix/thaliz-classic
+https://github.com/Sentilix/thaliz-classic/tree/thaliz-tbc-2.0.0
 
 
 About the Thaliz Project:

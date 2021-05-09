@@ -1,5 +1,5 @@
 ﻿--[[
-Author:			Mimma @ <EU-Pyrewood Village>
+Author:			Mimma @ <EU-Nethergarde Keep>
 Create Date:	2015-05-10 17:50:57
 
 The latest version of Thaliz can always be found at:
