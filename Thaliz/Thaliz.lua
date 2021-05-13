@@ -120,33 +120,33 @@ Thaliz_Options = { }
 -- List of resurrection messages
 --	{ "Message", "Group", "Group parameter value" }
 local Thaliz_DefaultResurrectionMessages = {
-	-- UBRS
-	{ "(Ressing) THIS CANNOT BE!!! %s, deal with these insects.",		EMOTE_GROUP_DEFAULT, "" },	-- Rend Blackhand (UBRS)
-	-- ZG
-	{ "(Ressing) I\'m keeping my eye on you, %s!",						EMOTE_GROUP_DEFAULT, "" },	-- Bloodlord Mandokir (Raptor boss)
-	{ "(Ressing) %s, fill me with your RAGE!",							EMOTE_GROUP_DEFAULT, "" },	-- High Priest Thekal (Tiger boss)
-	{ "(Ressing) Fleeing will do you no good, %s!",						EMOTE_GROUP_DEFAULT, "" },	-- Hakkar
-	-- AQ20
-	{ "(Ressing) Master %c %s, continue the fight!",					EMOTE_GROUP_DEFAULT, "" },	-- General Rajaxx
-	-- MC	
-	{ "(Ressing) Perhaps you'll need another lesson in pain, %s!",		EMOTE_GROUP_DEFAULT, "" },	-- Majordomo Executus
-	{ "(Ressing) Too soon, %s - you have died too soon!",				EMOTE_GROUP_DEFAULT, "" },	-- Ragnaros
-	{ "(Ressing) You have failed me, %s! Justice is met, indeed!",		EMOTE_GROUP_DEFAULT, "" }, 	-- Ragnaros
-	-- BWL
-	{ "(Ressing) Forgive me %s, your death only adds to my failure.",	EMOTE_GROUP_DEFAULT, "" },	-- Vaelastrasz
-	-- AQ40
-	{ "(Ressing) Let your death serve as an example, %s!",				EMOTE_GROUP_DEFAULT, "" },	-- Prophet Skeram
-	{ "(Ressing) Only flesh and bone. %cs are such easy prey, %s!",		EMOTE_GROUP_DEFAULT, "" },	-- Emperor Vek'lor (Twins)	
-	{ "(Ressing) Your friends will abandon you, %s!",					EMOTE_GROUP_DEFAULT, "" },	-- C'Thun
-	-- Naxx
-	{ "(Ressing) Shhh, %s... it will all be over soon.",				EMOTE_GROUP_DEFAULT, "" },	-- Anub'Rekhan
-	{ "(Ressing) Slay %s in the masters name!",							EMOTE_GROUP_DEFAULT, "" },	-- Grand Widow Faerlina
-	{ "(Ressing) Rise, %s! Rise and fight once more!",					EMOTE_GROUP_DEFAULT, "" },	-- Noth the Plaguebringer
-	{ "(Ressing) You should have stayed home, %s!",						EMOTE_GROUP_DEFAULT, "" },	-- Instructor Razuvious
-	{ "(Ressing) Death is the only escape, %s.",						EMOTE_GROUP_DEFAULT, "" },	-- Gothik the Harvester
-	{ "(Ressing) The first res goes to %s! Anyone care to wager?",		EMOTE_GROUP_DEFAULT, "" },	-- Lady Blaumeux (4HM)
-	{ "(Ressing) No more play, %s?",									EMOTE_GROUP_DEFAULT, "" },	-- Patchwerk
-	{ "(Ressing) %s, you are too late... I... must... OBEY!",			EMOTE_GROUP_DEFAULT, "" } 	-- Thaddius
+	-- Karazhan
+	{ "(Ressing) Perhaps you would rather test yourself against a more formidable opponent, %s",	EMOTE_GROUP_DEFAULT, "" },	-- Attumen the Huntsman
+	{ "(Ressing) Come, gentle night; and give me back my %s!",										EMOTE_GROUP_DEFAULT, "" },	-- Romeo and Julie
+	{ "(Ressing) You rang, %s?",																	EMOTE_GROUP_DEFAULT, "" },	-- Moroes
+	{ "(Ressing) %s is no longer op... er... ation... al.",											EMOTE_GROUP_DEFAULT, "" },	-- Curator
+	{ "(Ressing) Please, accept this humble offering, oh great %s.",								EMOTE_GROUP_DEFAULT, "" },	-- Terestian Illhoof
+	{ "(Ressing) You''ve wasted enough of my time... let these games be finished, %s!",				EMOTE_GROUP_DEFAULT, "" },	-- Shade of Aran
+	{ "(Ressing) Your greed, your foolishness has brought you to this end, %s.",					EMOTE_GROUP_DEFAULT, "" },	-- Prince Malchezaar
+	-- Gruuls Lair
+	{ "(Ressing) You will not defeat the Hand of %s!",												EMOTE_GROUP_DEFAULT, "" }, 	-- High King Maulgar
+	-- Tempest Keep/The Eye
+	{ "(Ressing) Let us see how your nerves hold up against the Darkener, %s.",						EMOTE_GROUP_DEFAULT, "" },	-- Kael'thas Sunstrider
+	-- Battle for Mount Hyjal
+	{ "(Ressing) All of your efforts have been in vain, %s!",										EMOTE_GROUP_DEFAULT, "" },	-- Archimonde
+	{ "(Ressing) %s has returned to finish what was begun so many years ago.",						EMOTE_GROUP_DEFAULT, "" },	-- Azgalor
+	--	Black Temple
+	{ "(Ressing) Is this it, %s? Is this all the fury you can muster?",								EMOTE_GROUP_DEFAULT, "" },	-- Illidan Stormrage
+	{ "(Ressing) You play, you pay, %s!",															EMOTE_GROUP_DEFAULT, "" },	-- Mother Shahraz
+	{ "(Ressing) %s, You can have anything you desire... for a price.",								EMOTE_GROUP_DEFAULT, "" },	-- Reliquary of Souls
+	{ "(Ressing) So much time has passed. %s have a lot of catching up to do...",					EMOTE_GROUP_DEFAULT, "" },	-- Teron Gorefiend
+	--	Serpentshrine Cavern
+	{ "(Ressing) I did not wish to lower myself by ressing %s, but you leave me little choice!",	EMOTE_GROUP_DEFAULT, "" },	-- Lady Vashj
+	{ "(Ressing) Your overconfidence will be your undoing! %s, lend me your strength!",				EMOTE_GROUP_DEFAULT, "" },	-- Fathom-Lord Karathress
+	{ "(Ressing) %s ... Be gone trifling %r. I''m in control now.",									EMOTE_GROUP_DEFAULT, "" },	-- Leotheras the Blind
+	--	Sunwell Plataeu
+	{ "(Ressing) The expendible have perished... So be it! Now I shall succeed where %s could not!",EMOTE_GROUP_DEFAULT, "" },	-- Kil'jaeden
+	{ "(Ressing) Your luck has run its course, %s!",												EMOTE_GROUP_DEFAULT, "" } 	-- Eredar Twins
 }
 
 
