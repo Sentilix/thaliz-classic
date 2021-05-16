@@ -1,7 +1,7 @@
 ## Title: Thaliz - Ress dem deads
 ## Notes: Smart addon to handle ressing party / raid members
-## Version: 2.0.0-beta3
-## Author: Mimma @ <EU-Nethergarde Keep>
+## Version: 2.0.0
+## Author: Mimma @ <EU-Pyrewood Village>
 ## Interface: 20501
 ## SavedVariables: Thaliz_Options
 Thaliz.xml

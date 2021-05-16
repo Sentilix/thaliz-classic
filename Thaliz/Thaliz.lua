@@ -1,5 +1,5 @@
 ﻿--[[
-Author:			Mimma @ <EU-Nethergarde Keep>
+Author:			Mimma @ <EU-Pyrewood Village>
 Create Date:	2015-05-10 17:50:57
 
 The latest version of Thaliz can always be found at:
@@ -126,7 +126,7 @@ local Thaliz_DefaultResurrectionMessages = {
 	{ "(Ressing) You rang, %s?",																	EMOTE_GROUP_DEFAULT, "" },	-- Moroes
 	{ "(Ressing) %s is no longer op... er... ation... al.",											EMOTE_GROUP_DEFAULT, "" },	-- Curator
 	{ "(Ressing) Please, accept this humble offering, oh great %s.",								EMOTE_GROUP_DEFAULT, "" },	-- Terestian Illhoof
-	{ "(Ressing) You''ve wasted enough of my time... let these games be finished, %s!",				EMOTE_GROUP_DEFAULT, "" },	-- Shade of Aran
+	{ "(Ressing) You've wasted enough of my time... let these games be finished, %s!",				EMOTE_GROUP_DEFAULT, "" },	-- Shade of Aran
 	{ "(Ressing) Your greed, your foolishness has brought you to this end, %s.",					EMOTE_GROUP_DEFAULT, "" },	-- Prince Malchezaar
 	-- Gruuls Lair
 	{ "(Ressing) You will not defeat the Hand of %s!",												EMOTE_GROUP_DEFAULT, "" }, 	-- High King Maulgar
@@ -143,7 +143,7 @@ local Thaliz_DefaultResurrectionMessages = {
 	--	Serpentshrine Cavern
 	{ "(Ressing) I did not wish to lower myself by ressing %s, but you leave me little choice!",	EMOTE_GROUP_DEFAULT, "" },	-- Lady Vashj
 	{ "(Ressing) Your overconfidence will be your undoing! %s, lend me your strength!",				EMOTE_GROUP_DEFAULT, "" },	-- Fathom-Lord Karathress
-	{ "(Ressing) %s ... Be gone trifling %r. I''m in control now.",									EMOTE_GROUP_DEFAULT, "" },	-- Leotheras the Blind
+	{ "(Ressing) %s ... Be gone trifling %r. I'm in control now.",									EMOTE_GROUP_DEFAULT, "" },	-- Leotheras the Blind
 	--	Sunwell Plataeu
 	{ "(Ressing) The expendible have perished... So be it! Now I shall succeed where %s could not!",EMOTE_GROUP_DEFAULT, "" },	-- Kil'jaeden
 	{ "(Ressing) Your luck has run its course, %s!",												EMOTE_GROUP_DEFAULT, "" } 	-- Eredar Twins
