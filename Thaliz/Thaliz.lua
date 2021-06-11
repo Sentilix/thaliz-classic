@@ -1683,11 +1683,12 @@ function Thaliz_SpellIsResurrect(spellId)
 		spellId = 1 * spellId;
 
 		if IsPriest then
-			--Resurrection, rank 1=2006, 2=2010, 3=10880, 4=10881, 5=20770:
-			if (spellId == 2006) or (spellId == 2010) or (spellId == 10880) or (spellId == 10881) or (spellId == 20770) then
+			--Resurrection, rank 1=2006, 2=2010, 3=10880, 4=10881, 5=20770, 6=25435:
+			if (spellId == 2006) or (spellId == 2010) or (spellId == 10880) or (spellId == 10881) or (spellId == 20770) or (spellId == 25435) then
 				resSpell = true;
 			end;
 		elseif IsPaladin then
+			-- Redemption, rank 1=7328, 2=10322, 3=10324, 4=20772, 5=20773:
 			if (spellId == 7328) or (spellId == 10322) or (spellId == 10324) or (spellId == 20772) or (spellId == 20773) then
 				resSpell = true;
 			end;
