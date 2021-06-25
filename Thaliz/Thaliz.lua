@@ -1733,12 +1733,14 @@ end;
 local SpellcastIsStarted = 0;
 function Thaliz_OnEvent(self, event, ...)
 	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_OnEvent");
+	local timerTick = Thaliz_GetTimerTick();
 
 	if (event == "ADDON_LOADED") then
 		local addonname = ...;
 		if addonname == THALIZ_NAME then
 		    Thaliz_InitializeConfigSettings();
-		end		
+		end
+
 	elseif (event == "UNIT_SPELLCAST_SENT") then
 		local resser, target, _, spellId = ...;
 		if(resser == "player") then
@@ -1755,31 +1757,18 @@ function Thaliz_OnEvent(self, event, ...)
 			end;
 		end;
 
-	elseif (event == "UNIT_SPELLCAST_START") then
-		SpellcastIsStarted = TimerTick;
-		if(debug) then 
-			echo(string.format("**DEBUG**: UNIT_SPELLCAST_START,sc=%d", SpellcastIsStarted));
-		end;
-
-	elseif (event == "UNIT_SPELLCAST_STOP") then
-		SpellcastIsStarted = 0;
-		if(debug) then 
-			echo(string.format("**DEBUG**: UNIT_SPELLCAST_STOP,sc=%d", SpellcastIsStarted));
-		end;
-
 	elseif (event == "INCOMING_RESURRECT_CHANGED") then
 		local arg1 = ...;
 		local target = nil;
 
-		-- Hack: we assume this is someone ressing; we can't see the spellId on the event!
-		local timeDiff = TimerTick - SpellcastIsStarted;
+		local timeDiff = timerTick - SpellcastIsStarted;
 		if(debug) then 
-			echo(string.format("**DEBUG**: INCOMING_RESURRECT_CHANGED,sc=%d, td=%f", SpellcastIsStarted, timeDiff));
+			echo(string.format("**DEBUG**: INCOMING_RESURRECT_CHANGED, cast=%f, diff=%f", SpellcastIsStarted, timeDiff));
 		end;
 
 		if (timeDiff < 0.001) and UnitIsGhost(arg1) then
 			if(debug) then 
-				echo("**DEBUG**: INCOMING_RESURRECT_CHANGED,starting");
+				echo("**DEBUG**: INCOMING_RESURRECT_CHANGED, starting");
 			end;
 
 			SpellcastIsStarted = 0;
@@ -1795,7 +1784,7 @@ function Thaliz_OnEvent(self, event, ...)
 
 			if target then
 				if(debug) then 
-					echo(string.format("**DEBUG**: INCOMING_RESURRECT_CHANGED,casting, tg=%s", target));
+					echo(string.format("**DEBUG**: INCOMING_RESURRECT_CHANGED, target=%s", target));
 				end;
 
 				if not Thaliz_IsPlayerBlacklisted(target) then
@@ -1812,9 +1801,20 @@ function Thaliz_OnEvent(self, event, ...)
 		Thaliz_OnRaidRosterUpdate(event, ...)
 
 	elseif (event == "COMBAT_LOG_EVENT_UNFILTERED") then
-		local _, subevent, _, _, sourceName, _, _, _, destName = CombatLogGetCurrentEventInfo();
+		local _, subevent, _, _, sourceName, _, _, _, destName, _, _, spellId = CombatLogGetCurrentEventInfo();
 
-		if subevent == "SPELL_RESURRECT" then
+		if (subevent == "SPELL_CAST_START") then
+			if(debug) then 
+				echo(string.format("**DEBUG**: COMBAT_LOG_EVENT_UNFILTERED, subevent=%s, sourceName=%s, spellId=%s", subevent, sourceName, spellId));
+			end;
+
+			if (sourceName == UnitName("player")) then
+				if Thaliz_SpellIsResurrect(spellId) then
+					SpellcastIsStarted = timerTick;
+				end;
+			end
+
+		elseif subevent == "SPELL_RESURRECT" then
 			if sourceName ~= UnitName("player") then
 				Thaliz_BlacklistPlayer(destName, Thaliz_Blacklist_Resurrect);
 			end;
@@ -1851,8 +1851,6 @@ function Thaliz_OnLoad()
     ThalizEventFrame:RegisterEvent("ADDON_LOADED");
     ThalizEventFrame:RegisterEvent("CHAT_MSG_ADDON");
     ThalizEventFrame:RegisterEvent("RAID_ROSTER_UPDATE");
-    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_START");
-    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
 	ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");
 	ThalizEventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
