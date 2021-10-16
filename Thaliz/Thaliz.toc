@@ -2,6 +2,6 @@
 ## Notes: Smart addon to handle ressing party / raid members
 ## Version: 2.0.4
 ## Author: Mimma @ <EU-Pyrewood Village>
-## Interface: 20503
+## Interface: 20502
 ## SavedVariables: Thaliz_Options
 Thaliz.xml

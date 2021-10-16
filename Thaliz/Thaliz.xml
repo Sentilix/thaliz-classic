@@ -67,6 +67,7 @@
 			<Color r="0.0" g="0.0" b="0.5" a="0.5"/>
 		</NormalTexture>
 	</Button>
+	
 	<!-- Main configuration frame -->
 	<Frame name="ThalizFrame" parent="UIParent" inherits="BackdropTemplate" hidden="true">
 		<KeyValues>
@@ -152,7 +153,6 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<!-- 2nd line options: msg options -->
 			<CheckButton name="$parentCheckbuttonIncludeDefault" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -168,6 +168,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<!-- 2nd line options: msg options -->
 			<CheckButton name="$parentCheckbuttonPerCharacter" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -183,6 +184,27 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			
+			<Button name="DropDownNameEnclosureButton" inherits="UIDropDownMenuTemplate">
+				<Size>
+					<AbsDimension x="200" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="438" y="-384"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(self, Thaliz_DropDownNameEnclosure_Initialize);
+					</OnLoad>
+					<OnClick>
+						Thaliz_DropDownNameEnclosureButton_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<!-- 3nd line options: whisper text -->
 			<CheckButton name="$parentCheckbuttonWhisper" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -273,7 +295,7 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</FontString>
+				</FontString>			
 				<FontString name="ThalizVersionString" inherits="GameFontNormal" text="Thaliz Classic x - by y">
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentHeaderTexture">
@@ -283,6 +305,13 @@
 						</Anchor>
 					</Anchors>
 					<Color r="0.3" g="0.3" b="0.3" a="1.0"/>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Resurrection target layout">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="276" y="-392"/>
+						</Anchor>
+					</Anchors>
 				</FontString>
 				<!-- Whisper EditBox border -->
 				<Texture name="$parentTextureLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left">

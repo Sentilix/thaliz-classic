@@ -53,7 +53,21 @@ local classInfo = {
 	{ "Warrior", 20, nil				}
 };
 
-
+--	Table: { Name, Sample, Pattern }
+--	At runtime Sample ("%") is replaced with UnitName('Player').
+--	Pattern is used when the macros are shown.
+local THALIZ_NAME_ENCLOSURES = {
+	{ "NONE",		"%s",		"%s"		},
+	{ "BRACKET",	"[%s]",		"[%s]"		},
+	{ "CURLY",		"{%s}",		"{%s}"		},
+	{ "XMLTAG",		"<%s>",		"<%s>"		},
+	{ "CENTER1",	">%s<",		">%s<"		},
+	{ "CENTER2",	">>%s<<",	">>%s<<"	},
+	{ "ARROW",		"-->%s",	"-->%s"		},
+	{ "ATTENTION",	"!!%s!!",	"!!%s!!"	},
+	{ "SINGLEQ",	"'%s'",		"'%s'"		},
+	{ "DOUBLEQ",	'"%s"',		'"%s"'		}
+}
 
 local IsPaladin = false;
 local IsPriest = false;
@@ -105,6 +119,7 @@ local Thaliz_ConfigurationLevel							= Thaliz_Configuration_Default_Level;
 local Thaliz_ROOT_OPTION_CharacterBasedSettings			= "CharacterBasedSettings";
 local Thaliz_OPTION_ResurrectionMessageTargetChannel	= "ResurrectionMessageTargetChannel";
 local Thaliz_OPTION_ResurrectionMessageTargetWhisper	= "ResurrectionMessageTargetWhisper";
+local Thaliz_OPTION_ResurrectionNameEnclosure			= "ResurrectionNameEnclosure";
 local Thaliz_OPTION_AlwaysIncludeDefaultGroup			= "AlwaysIncludeDefaultGroup";
 local Thaliz_OPTION_ResurrectionWhisperMessage			= "ResurrectionWhisperMessage";
 local Thaliz_OPTION_ResurrectionMessages				= "ResurrectionMessages";
@@ -384,7 +399,9 @@ function Thaliz_RefreshVisibleMessageList(offset)
 		elseif grp == EMOTE_GROUP_RACE then
 			prio = 40
 			-- Racess are listed by faction, race name:
-			if prm == "Dwarf" then
+			if prm == "Draenai" then
+				prio = 50
+			elseif prm == "Dwarf" then
 				prio = 49
 			elseif prm == "Gnome" then
 				prio = 48
@@ -400,6 +417,8 @@ function Thaliz_RefreshVisibleMessageList(offset)
 				prio = 43
 			elseif prm == "Undead" then
 				prio = 42
+			elseif prm == "Blood Elf" then
+				prio = 41
 			end;			
 		elseif grp == EMOTE_GROUP_DEFAULT then
 			prio = 0
@@ -467,9 +486,9 @@ function Thaliz_RefreshVisibleMessageList(offset)
 			end;			
 		elseif grp == EMOTE_GROUP_RACE then
 			grpColor = { 0.80, 0.80, 0.00 }			
-			if prm == "DWARF" or prm == "GNOME" or prm == "HUMAN"  or prm == "NIGHT ELF" then
+			if prm == "DWARF" or prm == "GNOME" or prm == "HUMAN" or prm == "NIGHT ELF" or prm == "DRAENAI" then
 				grpColor = { 0.00, 0.50, 1.00 }
-			elseif prm == "ORC" or prm == "TAUREN" or prm == "TROLL"  or prm == "UNDEAD" then
+			elseif prm == "ORC" or prm == "TAUREN" or prm == "TROLL" or prm == "UNDEAD" or prm == "BLOOD ELF" then
 				grpColor = { 1.00, 0.00, 0.00 }
 			end
 			prmColor = grpColor;
@@ -572,6 +591,8 @@ function Thaliz_SaveMessageButton_OnClick()
 		-- This weird construction ensures all are shown with capital first letter.
 		if string.upper(prm) == "NIGHTELF" or string.upper(prm) == "NIGHT ELF" then
 			prm = "Night Elf"
+		elseif string.upper(prm) == "BLOODELF" or string.upper(prm) == "BLOOD ELF" then
+			prm = "Blood Elf"
 		else
 			prm = Thaliz_UCFirst(prm)
 		end;
@@ -629,7 +650,6 @@ function Thaliz_HandleCheckbox(checkbox)
 	else
 		Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, "Realm");
 	end	
-
 	
 	-- Emote Groups: Only one can be active:
 	if checkboxname == "ThalizMsgEditorFrameCheckbuttonAlways" then	
@@ -759,6 +779,10 @@ function Thaliz_InitializeConfigSettings()
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_Target_Whisper_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_Resurrection_Whisper_Message_Default))
 	Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_GetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_Include_Default_Group_Default))
+
+	Thaliz_SetOption(Thaliz_OPTION_ResurrectionNameEnclosure, Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE"));
+	Thaliz_InitializeNameEnclosures();
+
 
 	local x,y = RezButton:GetPoint();
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosX, x))
@@ -979,6 +1003,12 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		validCount = 1;
 	end
 
+	-- Check player name enclosure:
+	local enclosure = Thaliz_GetNameEnclosure(Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE"));
+	if enclosure then
+		playername = string.format(enclosure[3], playername);
+	end;
+	
 	local message = validMessages[ random(validCount) ];
 	message = string.gsub(message, "%%c", Thaliz_UCFirst(class));
 	message = string.gsub(message, "%%r", Thaliz_UCFirst(race));
@@ -1877,6 +1907,61 @@ function Thaliz_RepositionateButton(self)
 		RezButton:Hide();
 	end;
 end
+
+function Thaliz_DropDownNameEnclosure_Initialize(frame, level, menuList)
+	local CurOption = Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE");
+
+	for n=1, table.getn(THALIZ_NAME_ENCLOSURES), 1 do
+		local checked = false;
+		if CurOption == THALIZ_NAME_ENCLOSURES[n][1] then 
+			checked = true;
+		end;
+
+		local info = UIDropDownMenu_CreateInfo();
+		info.text       = THALIZ_NAME_ENCLOSURES[n][2];
+		info.checked	= checked;
+		info.func       = function() Thaliz_DropDownNameEnclosureButton_OnClick(this, THALIZ_NAME_ENCLOSURES[n][1]) end;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function Thaliz_InitializeNameEnclosures()
+	local playername = UnitName('Player');
+	for n=1, table.getn(THALIZ_NAME_ENCLOSURES), 1 do
+		THALIZ_NAME_ENCLOSURES[n][2] = string.format(THALIZ_NAME_ENCLOSURES[n][2], playername);
+	end;
+
+	Thaliz_UpdateNameEnclosureText();
+end;
+
+function Thaliz_DropDownNameEnclosureButton_OnClick(self, arg1, arg2, checked)
+	if arg1 then
+		Thaliz_SetOption(Thaliz_OPTION_ResurrectionNameEnclosure, arg1);
+	end;
+
+	Thaliz_UpdateNameEnclosureText();
+end;
+
+function Thaliz_UpdateNameEnclosureText()
+	local enclosure = Thaliz_GetNameEnclosure(Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE"));
+	if enclosure then
+		UIDropDownMenu_SetText(DropDownNameEnclosureButton, enclosure[2]);
+	end;
+end;
+
+function Thaliz_GetNameEnclosure(optionname)
+	local enclosure = nil;
+
+	for n=1, table.getn(THALIZ_NAME_ENCLOSURES), 1 do
+		if THALIZ_NAME_ENCLOSURES[n][1] == optionname then
+			enclosure = THALIZ_NAME_ENCLOSURES[n];
+			break;
+		end;
+	end;	
+	
+	return enclosure;
+end;
+
 
 function Thaliz_OKButton_OnClick()
 	Thaliz_CloseConfigurationDialogue();
