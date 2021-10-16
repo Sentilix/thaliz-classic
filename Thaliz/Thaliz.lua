@@ -459,7 +459,7 @@ function Thaliz_RefreshVisibleMessageList(offset)
 			elseif prm == "ROGUE" then
 				prmColor = { 1.00, 0.96, 0.41 }
 			elseif prm == "SHAMAN" then
-				prmColor = { 0.96, 0.55, 0.73 }
+				prmColor = { 0.00, 0.44, 0.87 }
 			elseif prm == "WARLOCK" then
 				prmColor = { 0.58, 0.51, 0.79 }
 			elseif prm == "WARRIOR" then
@@ -1868,6 +1868,14 @@ function Thaliz_RepositionateButton(self)
 
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, x);
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosY, y);
+
+	classinfo = Thaliz_GetClassinfo(Thaliz_UnitClass("player"));
+	local spellname = classinfo[3];
+	if spellname then
+		RezButton:Show();
+	else
+		RezButton:Hide();
+	end;
 end
 
 function Thaliz_OKButton_OnClick()
