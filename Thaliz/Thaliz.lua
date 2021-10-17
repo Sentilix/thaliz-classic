@@ -40,17 +40,17 @@ local EMOTE_GROUP_CLASS						= "Class";
 local EMOTE_GROUP_RACE						= "Race";
 
 --	List of valid class names with priority and resurrection spell name (if any)
---	classname, priority, ress spellname
+--	classname, priority, spellname (translated runtime), spellID
 local classInfo = {
-	{ "Druid",   40, "Rebirth"			},
-	{ "Hunter",  30, nil				},
-	{ "Mage",    40, nil				},
-	{ "Paladin", 50, "Redemption"		},
-	{ "Priest",  50, "Resurrection"		},
-	{ "Rogue",   10, nil				},
-	{ "Shaman",  50, "Ancestral Spirit"	},
-	{ "Warlock", 30, nil				},
-	{ "Warrior", 20, nil				}
+	{ "Druid",   40, nil,	20484	},	-- Rebirth
+	{ "Hunter",  30, nil,	nil		},
+	{ "Mage",    40, nil,	nil		},
+	{ "Paladin", 50, nil,	7328	},	-- Redemption
+	{ "Priest",  50, nil,	2006	},	-- Resurrection
+	{ "Rogue",   10, nil,	nil		},
+	{ "Shaman",  50, nil,	2008	},	-- Ancestral Spirit
+	{ "Warlock", 30, nil,	nil		},
+	{ "Warrior", 20, nil,	nil		}
 };
 
 --	Table: { Name, Sample, Pattern }
@@ -1134,6 +1134,15 @@ function Thaliz_UpdateResurrectionMessage(index, offset, message, group, param)
 	_G[frame:GetName().."Param"]:SetText(param);
 end
 
+function Thaliz_TranslateSpellnames()
+	for key, val in next, classInfo do 
+		if type(val[4]) == "number" then
+			local spellname, _ = GetSpellInfo(val[4]);
+			val[3] = spellname;
+		end
+	end
+end;
+
 
 
 --  *******************************************************
@@ -1887,6 +1896,7 @@ function Thaliz_OnLoad()
 
 	C_ChatInfo.RegisterAddonMessagePrefix(THALIZ_MESSAGE_PREFIX);
 
+	Thaliz_TranslateSpellnames();
 	Thaliz_InitClassSpecificStuff();
     Thaliz_InitializeListElements();
 
