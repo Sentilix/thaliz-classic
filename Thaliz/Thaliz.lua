@@ -1,4 +1,4 @@
-﻿--[[
+--[[
 Author:			Mimma @ <EU-Pyrewood Village>
 Create Date:	2015-05-10 17:50:57
 
@@ -125,6 +125,7 @@ local Thaliz_OPTION_ResurrectionWhisperMessage			= "ResurrectionWhisperMessage";
 local Thaliz_OPTION_ResurrectionMessages				= "ResurrectionMessages";
 local Thaliz_OPTION_RezButtonPosX						= "RezButtonPosX";
 local Thaliz_OPTION_RezButtonPosY						= "RezButtonPosY";
+local Thaliz_OPTION_RezButtonVisible                    = true;
 
 local Thaliz_DebugFunction = nil;
 
@@ -224,10 +225,44 @@ SlashCmdList["THALIZ_THALIZ"] = function(msg)
 		SlashCmdList["THALIZ_ENABLE"]();
 	elseif option == "HELP" then
 		SlashCmdList["THALIZ_HELP"]();
+	elseif option == "SHOW" then
+		SlashCmdList["THALIZ_SHOW"]();
+	elseif option == "HIDE" then
+		SlashCmdList["THALIZ_HIDE"]();
 	elseif option == "VERSION" then
 		SlashCmdList["THALIZ_VERSION"]();
 	else
 		Thaliz_Echo(string.format("Unknown command: %s", option));
+	end
+end
+
+--[[
+	Show the resurrection button
+	Syntax: /thalizshow
+	Alternative: /thaliz show
+	Added in: 2.0.5
+]]
+
+SLASH_THALIZ_SHOW1 = "/thalizshow"	
+SlashCmdList["THALIZ_SHOW"] = function(msg)
+	if not Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible) then
+		RezButton:Show();
+		Thaliz_SetOption(Thaliz_OPTION_RezButtonVisible, true);
+	end
+end
+
+--[[
+	Hide the resurrection button
+	Syntax: /thalizhide
+	Alternative: /thaliz hide
+	Added in: 2.0.5
+]]
+
+SLASH_THALIZ_HIDE1 = "/thalizhide"	
+SlashCmdList["THALIZ_HIDE"] = function(msg)
+	if Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible) then
+		RezButton:Hide();
+		Thaliz_SetOption(Thaliz_OPTION_RezButtonVisible, false);
 	end
 end
 
@@ -320,6 +355,8 @@ SlashCmdList["THALIZ_HELP"] = function(msg)
 	Thaliz_Echo("    Disable      Disable Thaliz resurrection messages.");
 	Thaliz_Echo("    Enable       Enable Thaliz resurrection messages again.");
 	Thaliz_Echo("    Help         This help.");
+	Thaliz_Echo("    Show         Shows the resurrection button.");
+	Thaliz_Echo("    Hide         Hides the resurrection button.");
 	Thaliz_Echo("    Version      Request version info from all clients.");
 end
 
@@ -783,7 +820,6 @@ function Thaliz_InitializeConfigSettings()
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionNameEnclosure, Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE"));
 	Thaliz_InitializeNameEnclosures();
 
-
 	local x,y = RezButton:GetPoint();
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosX, x))
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosY, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosY, y))
@@ -806,7 +842,12 @@ function Thaliz_InitializeConfigSettings()
 	if Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings) == "Character" then
 		ThalizFrameCheckbuttonPerCharacter:SetChecked(1)
 	end    
-	
+	if Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible) then
+		RezButton:Show();
+	end
+	if not Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible) then
+		RezButton:Hide()
+	end
 	Thaliz_ValidateResurrectionMessages();
 end
 
@@ -1352,7 +1393,6 @@ function Thaliz_BroadcastResurrection(self)
 
 	Thaliz_SendAddonMessage(string.format("TX_RESBEGIN#%s#", playername));
 end;
-
 
 function Thaliz_SetRezTargetText(playername)
 	if not playername then
