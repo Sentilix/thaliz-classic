@@ -93,7 +93,7 @@ local THALIZ_ICON_SHAMAN_ACTIVE		= "Interface\\Icons\\spell_holy_resurrection";
 
 local PriorityToFirstWarlock  = 45;     -- Prio below ressers if no warlocks are alive
 local PriorityToGroupLeader   = 45;     -- Prio below ressers if raid leader or assistant
-local PriorityToCurrentTarget = 100;	-- Prio over all if target is selected
+local PriorityToCurrentTarget = 100;	-- Prio over all if target i selected
 
 -- List of blacklisted (already ressed) people
 local blacklistedTable = {}
@@ -113,6 +113,7 @@ local Thaliz_Target_Channel_Default						= "RAID";
 local Thaliz_Target_Whisper_Default						= "0";
 local Thaliz_Resurrection_Whisper_Message_Default		= "Resurrection incoming in 10 seconds!";
 local Thaliz_Include_Default_Group_Default				= "1";
+local Thaliz_OPTION_RezButtonVisible_Default			= "1";
 
 local Thaliz_ConfigurationLevel							= Thaliz_Configuration_Default_Level;
 
@@ -125,6 +126,7 @@ local Thaliz_OPTION_ResurrectionWhisperMessage			= "ResurrectionWhisperMessage";
 local Thaliz_OPTION_ResurrectionMessages				= "ResurrectionMessages";
 local Thaliz_OPTION_RezButtonPosX						= "RezButtonPosX";
 local Thaliz_OPTION_RezButtonPosY						= "RezButtonPosY";
+local Thaliz_OPTION_RezButtonVisible					= "ResurrectionButtonVisible";
 
 local Thaliz_DebugFunction = nil;
 
@@ -224,11 +226,40 @@ SlashCmdList["THALIZ_THALIZ"] = function(msg)
 		SlashCmdList["THALIZ_ENABLE"]();
 	elseif option == "HELP" then
 		SlashCmdList["THALIZ_HELP"]();
+	elseif option == "SHOW" then
+		SlashCmdList["THALIZ_SHOW"]();
+	elseif option == "HIDE" then
+		SlashCmdList["THALIZ_HIDE"]();
 	elseif option == "VERSION" then
 		SlashCmdList["THALIZ_VERSION"]();
 	else
 		Thaliz_Echo(string.format("Unknown command: %s", option));
 	end
+end
+
+--[[
+	Show the resurrection button
+	Syntax: /thalizshow
+	Alternative: /thaliz show
+	Added in: 1.1.1
+]]
+SLASH_THALIZ_SHOW1 = "/thalizshow"	
+SlashCmdList["THALIZ_SHOW"] = function(msg)
+	RezButton:Show();
+	Thaliz_SetOption(Thaliz_OPTION_RezButtonVisible, "1");
+end
+
+
+--[[
+	Hide the resurrection button
+	Syntax: /thalizhide
+	Alternative: /thaliz hide
+	Added in: 1.1.1
+]]
+SLASH_THALIZ_HIDE1 = "/thalizhide"	
+SlashCmdList["THALIZ_HIDE"] = function(msg)
+	RezButton:Hide();
+	Thaliz_SetOption(Thaliz_OPTION_RezButtonVisible, "0");
 end
 
 --[[
@@ -320,6 +351,8 @@ SlashCmdList["THALIZ_HELP"] = function(msg)
 	Thaliz_Echo("    Disable      Disable Thaliz resurrection messages.");
 	Thaliz_Echo("    Enable       Enable Thaliz resurrection messages again.");
 	Thaliz_Echo("    Help         This help.");
+	Thaliz_Echo("    Show         Shows the resurrection button.");
+	Thaliz_Echo("    Hide         Hides the resurrection button.");
 	Thaliz_Echo("    Version      Request version info from all clients.");
 end
 
@@ -780,6 +813,8 @@ function Thaliz_InitializeConfigSettings()
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_Resurrection_Whisper_Message_Default))
 	Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_GetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_Include_Default_Group_Default))
 
+	Thaliz_SetOption(Thaliz_OPTION_RezButtonVisible, Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible, Thaliz_OPTION_RezButtonVisible_Default))
+
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionNameEnclosure, Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE"));
 	Thaliz_InitializeNameEnclosures();
 
@@ -806,6 +841,11 @@ function Thaliz_InitializeConfigSettings()
 	if Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings) == "Character" then
 		ThalizFrameCheckbuttonPerCharacter:SetChecked(1)
 	end    
+	if Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible) == "1" then
+		RezButton:Show();
+	else
+		RezButton:Hide()
+	end
 	
 	Thaliz_ValidateResurrectionMessages();
 end
