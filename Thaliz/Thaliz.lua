@@ -113,6 +113,7 @@ local Thaliz_Target_Channel_Default						= "RAID";
 local Thaliz_Target_Whisper_Default						= "0";
 local Thaliz_Resurrection_Whisper_Message_Default		= "Resurrection incoming in 10 seconds!";
 local Thaliz_Include_Default_Group_Default				= "1";
+local Thaliz_OPTION_RezButtonVisible_Default			= "1";
 
 local Thaliz_ConfigurationLevel							= Thaliz_Configuration_Default_Level;
 
@@ -125,7 +126,7 @@ local Thaliz_OPTION_ResurrectionWhisperMessage			= "ResurrectionWhisperMessage";
 local Thaliz_OPTION_ResurrectionMessages				= "ResurrectionMessages";
 local Thaliz_OPTION_RezButtonPosX						= "RezButtonPosX";
 local Thaliz_OPTION_RezButtonPosY						= "RezButtonPosY";
-local Thaliz_OPTION_RezButtonVisible					= true;
+local Thaliz_OPTION_RezButtonVisible					= "ResurrectionButtonVisible";
 
 local Thaliz_DebugFunction = nil;
 
@@ -245,10 +246,8 @@ end
 
 SLASH_THALIZ_SHOW1 = "/thalizshow"	
 SlashCmdList["THALIZ_SHOW"] = function(msg)
-	if not Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible) then
-		RezButton:Show();
-		Thaliz_SetOption(Thaliz_OPTION_RezButtonVisible, true);
-	end
+	RezButton:Show();
+	Thaliz_SetOption(Thaliz_OPTION_RezButtonVisible, "1");
 end
 
 --[[
@@ -260,10 +259,8 @@ end
 
 SLASH_THALIZ_HIDE1 = "/thalizhide"	
 SlashCmdList["THALIZ_HIDE"] = function(msg)
-	if Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible) then
-		RezButton:Hide();
-		Thaliz_SetOption(Thaliz_OPTION_RezButtonVisible, false);
-	end
+	RezButton:Hide();
+	Thaliz_SetOption(Thaliz_OPTION_RezButtonVisible, "0");
 end
 
 --[[
@@ -817,6 +814,8 @@ function Thaliz_InitializeConfigSettings()
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_Resurrection_Whisper_Message_Default))
 	Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_GetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_Include_Default_Group_Default))
 
+	Thaliz_SetOption(Thaliz_OPTION_RezButtonVisible, Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible, Thaliz_OPTION_RezButtonVisible_Default))
+
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionNameEnclosure, Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE"));
 	Thaliz_InitializeNameEnclosures();
 
@@ -842,12 +841,12 @@ function Thaliz_InitializeConfigSettings()
 	if Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings) == "Character" then
 		ThalizFrameCheckbuttonPerCharacter:SetChecked(1)
 	end    
-	if Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible) then
+	if Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible) == "1" then
 		RezButton:Show();
-	end
-	if not Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible) then
+	else
 		RezButton:Hide()
 	end
+
 	Thaliz_ValidateResurrectionMessages();
 end
 
