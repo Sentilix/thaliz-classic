@@ -1835,6 +1835,9 @@ function Thaliz_OnEvent(self, event, ...)
 				end;
 			end;
 		end;
+		
+	elseif(event == "UNIT_SPELLCAST_START") then
+		SpellcastIsStarted = timerTick;
 
 	elseif (event == "INCOMING_RESURRECT_CHANGED") then
 		local arg1 = ...;
@@ -1850,7 +1853,7 @@ function Thaliz_OnEvent(self, event, ...)
 				echo("**DEBUG**: INCOMING_RESURRECT_CHANGED, starting");
 			end;
 
-			SpellcastIsStarted = 0;
+			SpellcastIsStarted = timerTick;
 			if IsInRaid() then
 				if Thaliz_BeginsWith(arg1, 'raid') then
 					target = UnitName(arg1);
@@ -1933,6 +1936,7 @@ function Thaliz_OnLoad()
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
 	ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");
 	ThalizEventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_START");
 
 	C_ChatInfo.RegisterAddonMessagePrefix(THALIZ_MESSAGE_PREFIX);
 
