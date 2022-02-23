@@ -1803,6 +1803,21 @@ function Thaliz_IsPlayerBlacklisted(playername)
 end;
 
 
+local Thaliz_CurrentRessedTarget = nil;
+function Thaliz_ClearCurrentResurrectedTarget()
+	Thaliz_SetCurrentResurrectedTarget(nil);
+end;
+
+function Thaliz_GetCurrentResurrectedTarget()
+	return Thaliz_CurrentRessedTarget;
+end;
+
+function Thaliz_SetCurrentResurrectedTarget(target)
+	Thaliz_CurrentRessedTarget = target;
+end;
+
+
+
 --  *******************************************************
 --
 --	Event handlers
@@ -1829,6 +1844,7 @@ function Thaliz_OnEvent(self, event, ...)
 				end;
 				if not Thaliz_IsPlayerBlacklisted(target) then
 					if Thaliz_SpellIsResurrect(spellId) then
+						Thaliz_SetCurrentResurrectedTarget(target);
 						Thaliz_BlacklistPlayer(target);
 						Thaliz_AnnounceResurrection(target);
 					end;
@@ -1839,9 +1855,24 @@ function Thaliz_OnEvent(self, event, ...)
 	elseif(event == "UNIT_SPELLCAST_START") then
 		SpellcastIsStarted = timerTick;
 
+	elseif(event == "UNIT_SPELLCAST_SUCCEEDED") then
+		Thaliz_ClearCurrentResurrectedTarget();
+
+	elseif(event == "UNIT_SPELLCAST_STOP") then
+		local target = Thaliz_GetCurrentResurrectedTarget();
+		if target then
+			if(debug) then 
+				echo(string.format("**DEBUG**: UNIT_SPELLCAST_STOP, whitelisting player=%s", target));
+			end;
+			Thaliz_WhitelistPlayer(target);
+			Thaliz_ClearCurrentResurrectedTarget();
+		end;
+
+	elseif(event == "UNIT_SPELLCAST_FAILED") then
+		Thaliz_ClearCurrentResurrectedTarget();
+
 	elseif (event == "INCOMING_RESURRECT_CHANGED") then
 		local arg1 = ...;
-		local target = nil;
 
 		local timeDiff = timerTick - SpellcastIsStarted;
 		if(debug) then 
@@ -1856,20 +1887,23 @@ function Thaliz_OnEvent(self, event, ...)
 			SpellcastIsStarted = timerTick;
 			if IsInRaid() then
 				if Thaliz_BeginsWith(arg1, 'raid') then
-					target = UnitName(arg1);
+					Thaliz_SetCurrentResurrectedTarget(UnitName(arg1));
 				end;
 			else
 				if Thaliz_BeginsWith(arg1, 'party') then
-					target = UnitName(arg1);
+					Thaliz_SetCurrentResurrectedTarget(UnitName(arg1));
 				end;
 			end;
 
+			local target = Thaliz_GetCurrentResurrectedTarget();
 			if target then
 				if(debug) then 
 					echo(string.format("**DEBUG**: INCOMING_RESURRECT_CHANGED, target=%s", target));
 				end;
 
-				if not Thaliz_IsPlayerBlacklisted(target) then
+				if Thaliz_IsPlayerBlacklisted(target) then
+					Thaliz_Echo(string.format("Note: [%s] is already being resurrected.", target));
+				else
 					Thaliz_BlacklistPlayer(target, 10);
 					Thaliz_AnnounceResurrection(target, arg1);
 				end;
@@ -1937,6 +1971,9 @@ function Thaliz_OnLoad()
 	ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");
 	ThalizEventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_START");
+    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
+    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_FAILED");
+    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 
 	C_ChatInfo.RegisterAddonMessagePrefix(THALIZ_MESSAGE_PREFIX);
 
