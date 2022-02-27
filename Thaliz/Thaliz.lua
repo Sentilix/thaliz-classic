@@ -881,8 +881,11 @@ function Thaliz_GetUnitID(playername)
 		grouptype = "party";
 	end;
 
+	playername = Thaliz_StripRealmName(playername);
+
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
+
 		if UnitName(unitid) == playername then
 			return unitid;
 		end
@@ -921,6 +924,8 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	if not Thaliz_Enabled then
 		return;
 	end
+
+	playername = Thaliz_StripRealmName(playername);
 
 	if not unitid then
 		unitid = Thaliz_GetUnitID(playername);			
@@ -1554,6 +1559,10 @@ function Thaliz_GetPlayerName(nameAndRealm)
 	end;
 
 	return name;
+end;
+
+function Thaliz_StripRealmName(playername)
+	return string.gsub(playername, "(.*)-.*", "%1");
 end;
 
 function Thaliz_IsInParty()
