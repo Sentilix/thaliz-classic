@@ -1,4 +1,6 @@
-﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
 	<Script file="Thaliz.lua" />
 
 	<!-- template for Message list entries -->
@@ -64,32 +66,23 @@
 		<NormalTexture name="$parentBG">
 			<Color r="0.0" g="0.0" b="0.5" a="0.5"/>
 		</NormalTexture>
-	</Button>	
-
+	</Button>
+	
 	<!-- Main configuration frame -->
-	<Frame name="ThalizFrame" parent="UIParent" toplevel="true" hidden="true">
-		<Size>
-			<AbsDimension x="690" y="516" />
-		</Size>
+	<Frame name="ThalizFrame" parent="UIParent" inherits="BackdropTemplate" hidden="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+			<KeyValue key="backdropColor" value="BLACK" type="global"/>
+			<KeyValue key="backdropBorderColor" value="WHITE" type="global"/>
+		</KeyValues>
+		<Size x="690" y="516" />
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset x="312" y="-118" />
-			</Anchor>
+			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11" />
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32" />
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32" />
-			</EdgeSize>
-		</Backdrop>
+
 		<Frames>
 			<!-- Message list frame -->
-			<ScrollFrame name="$parentTableList" inherits="FauxScrollFrameTemplate">
+			<ScrollFrame name="$parentTableList" inherits="FauxScrollFrameTemplate, BackdropTemplate">
 				<Size>
 					<AbsDimension x="630" y="330"/>
 				</Size>
@@ -100,14 +93,11 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<EdgeSize>
-						<AbsValue val="16"/>
-					</EdgeSize>
-					<TileSize>
-						<AbsValue val="16"/>
-					</TileSize>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_TOAST_12_12" type="global"/>
+					<KeyValue key="backdropColor" value="BLACK" type="global"/>
+					<KeyValue key="backdropBorderColor" value="WHITE" type="global"/>
+				</KeyValues>
 				<Scripts>
 					<OnVerticalScroll>
 						FauxScrollFrame_OnVerticalScroll(self, offset, 20, Thaliz_UpdateMessageList);
@@ -116,7 +106,7 @@
 						Thaliz_UpdateMessageList()
 					</OnShow>
 				</Scripts>
-			</ScrollFrame>			
+			</ScrollFrame>
 			<!-- 1st line options: Radio buttons for chat destination -->
 			<CheckButton name="$parentCheckbuttonRaid" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
@@ -163,7 +153,6 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<!-- 2nd line options: msg options -->
 			<CheckButton name="$parentCheckbuttonIncludeDefault" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -179,6 +168,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<!-- 2nd line options: msg options -->
 			<CheckButton name="$parentCheckbuttonPerCharacter" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -194,6 +184,27 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			
+			<Button name="DropDownNameEnclosureButton" inherits="UIDropDownMenuTemplate">
+				<Size>
+					<AbsDimension x="200" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="438" y="-384"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(self, Thaliz_DropDownNameEnclosure_Initialize);
+					</OnLoad>
+					<OnClick>
+						Thaliz_DropDownNameEnclosureButton_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<!-- 3nd line options: whisper text -->
 			<CheckButton name="$parentCheckbuttonWhisper" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -284,7 +295,7 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</FontString>
+				</FontString>			
 				<FontString name="ThalizVersionString" inherits="GameFontNormal" text="Thaliz Classic x - by y">
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentHeaderTexture">
@@ -294,6 +305,13 @@
 						</Anchor>
 					</Anchors>
 					<Color r="0.3" g="0.3" b="0.3" a="1.0"/>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Resurrection target layout">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="276" y="-392"/>
+						</Anchor>
+					</Anchors>
 				</FontString>
 				<!-- Whisper EditBox border -->
 				<Texture name="$parentTextureLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left">
@@ -335,7 +353,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				self:SetMovable(true)
 				self:SetUserPlaced(true)
 				self:RegisterForDrag("LeftButton")
@@ -350,7 +368,12 @@
 	</Frame>
 
 	<!-- Message editor frame -->
-	<Frame name="ThalizMsgEditorFrame" parent="UIParent" toplevel="true" hidden="true">
+	<Frame name="ThalizMsgEditorFrame" parent="UIParent" inherits="BackdropTemplate" toplevel="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+			<KeyValue key="backdropColor" value="BLACK" type="global"/>
+			<KeyValue key="backdropBorderColor" value="WHITE" type="global"/>
+		</KeyValues>
 		<Size>
 			<AbsDimension x="600" y="250" />
 		</Size>
@@ -359,17 +382,6 @@
 				<Offset x="0" y="0" />
 			</Anchor>
 		</Anchors>
-		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11" />
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32" />
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32" />
-			</EdgeSize>
-		</Backdrop>
 		<Frames>
 			<!-- Message input field -->
 			<EditBox name="$parentMessage" letters="120">
@@ -390,7 +402,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="450" y="-123"/>KN
+						<Offset x="450" y="-123"/>
 					</Anchor>
 				</Anchors>
 				<FontString inherits="GameFontNormal"/>
@@ -606,7 +618,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				self:SetMovable(true)
 				self:SetUserPlaced(true)
 				self:RegisterForDrag("LeftButton")
