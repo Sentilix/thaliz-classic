@@ -29,7 +29,7 @@ local GUILD_CHANNEL							= "GUILD"
 local CHAT_END								= "|r"
 local COLOUR_BEGINMARK						= "|c80"
 local COLOUR_CHAT							= COLOUR_BEGINMARK.."40A0F8"
-local COLOUR_INTRO							= COLOUR_BEGINMARK.."B040F0"
+local COLOUR_INTRO							= COLOUR_BEGINMARK.."00F0F0"
 local THALIZ_NAME							= "Thaliz"
 local THALIZ_TITAN_TITLE					= "Thaliz - Ress dem deads!"
 local THALIZ_MESSAGE_PREFIX					= "Thalizv1"
@@ -100,17 +100,18 @@ local THALIZ_ICON_SHAMAN_ACTIVE		= "Interface\\Icons\\spell_holy_resurrection";
 
 
 local PriorityToFirstWarlock  = 45;     -- Prio below ressers if no warlocks are alive
-local PriorityToGroupLeader   = 45;     -- Prio below ressers if raid leader or assistant
+local PriorityToMasterLooter  = 60;     -- Prio above ressers if master looter
 local PriorityToCurrentTarget = 100;	-- Prio over all if target i selected
 
 -- List of blacklisted (already ressed) people
 -- Table { PlayerName-RealmName, TimerTick }
 local blacklistedTable = {}
 -- Corpses are blacklisted for 40 seconds (10 seconds cast time + 30 seconds waiting) as default
-local Thaliz_Blacklist_Spellcast = 10;
-local Thaliz_Blacklist_Resurrect = 30;
+local Thaliz_Blacklist_Spellcast = 1.0;
+local Thaliz_Blacklist_Resurrect = 3.0;
 local Thaliz_Blacklist_Timeout = Thaliz_Blacklist_Spellcast + Thaliz_Blacklist_Resurrect;
 
+local Thaliz_LastRandomMessageIndex = -1;
 local Thaliz_Enabled = true;
 local ThalizConfigDialogOpen = false;
 local ThalizDoScanRaid = true;
@@ -201,7 +202,7 @@ end
 	Echo a message for the local user only, including Thaliz "logo"
 ]]
 function Thaliz_Echo(msg)
-	echo("<"..COLOUR_INTRO.."THALIZ"..COLOUR_CHAT.."> "..msg);
+	echo("-["..COLOUR_INTRO.."THALIZ"..COLOUR_CHAT.."]- "..msg);
 end
 
 
@@ -1061,8 +1062,18 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	if enclosure then
 		playershortname = string.format(enclosure[3], playershortname);
 	end;
-	
-	local message = validMessages[ random(validCount) ];
+
+	--	This prevents the same message being shown twice:
+	local randomMsgIndex = random(validCount);
+	if randomMsgIndex == Thaliz_LastRandomMessageIndex then
+		randomMsgIndex = randomMsgIndex + 1;
+		if randomMsgIndex > validCount then
+			randomMsgIndex = 1;
+		end;
+	end;
+	Thaliz_LastRandomMessageIndex = randomMsgIndex;
+
+	local message = validMessages[ randomMsgIndex ];
 	message = string.gsub(message, "%%c", Thaliz_UCFirst(class));
 	message = string.gsub(message, "%%r", Thaliz_UCFirst(race));
 	message = string.gsub(message, "%%g", guildname);
@@ -1282,6 +1293,12 @@ function Thaliz_ScanRaid()
 		currentTarget = GetUnitName(unitid, true);
 	end;
 
+	local lootMethod, _, raidIndex = GetLootMethod();
+	local masterLooter = nil;
+	if lootMethod == "master" then
+		masterLooter = GetUnitName("raid"..raidIndex, true);
+	end;
+
 	local targetprio;
 	local corpseTable = { };
 	local playername, classinfo;
@@ -1319,14 +1336,15 @@ function Thaliz_ScanRaid()
 				targetprio = PriorityToCurrentTarget;
 			end
 
---	IsRaidLeader(): removed in wow 5.0 and thereby Classic!
---			if IsRaidLeader(playername) and targetprio < PriorityToGroupLeader then
---				targetprio = PriorityToGroupLeader;
---			end
+			--	If masterlooter is ON then give prio to the master looter:
+			if (playername == masterLooter) and (PriorityToMasterLooter > targetprio) then
+				targetprio = PriorityToMasterLooter;
+			end;
 
-			if not warlocksAlive and classinfo[1] == "Warlock" then
+			if not warlocksAlive and classinfo[1] == "Warlock" and PriorityToFirstWarlock > targetprio then
 				targetprio = PriorityToFirstWarlock;				
 			end
+
 			
 			-- Check if the current target is still eligible for ress:
 			if playername == currentTarget then
