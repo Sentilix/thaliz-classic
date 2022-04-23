@@ -107,8 +107,8 @@ local PriorityToCurrentTarget = 100;	-- Prio over all if target i selected
 -- Table { PlayerName-RealmName, TimerTick }
 local blacklistedTable = {}
 -- Corpses are blacklisted for 40 seconds (10 seconds cast time + 30 seconds waiting) as default
-local Thaliz_Blacklist_Spellcast = 1.0;
-local Thaliz_Blacklist_Resurrect = 3.0;
+local Thaliz_Blacklist_Spellcast = 10;
+local Thaliz_Blacklist_Resurrect = 30;
 local Thaliz_Blacklist_Timeout = Thaliz_Blacklist_Spellcast + Thaliz_Blacklist_Resurrect;
 
 local Thaliz_LastRandomMessageIndex = -1;
@@ -1063,6 +1063,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		playershortname = string.format(enclosure[3], playershortname);
 	end;
 
+
 	--	This prevents the same message being shown twice:
 	local randomMsgIndex = random(validCount);
 	if randomMsgIndex == Thaliz_LastRandomMessageIndex then
@@ -1074,6 +1075,20 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	Thaliz_LastRandomMessageIndex = randomMsgIndex;
 
 	local message = validMessages[ randomMsgIndex ];
+
+	--	%m (male/female check:
+	--	Syntax: "%m{male text:female text}"
+	local _, _, maleStr, femaleStr = string.find(message, "%%m\{([^:^}]*):?([^}]*)\}");
+	if UnitSex(unitid) == 2 then
+		if maleStr then
+			message = string.gsub(message, "%%m\{[^}]*\}", maleStr);
+		end;
+	else
+		if femaleStr then
+			message = string.gsub(message, "%%m\{[^}]*\}", femaleStr);
+		end;
+	end;
+
 	message = string.gsub(message, "%%c", Thaliz_UCFirst(class));
 	message = string.gsub(message, "%%r", Thaliz_UCFirst(race));
 	message = string.gsub(message, "%%g", guildname);
@@ -2018,6 +2033,8 @@ function Thaliz_OnLoad()
 	_G["ThalizVersionString"]:SetText(string.format("Thaliz version %s by %s", GetAddOnMetadata(THALIZ_NAME, "Version"), GetAddOnMetadata(THALIZ_NAME, "Author")));
 
 	Thaliz_Echo(string.format("version %s by %s", GetAddOnMetadata(THALIZ_NAME, "Version"), GetAddOnMetadata(THALIZ_NAME, "Author")));
+	Thaliz_Echo(string.format("Type %s/thaliz%s to configure the addon.", COLOUR_INTRO, COLOUR_CHAT));
+
     ThalizEventFrame:RegisterEvent("ADDON_LOADED");
     ThalizEventFrame:RegisterEvent("CHAT_MSG_ADDON");
     ThalizEventFrame:RegisterEvent("RAID_ROSTER_UPDATE");
