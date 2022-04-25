@@ -15,14 +15,13 @@ This addon will target a random friendly (unreleased) corpse, if any.
 The target will be prioritized in the following order:
 
 	* Highest priority to the corpse you are currently targetting (if any)
+	* The Master looter (if any)
 	* then other ressers are resurrected
 	* then mana users are resurrected
 	* then warriors are resurrected
 	* and last the rogues.
 	
-If no Warlocks are up, one Warlock will be ressed after ressers are up. The
-raid leader will get priority just below the ressers, as he is usually also
-the loot master.
+If no Warlocks are up, one Warlock will be ressed after ressers are up.
 
 When a corpse is being resurrected (unreleased or not), a random message is
 displayed on the screen. This can be configured to be either a /SAY, /YELL
@@ -51,6 +50,27 @@ macro and reconfigure it as you like.
 If the "Include Defaults in filtered macros" option is checked, then the
 default macro list will always be considered, also even the target may match
 macros in one or more of the other groups.
+
+
+Message formatting:
+-------------------
+A resurrection message is a raw text string with a few extra codes to control
+the final output.
+The codes are:
+ * %s - target name (without realm name) being resurrected.
+ * %c - target class.
+ * %r - target race.
+ * %m - used for male/female specific texts, see below.
+
+Male/female specific texts:
+Imagine you have this resurrection string: "%s don't know what hit him!".
+It works fine on male characters. But what if we could change the "him" to
+"her" when resurrecting female characers? We can by using the %m code.
+
+The %m code takes two parameters: a male text and a female text. When a male
+is resurrected, the male text will be used and vice versa. The macro can now
+be changed to "%s don't know what hit %m{him:her}!", and Thaliz will runtime
+replace the %m macro with the "him" or "her" text.
 
 
 

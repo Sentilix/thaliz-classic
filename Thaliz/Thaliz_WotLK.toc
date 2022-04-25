@@ -1,8 +1,8 @@
 ## Title: Thaliz - Ress dem deads (WotLK)
 ## Notes: Smart addon to handle ressing party / raid members
-## Version: 3.0.0-alpha2
+## Version: 3.0.0-beta1
 ## Author: Mimma @ <EU-Pyrewood Village>
 ## Interface: 30401
 ## SavedVariables: Thaliz_Options
-## X-Wowclient-Type: WotLK
+## X-Expansion-Version: 3
 Thaliz.xml

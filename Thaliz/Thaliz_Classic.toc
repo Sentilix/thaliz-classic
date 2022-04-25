@@ -1,9 +1,9 @@
 ## Title: Thaliz - Ress dem deads (Classic)
 ## Notes: Smart addon to handle ressing party / raid members
-## Version: 3.0.0-alpha2
+## Version: 3.0.0-beta1
 ## Author: Mimma @ <EU-Pyrewood Village>
 ## Interface: 11403
 ## SavedVariables: Thaliz_Options
-## X-Wowclient-Type: Classic
+## X-Expansion-Version: 1
 Thaliz.xml
 
