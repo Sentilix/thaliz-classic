@@ -17,6 +17,14 @@ Please see the ReadMe.txt for addon details.
 	WLK:	n/a		n/a		n/a		n/a
 	RET:	Yes		Yes		Yes		Yes
 
+
+TODO:
+-	Revive icon for WotLK druids!
+
+-	Cata: Monks!
+-	Other classes which can res?
+	
+
 ]]
 
 
@@ -49,17 +57,48 @@ local EMOTE_GROUP_RACE						= "Race";
 
 --	List of valid class names with priority and resurrection spell name (if any)
 --	classname, priority, spellname (translated runtime), spellID
-local classInfo = {
-	{ "Druid",   40, nil,	20484	},	-- Rebirth
-	{ "Hunter",  30, nil,	nil		},
-	{ "Mage",    40, nil,	nil		},
-	{ "Paladin", 50, nil,	7328	},	-- Redemption
-	{ "Priest",  50, nil,	2006	},	-- Resurrection
-	{ "Rogue",   10, nil,	nil		},
-	{ "Shaman",  50, nil,	2008	},	-- Ancestral Spirit
-	{ "Warlock", 30, nil,	nil		},
-	{ "Warrior", 20, nil,	nil		}
+local Thaliz_classInfo = { }
+
+local Thaliz_classInfo_Classic = {
+	{ "Druid",          40, nil,	20484	},	-- Rebirth
+	{ "Hunter",         30, nil,	nil		},
+	{ "Mage",           40, nil,	nil		},
+	{ "Paladin",        50, nil,	7328	},	-- Redemption
+	{ "Priest",         50, nil,	2006	},	-- Resurrection
+	{ "Rogue",          10, nil,	nil		},
+	{ "Shaman",         50, nil,	2008	},	-- Ancestral Spirit
+	{ "Warlock",        30, nil,	nil		},
+	{ "Warrior",        20, nil,	nil		}
 };
+
+local Thaliz_classInfo_WotLK = {
+	{ "Death Knight",   20,	nil,	nil		},
+	{ "Druid",          40, nil,	50769	},	-- Revive (rebirth is now ignored)
+	{ "Hunter",         30, nil,	nil		},
+	{ "Mage",           40, nil,	nil		},
+	{ "Paladin",        50, nil,	7328	},	-- Redemption
+	{ "Priest",         50, nil,	2006	},	-- Resurrection
+	{ "Rogue",          10, nil,	nil		},
+	{ "Shaman",         50, nil,	2008	},	-- Ancestral Spirit
+	{ "Warlock",        30, nil,	nil		},
+	{ "Warrior",        20, nil,	nil		}
+};
+
+local Thaliz_classInfo_Retail = {
+	{ "Death Knight",   20,	nil,	nil		},
+	{ "Demon Hunter",   30,	nil,	nil		},
+	{ "Druid",          40, nil,	50769	},	-- Revive
+	{ "Hunter",         30, nil,	nil		},
+	{ "Mage",           40, nil,	nil		},
+	{ "Paladin",        50, nil,	7328	},	-- Redemption
+	{ "Priest",         50, nil,	2006	},	-- Resurrection
+	{ "Rogue",          10, nil,	nil		},
+	{ "Shaman",         50, nil,	2008	},	-- Ancestral Spirit
+	{ "Warlock",        30, nil,	nil		},
+	{ "Warrior",        20, nil,	nil		},
+	{ "Monk",           50, nil,	115178	}	-- Resuscitate (115178)
+};
+
 
 --	Table: { Name, Sample, Pattern }
 --	At runtime Sample ("%") is replaced with UnitName('Player').
@@ -81,6 +120,7 @@ local IsPaladin = false;
 local IsPriest = false;
 local IsShaman = false;
 local IsDruid = false;
+local IsMonk = false;
 local IsResser = false;
 
 local THALIZ_RezBtn_Passive			= "";
@@ -91,6 +131,8 @@ local THALIZ_RezBtn_Dead			= "Interface\\Icons\\Ability_rogue_feigndeath";
 local THALIZ_ICON_OTHER_PASSIVE		= "Interface\\Icons\\INV_Misc_Gear_01";
 local THALIZ_ICON_DRUID_PASSIVE		= "Interface\\Icons\\INV_Misc_Monsterclaw_04";
 local THALIZ_ICON_DRUID_ACTIVE		= "Interface\\Icons\\spell_holy_resurrection";
+local THALIZ_ICON_MONK_PASSIVE		= "Interface\\Icons\\classicon_monk";
+local THALIZ_ICON_MONK_ACTIVE		= "Interface\\Icons\\ability_druid_lunarguidance";
 local THALIZ_ICON_PALADIN_PASSIVE	= "Interface\\Icons\\INV_Hammer_01";
 local THALIZ_ICON_PALADIN_ACTIVE	= "Interface\\Icons\\spell_holy_resurrection";
 local THALIZ_ICON_PRIEST_PASSIVE	= "Interface\\Icons\\INV_Staff_30";
@@ -450,51 +492,83 @@ function Thaliz_RefreshVisibleMessageList(offset)
 			prio = 20
 		elseif grp == EMOTE_GROUP_CHARACTER then
 			prio = 30
+		elseif grp == EMOTE_GROUP_RACE then
+			prio = 100
+			-- Racess are listed by race name:
+			if prm == "Blood Elf" then
+				prio = 101
+			elseif prm == "Dark Iron Dwarf" then
+				prio = 102
+			elseif prm == "Draenei" then
+				prio = 103
+			elseif prm == "Dwarf" then
+				prio = 104
+			elseif prm == "Gnome" then
+				prio = 105
+			elseif prm == "Goblin" then
+				prio = 106
+			elseif prm == "Highmountain Tauren" then
+				prio = 107
+			elseif prm == "Human" then
+				prio = 108
+			elseif prm == "Kul Tiran" then
+				prio = 109
+			elseif prm == "Lightforged Draenei" then
+				prio = 110
+			elseif prm == "Mag'har Orc" then
+				prio = 111
+			elseif prm == "Mechagnome" then
+				prio = 112
+			elseif prm == "Nightborne" then
+				prio = 113
+			elseif prm == "Night Elf" then
+				prio = 114
+			elseif prm == "Orc" then
+				prio = 115
+			elseif prm == "Pandaren" then
+				prio = 116
+			elseif prm == "Tauren" then
+				prio = 117
+			elseif prm == "Troll" then
+				prio = 118
+			elseif prm == "Undead" then
+				prio = 119
+			elseif prm == "Void Elf" then
+				prio = 120
+			elseif prm == "Vulpera" then
+				prio = 121
+			elseif prm == "Worgen" then
+				prio = 122
+			elseif prm == "Zandalari Troll" then
+				prio = 123
+			end;			
 		elseif grp == EMOTE_GROUP_CLASS then
 			-- Class names are listed alphabetically:
-			prio = 50		
-			if prm == "Druid" then
-				prio = 59
+			prio = 200
+			if prm == "Death Knight" then
+				prio = 212
+			elseif prm == "Demon Hunter" then
+				prio = 211
+			elseif prm == "Druid" then
+				prio = 210
 			elseif prm == "Hunter" then
-				prio = 58
+				prio = 209
 			elseif prm == "Mage" then
-				prio = 57
+				prio = 208
+			elseif prm == "Monk" then
+				prio = 207
 			elseif prm == "Paladin" then
-				prio = 56
+				prio = 206
 			elseif prm == "Priest" then
-				prio = 55
+				prio = 205
 			elseif prm == "Rogue" then
-				prio = 54
+				prio = 204
 			elseif prm == "Shaman" then
-				prio = 53
+				prio = 203
 			elseif prm == "Warlock" then
-				prio = 52
+				prio = 202
 			elseif prm == "Warrior" then
-				prio = 51
-			end;			
-		elseif grp == EMOTE_GROUP_RACE then
-			prio = 40
-			-- Racess are listed by faction, race name:
-			if prm == "Draenai" then
-				prio = 50
-			elseif prm == "Dwarf" then
-				prio = 49
-			elseif prm == "Gnome" then
-				prio = 48
-			elseif prm == "Human" then
-				prio = 47
-			elseif prm == "Night Elf" then
-				prio = 46
-			elseif prm == "Orc" then
-				prio = 45
-			elseif prm == "Tauren" then
-				prio = 44
-			elseif prm == "Troll" then
-				prio = 43
-			elseif prm == "Undead" then
-				prio = 42
-			elseif prm == "Blood Elf" then
-				prio = 41
+				prio = 201
 			end;			
 		elseif grp == EMOTE_GROUP_DEFAULT then
 			prio = 0
@@ -1108,17 +1182,14 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 
 	local message = validMessages[ randomMsgIndex ];
 
-	--	%m (male/female check:
+	--	%m (male/female specific message):
 	--	Syntax: "%m{male text:female text}"
-	local _, _, maleStr, femaleStr = string.find(message, "%%m\{([^:^}]*):?([^}]*)\}");
 	if UnitSex(unitid) == 2 then
-		if maleStr then
-			message = string.gsub(message, "%%m\{[^}]*\}", maleStr);
-		end;
+		--	(male) Use first string
+		message = string.gsub(message, "%%m\{([^:^}]*):?([^}]*)\}", "%1");
 	else
-		if femaleStr then
-			message = string.gsub(message, "%%m\{[^}]*\}", femaleStr);
-		end;
+		--	(female) Use second string
+		message = string.gsub(message, "%%m\{([^:^}]*):?([^}]*)\}", "%2");
 	end;
 
 	message = string.gsub(message, "%%c", Thaliz_UCFirst(class));
@@ -1235,7 +1306,7 @@ function Thaliz_UpdateResurrectionMessage(index, offset, message, group, param)
 end
 
 function Thaliz_TranslateSpellnames()
-	for key, val in next, classInfo do 
+	for key, val in next, Thaliz_classInfo do 
 		if type(val[4]) == "number" then
 			local spellname, _ = GetSpellInfo(val[4]);
 			val[3] = spellname;
@@ -1309,8 +1380,8 @@ function Thaliz_ScanRaid()
 		return;
 	end
 
-	classinfo = Thaliz_GetClassinfo(Thaliz_UnitClass("player"));
-	local spellname = classinfo[3];
+	local classinfo = Thaliz_GetClassinfo(Thaliz_UnitClass("player"));
+	local spellname = classinfo[4];
 
 	local grouptype = "party";
 	if IsInRaid() then
@@ -1326,7 +1397,7 @@ function Thaliz_ScanRaid()
 			break;
 		end
 	end
-	
+
 	Thaliz_CleanupBlacklistedPlayers();
 
 	--Fetch current assigned target (if any):
@@ -1351,9 +1422,10 @@ function Thaliz_ScanRaid()
 	local playername, classinfo;
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
+
 		--playername = UnitName(unitid)
 		playername = GetUnitName(unitid, true);
-		
+	
 		local isBlacklisted = false;
 		for b=1, table.getn(blacklistedTable), 1 do
 			blacklistInfo = blacklistedTable[b];
@@ -1371,12 +1443,15 @@ function Thaliz_ScanRaid()
 		--targetname = UnitName("playertarget");
 		targetname = GetUnitName("playertarget", true);
 
+		local spellnameStr = GetSpellInfo(spellname)
+
 		if (isBlacklisted == false) and 
-				UnitIsDead(unitid) and 
-				(UnitHasIncomingResurrection(unitid) == false) and 
-				UnitIsConnected(unitid) and 
-				UnitIsVisible(unitid) and
-				(IsSpellInRange(spellname, unitid) == 1) then
+			UnitIsDead(unitid) and 
+			(UnitHasIncomingResurrection(unitid) == false) and 
+			UnitIsConnected(unitid) and 
+			UnitIsVisible(unitid) and 
+			(IsSpellInRange(spellnameStr, unitid) == 1) 
+		then
 			classinfo = Thaliz_GetClassinfo(Thaliz_UnitClass(unitid));
 			targetprio = classinfo[2];
 			if targetname and targetname == playername then
@@ -1494,6 +1569,11 @@ function Thaliz_InitClassSpecificStuff()
 		IsResser = true;
 		THALIZ_RezBtn_Passive = THALIZ_ICON_DRUID_PASSIVE;
 		THALIZ_RezBtn_Active = THALIZ_ICON_DRUID_ACTIVE;
+	elseif classname == "MONK" then
+		IsMonk = true;
+		IsResser = true;
+		THALIZ_RezBtn_Passive = THALIZ_ICON_MONK_PASSIVE;
+		THALIZ_RezBtn_Active = THALIZ_ICON_MONK_ACTIVE;
 	elseif classname == "PALADIN" then
 		IsPaladin = true;
 		IsResser = true;
@@ -1515,16 +1595,21 @@ function Thaliz_InitClassSpecificStuff()
 		Thaliz_OPTION_RezButtonVisible_Default = "0";
 	end;
 
-	local expansionLevel = 1 * GetAddOnMetadata(THALIZ_NAME, "X-Expansion-Version");
-	
+	local expansionLevel = 1 * GetAddOnMetadata(THALIZ_NAME, "X-Expansion-Level");
+
 	if expansionLevel == 1 then
 		Thaliz_DefaultResurrectionMessages = Thaliz_DefaultResurrectionMessages_Classic;
+		Thaliz_classInfo = Thaliz_classInfo_Classic;
 	elseif expansionLevel == 2 then
 		Thaliz_DefaultResurrectionMessages = Thaliz_DefaultResurrectionMessages_TBC;	
+		Thaliz_classInfo = Thaliz_classInfo_Classic;
+	elseif expansionLevel == 3 then
+		Thaliz_DefaultResurrectionMessages = Thaliz_DefaultResurrectionMessages_TBC;	
+		Thaliz_classInfo = Thaliz_classInfo_WotLK;
 	else
 		Thaliz_DefaultResurrectionMessages = Thaliz_DefaultResurrectionMessages_TBC;	
+		Thaliz_classInfo = Thaliz_classInfo_Retail;
 	end;
-
 end;
 
 local RezButtonLastTexture = "";
@@ -1544,7 +1629,8 @@ end;
 
 function Thaliz_GetClassinfo(classname)
 	classname = Thaliz_UCFirst(classname);
-	for key, val in next, classInfo do 
+
+	for key, val in next, Thaliz_classInfo do 
 		if val[1] == classname then
 			return val;
 		end
@@ -1878,6 +1964,11 @@ function Thaliz_SpellIsResurrect(spellId)
 			if (spellId == 2006) or (spellId == 2010) or (spellId == 10880) or (spellId == 10881) or (spellId == 20770) or (spellId == 25435) then
 				resSpell = true;
 			end;
+		elseif IsMonk then
+			-- Resuscitate, rank 1=115178:
+			if (spellId == 115178) then
+				resSpell = true;
+			end;
 		elseif IsPaladin then
 			-- Redemption, rank 1=7328, 2=10322, 3=10324, 4=20772, 5=20773:
 			if (spellId == 7328) or (spellId == 10322) or (spellId == 10324) or (spellId == 20772) or (spellId == 20773) then
@@ -1891,6 +1982,10 @@ function Thaliz_SpellIsResurrect(spellId)
 		elseif IsDruid then
 			--Rebirth, rank 1=20484, 2=20739, 3=20742, 4=20747, 5=20748:
 			if (spellId == 20484) or (spellId == 20739) or (spellId == 20742) or (spellId == 20747) or (spellId == 20748) then
+				resSpell = true;
+			end;
+			--Revive, rank 1=50769, 2=50768, 3=50767, 4=50766, 5=50765, 6=50764, 7=50763:
+			if (spellId == 50769) or (spellId == 50768) or (spellId == 50767) or (spellId == 50766) or (spellId == 50765) or (spellId == 50764) or (spellId == 50763) then
 				resSpell = true;
 			end;
 		end;
@@ -2108,8 +2203,9 @@ function Thaliz_RepositionateButton(self)
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, x);
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosY, y);
 
-	classinfo = Thaliz_GetClassinfo(Thaliz_UnitClass("player"));
-	local spellname = classinfo[3];
+	local classinfo = Thaliz_GetClassinfo(Thaliz_UnitClass("player"));
+
+	local spellname = classinfo[4];
 	if spellname then
 		RezButton:Show();
 	else
