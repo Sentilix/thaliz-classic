@@ -9,22 +9,6 @@ The source code can be found at Github:
 https://github.com/Sentilix/thaliz-classic
 
 Please see the ReadMe.txt for addon details.
-
-			Load	GUI		Ress	Version
-	Era:	Yes		Yes		Yes		Yes
-	Som:	Yes		Yes		-		-
-	TBC:	Yes		Yes		Yes		Yes
-	WLK:	n/a		n/a		n/a		n/a
-	RET:	Yes		Yes		Yes		Yes
-
-
-TODO:
--	Revive icon for WotLK druids!
-
--	Cata: Monks!
--	Other classes which can res?
-	
-
 ]]
 
 
@@ -48,6 +32,7 @@ local THALIZ_EMPTY_MESSAGE					= "(Empty)"
 
 local THALIZ_CURRENT_VERSION				= 0
 local THALIZ_UPDATE_MESSAGE_SHOWN			= false
+local THALIZ_REZBUTTON_SIZE					= 32;
 
 local EMOTE_GROUP_DEFAULT					= "Default";
 local EMOTE_GROUP_GUILD						= "Guild";
@@ -96,7 +81,7 @@ local Thaliz_classInfo_Retail = {
 	{ "Shaman",         50, nil,	2008	},	-- Ancestral Spirit
 	{ "Warlock",        30, nil,	nil		},
 	{ "Warrior",        20, nil,	nil		},
-	{ "Monk",           50, nil,	115178	}	-- Resuscitate (115178)
+	{ "Monk",           50, nil,	115178	}	-- Resuscitate
 };
 
 
@@ -153,6 +138,7 @@ local Thaliz_Blacklist_Spellcast = 10;
 local Thaliz_Blacklist_Resurrect = 30;
 local Thaliz_Blacklist_Timeout = Thaliz_Blacklist_Spellcast + Thaliz_Blacklist_Resurrect;
 
+local Thaliz_PlayerNameAndRealm = "";
 local Thaliz_LastRandomMessageIndex = -1;
 local Thaliz_Enabled = true;
 local ThalizConfigDialogOpen = false;
@@ -1400,6 +1386,8 @@ function Thaliz_ScanRaid()
 
 	Thaliz_CleanupBlacklistedPlayers();
 
+	local spellnameStr = GetSpellInfo(spellname);
+
 	--Fetch current assigned target (if any):
 	local currentPrio = 0;
 	local highestPrio = 0;
@@ -1442,8 +1430,6 @@ function Thaliz_ScanRaid()
 		
 		--targetname = UnitName("playertarget");
 		targetname = GetUnitName("playertarget", true);
-
-		local spellnameStr = GetSpellInfo(spellname)
 
 		if (isBlacklisted == false) and 
 			UnitIsDead(unitid) and 
@@ -1509,12 +1495,12 @@ function Thaliz_ScanRaid()
 		unitid = corpseTable[1][1];
 
 		if(debug) then 
-			if not spellname then spellname = "nil"; end;
-			echo(string.format("**DEBUG**: corpse=%s, unitid=%s, spell=%s", UnitName(unitid), unitid, spellname));
+			if not spellnameStr then spellnameStr = "nil"; end;
+			echo(string.format("**DEBUG**: corpse=%s, unitid=%s, spell=%s", UnitName(unitid), unitid, spellnameStr));
 		end;
 
 		RezButton:SetAttribute("type", "spell");
-		RezButton:SetAttribute("spell", spellname);
+		RezButton:SetAttribute("spell", spellnameStr);
 		RezButton:SetAttribute("unit", unitid);
 	end;
 
@@ -1768,7 +1754,7 @@ end
 	Broadcast my version if this is not a beta (CurrentVersion > 0) and
 	my version has not been identified as being too low (MessageShown = false)
 ]]
-function Thaliz_OnRaidRosterUpdate(event, ...)
+function Thaliz_OnGroupRosterUpdate(event, ...)
 	if THALIZ_CURRENT_VERSION > 0 and not THALIZ_UPDATE_MESSAGE_SHOWN then
 		if IsInRaid() or Thaliz_IsInParty() then
 			local versionstring = GetAddOnMetadata(THALIZ_NAME, "Version");
@@ -1797,7 +1783,7 @@ function Thalix_CheckIsNewVersion(versionstring)
 			if not THALIZ_UPDATE_MESSAGE_SHOWN then
 				THALIZ_UPDATE_MESSAGE_SHOWN = true;
 				Thaliz_Echo(string.format("NOTE: A newer version of ".. COLOUR_INTRO .."THALIZ"..COLOUR_CHAT.."! is available (version %s)!", versionstring));
-				Thaliz_Echo("NOTE: Go to https://github.com/Sentilix/thaliz-classic to download latest version.");
+				Thaliz_Echo("You can download latest version from https://www.curseforge.com/ or https://github.com/Sentilix/thaliz-classic.");
 			end
 		end	
 	end
@@ -1894,6 +1880,7 @@ end
 
 function Thaliz_OnChatMsgAddon(event, ...)
 	local prefix, msg, channel, sender = ...;
+
 	if prefix == THALIZ_MESSAGE_PREFIX then
 		Thaliz_HandleThalizMessage(msg, sender);
 	end
@@ -1921,21 +1908,29 @@ function Thaliz_GetPlayerAndRealm(unitid)
 	return playername;
 end;
 
+function Thaliz_GetPlayerAndRealmFromName(playername)
+	if not string.find(playername, "-") then
+		playername = playername .."-".. Thaliz_GetMyRealm();
+	end;
+
+	return playername;
+end;
+
 function Thaliz_HandleThalizMessage(msg, sender)
 	local _, _, cmd, message, recipient = string.find(msg, "([^#]*)#([^#]*)#([^#]*)");	
-	
---echo(string.format("Incoming, cmd=%s, message=%s, recipient=%s", cmd, message, recipient));
 
 	--	Ignore message if it is not for me. 
 	--	Receipient can be blank, which means it is for everyone.
-	if not (recipient == "") then
+	if recipient ~= "" then
 		-- Note: recipient comes with realmname. We need to compare
 		-- with realmname too, even GetUnitName() does not return one:
-		if not (recipient == Thaliz_GetPlayerAndRealm("player")) then
-			--echo(string.format("Skipping (not for me), msg=%s", msg));
+		recipient = Thaliz_GetPlayerAndRealmFromName(recipient);
+
+		if recipient ~= Thaliz_PlayerNameAndRealm then
 			return
 		end
 	end
+
 
 	if cmd == "TX_VERSION" then
 		Thaliz_HandleTXVersion(message, sender)
@@ -2122,8 +2117,8 @@ function Thaliz_OnEvent(self, event, ...)
 	elseif (event == "CHAT_MSG_ADDON") then
 		Thaliz_OnChatMsgAddon(event, ...)
 
-	elseif (event == "RAID_ROSTER_UPDATE") then
-		Thaliz_OnRaidRosterUpdate(event, ...)
+	elseif (event == "GROUP_ROSTER_UPDATE") then
+		Thaliz_OnGroupRosterUpdate(event, ...)
 
 	elseif (event == "COMBAT_LOG_EVENT_UNFILTERED") then
 		local _, subevent, _, _, sourceName, _, _, _, destName, _, _, spellId = CombatLogGetCurrentEventInfo();
@@ -2170,6 +2165,8 @@ end
 
 function Thaliz_OnLoad()
 	msgEditorIsOpen = false;
+	Thaliz_PlayerNameAndRealm = Thaliz_GetPlayerAndRealm("player");
+
 	THALIZ_CURRENT_VERSION = Thaliz_CalculateVersion(GetAddOnMetadata(THALIZ_NAME, "Version") );
 
 	_G["ThalizVersionString"]:SetText(string.format("Thaliz version %s by %s", GetAddOnMetadata(THALIZ_NAME, "Version"), GetAddOnMetadata(THALIZ_NAME, "Author")));
@@ -2179,7 +2176,7 @@ function Thaliz_OnLoad()
 
     ThalizEventFrame:RegisterEvent("ADDON_LOADED");
     ThalizEventFrame:RegisterEvent("CHAT_MSG_ADDON");
-    ThalizEventFrame:RegisterEvent("RAID_ROSTER_UPDATE");
+    ThalizEventFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
 	ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");
 	ThalizEventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
@@ -2202,6 +2199,8 @@ function Thaliz_RepositionateButton(self)
 
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, x);
 	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosY, y);
+
+	RezButton:SetSize(THALIZ_REZBUTTON_SIZE, THALIZ_REZBUTTON_SIZE);
 
 	local classinfo = Thaliz_GetClassinfo(Thaliz_UnitClass("player"));
 

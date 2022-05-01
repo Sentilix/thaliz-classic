@@ -2,11 +2,12 @@
 Author:			Mimma
 Create Date:	05/10/2015 17:50:57
 
-The latest version of Thaliz can always be found at:
-(TBD)
+The latest version of Thaliz can always be found at Curse:
+https://www.curseforge.com/wow/addons/thaliz-rez-dem-deads
 
 The source code can be found at Github:
 https://github.com/Sentilix/thaliz-classic
+
 
 
 About the Thaliz Project:
@@ -16,10 +17,10 @@ The target will be prioritized in the following order:
 
 	* Highest priority to the corpse you are currently targetting (if any)
 	* The Master looter (if any)
-	* then other ressers are resurrected
-	* then mana users are resurrected
-	* then warriors are resurrected
-	* and last the rogues.
+	* Then other ressers are resurrected
+	* Then mana users are resurrected
+	* Then warriors are resurrected
+	* And then the rest (rogues).
 	
 If no Warlocks are up, one Warlock will be ressed after ressers are up.
 
@@ -61,6 +62,7 @@ The codes are:
  * %c - target class.
  * %r - target race.
  * %m - used for male/female specific texts, see below.
+
 
 Male/female specific texts:
 Imagine you have this resurrection string: "%s don't know what hit him!".
