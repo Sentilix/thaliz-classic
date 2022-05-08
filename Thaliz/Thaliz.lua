@@ -2055,12 +2055,26 @@ function Thaliz_OnEvent(self, event, ...)
 		end;
 		
 	elseif(event == "UNIT_SPELLCAST_START") then
-		SpellcastIsStarted = timerTick;
+		local resser, _, _, _ = ...;
+		if(resser == "player") then
+			SpellcastIsStarted = timerTick;
+		end;
 
 	elseif(event == "UNIT_SPELLCAST_SUCCEEDED") then
-		Thaliz_ClearCurrentResurrectedTarget();
+		local resser, _, _, _ = ...;
+		if(resser == "player") then
+			Thaliz_ClearCurrentResurrectedTarget();
+		end;
 
 	elseif(event == "UNIT_SPELLCAST_STOP") then
+		local resser, _, _, _ = ...;
+		if(resser ~= "player") then
+			if(debug) then 
+				echo(string.format("**DEBUG**: UNIT_SPELLCAST_STOP, by other resser=%s", resser));
+			end;
+			return;
+		end;
+
 		local target = Thaliz_GetCurrentResurrectedTarget();
 		if target then
 			if(debug) then 
@@ -2089,12 +2103,10 @@ function Thaliz_OnEvent(self, event, ...)
 			SpellcastIsStarted = timerTick;
 			if IsInRaid() then
 				if Thaliz_BeginsWith(arg1, 'raid') then
-					--Thaliz_SetCurrentResurrectedTarget(UnitName(arg1));
 					Thaliz_SetCurrentResurrectedTarget(GetUnitName(arg1, true));
 				end;
 			else
 				if Thaliz_BeginsWith(arg1, 'party') then
-					--Thaliz_SetCurrentResurrectedTarget(UnitName(arg1));
 					Thaliz_SetCurrentResurrectedTarget(GetUnitName(arg1, true));
 				end;
 			end;
@@ -2128,7 +2140,6 @@ function Thaliz_OnEvent(self, event, ...)
 				echo(string.format("**DEBUG**: COMBAT_LOG_EVENT_UNFILTERED, subevent=%s, sourceName=%s, spellId=%s", subevent, sourceName, spellId));
 			end;
 
-			--if (sourceName == UnitName("player")) then
 			if (sourceName == GetUnitName("player", true)) then
 				if Thaliz_SpellIsResurrect(spellId) then
 					SpellcastIsStarted = timerTick;
@@ -2136,7 +2147,6 @@ function Thaliz_OnEvent(self, event, ...)
 			end
 
 		elseif subevent == "SPELL_RESURRECT" then
-			--if sourceName ~= UnitName("player") then
 			if sourceName ~= GetUnitName("player", true) then
 				Thaliz_BlacklistPlayer(destName, Thaliz_Blacklist_Resurrect);
 			end;
