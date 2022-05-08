@@ -1,11 +1,12 @@
-## Title: Thaliz - Ress dem deads (Classic)
+## Title: Thaliz - One-button resurrection (Classic)
 ## Notes: Smart addon to handle ressing party / raid members
-## Version: 3.0.2
+## Version: 3.0.3
 ## Author: Mimma @ <EU-Pyrewood Village>
 ## Interface: 11403
 ## SavedVariables: Thaliz_Options
 ## X-Expansion-Level: 1
 ## X-Curse-Project-ID: 346116
 ## X-WoWI-ID: 25437
+## X-Wago-ID: ZQ6aoqGW
 Thaliz.xml
 
