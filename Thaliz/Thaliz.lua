@@ -1806,14 +1806,6 @@ function Thaliz_OnTimer(elapsed)
 		Thaliz_ScanRaid();
 		NextScanTime = TimerTick;
 	end;
-
-	for n=1,table.getn(Timers),1 do
-		local timer = Timers[n]
-		if TimerTick > timer[2] then
-			Timers[n] = nil
-			timer[1]()
-		end
-	end
 end
 
 function Thaliz_GetTimerTick()
