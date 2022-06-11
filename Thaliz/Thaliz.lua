@@ -167,6 +167,9 @@ local Thaliz_OPTION_RezButtonPosY						= "RezButtonPosY";
 local Thaliz_OPTION_RezButtonVisible					= "ResurrectionButtonVisible";
 
 local Thaliz_DebugFunction = nil;
+local Thaliz_DelayInitialization = true;
+local Thaliz_DelayedTimerTick = 0;
+local _delayed_owner = nil;
 
 -- Persisted information:
 --	{realmname}{playername}{parameter}
@@ -1407,7 +1410,7 @@ function Thaliz_ScanRaid()
 
 	local targetprio;
 	local corpseTable = { };
-	local playername, classinfo;
+	local playername, classinfo, targetname;
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
 
@@ -1801,6 +1804,15 @@ local NextScanTime = 0;
 
 function Thaliz_OnTimer(elapsed)
 	TimerTick = TimerTick + elapsed
+
+	if Thaliz_DelayInitialization then
+		if Thaliz_DelayedTimerTick < TimerTick then
+			Thaliz_DelayedTimerTick = TimerTick + 3;
+			Thaliz_DelayedDropDownNameEnclosure_Initialize();
+		end;
+
+		return;
+	end;
 
 	if TimerTick > (NextScanTime + ThalizScanFrequency) then
 		Thaliz_ScanRaid();
@@ -2214,8 +2226,24 @@ function Thaliz_RepositionateButton(self)
 	end;
 end
 
+local SkipTaintCheck = true;
 function Thaliz_DropDownNameEnclosure_Initialize(frame, level, menuList)
+	_delayed_owner = this;
+	Thaliz_DelayInitialization = true;
+	Thaliz_DelayedDropDownNameEnclosure_Initialize();
+end;
+
+function Thaliz_DelayedDropDownNameEnclosure_Initialize()
+	if not CompactRaidFrame1  then
+		if not SkipTaintCheck then
+			return;
+		end;
+	end;
+
+	Thaliz_DelayInitialization = false;
+
 	local CurOption = Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE");
+
 
 	for n=1, table.getn(THALIZ_NAME_ENCLOSURES), 1 do
 		local checked = false;
@@ -2226,7 +2254,7 @@ function Thaliz_DropDownNameEnclosure_Initialize(frame, level, menuList)
 		local info = UIDropDownMenu_CreateInfo();
 		info.text       = THALIZ_NAME_ENCLOSURES[n][2];
 		info.checked	= checked;
-		info.func       = function() Thaliz_DropDownNameEnclosureButton_OnClick(this, THALIZ_NAME_ENCLOSURES[n][1]) end;
+		info.func       = function() Thaliz_DropDownNameEnclosureButton_OnClick(_delayed_owner, THALIZ_NAME_ENCLOSURES[n][1]) end;
 		UIDropDownMenu_AddButton(info);
 	end
 end
