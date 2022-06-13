@@ -92,3 +92,15 @@ Dying had never been funnier since that!
 Thaliz (the priest) ultimately died mid 2016 when he deleted his account.
 
 RIP Thaliz.
+
+
+
+Thaliz Versions
+---------------
+Version 3.0.6
+* Bugfix: using master loot in a 5 man party made Thaliz throw a LUA error.
+
+
+Version 3.0.5
+* Update: minor fixes to avoid taint.
+

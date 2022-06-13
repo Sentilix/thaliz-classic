@@ -1402,10 +1402,12 @@ function Thaliz_ScanRaid()
 		currentTarget = GetUnitName(unitid, true);
 	end;
 
-	local lootMethod, _, raidIndex = GetLootMethod();
 	local masterLooter = nil;
-	if lootMethod == "master" then
-		masterLooter = GetUnitName("raid"..raidIndex, true);
+	if IsInRaid() then
+		local lootMethod, _, raidIndex = GetLootMethod();
+		if lootMethod == "master" then
+			masterLooter = GetUnitName("raid"..raidIndex, true);
+		end;
 	end;
 
 	local targetprio;
