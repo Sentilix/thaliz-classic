@@ -1,6 +1,6 @@
 ## Title: Thaliz - One-button resurrection
 ## Notes: Smart addon to handle ressing party / raid members
-## Version: 3.1.0
+## Version: 3.1.1
 ## Author: Mimma @ <EU-Pyrewood Village>
 ## Interface: 90205
 ## SavedVariables: Thaliz_Options
@@ -8,4 +8,6 @@
 ## X-Curse-Project-ID: 346116
 ## X-WoWI-ID: 25437
 ## X-Wago-ID: ZQ6aoqGW
+
+DigamAddonLib.lua
 Thaliz.xml

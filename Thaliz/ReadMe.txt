@@ -97,6 +97,10 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.1.1
+* Bugfix: Due to a failed merge the TOC file was broken in 3.1.0 - fixed
+
+
 Version 3.1.0
 * Added option to copy/merge profiles
 * Update: UI has been refreshed.
