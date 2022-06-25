@@ -97,6 +97,12 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.1.0
+* Added option to copy/merge profiles
+* Update: UI has been refreshed.
+* Update: Config menu can now be opened by right-clicking the Rezz button.
+
+
 Version 3.0.6
 * Bugfix: using master loot in a 5 man party made Thaliz throw a LUA error.
 
