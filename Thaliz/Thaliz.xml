@@ -1,18 +1,17 @@
-﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 	<Script file="Thaliz.lua" />
 
 	<!-- template for Message list entries -->
 	<Button name="Thaliz_CellTemplate" hidden="true" virtual="true">
 		<Size>
-			<AbsDimension x="620" y="16"/>
+			<AbsDimension x="770" y="16"/>
 		</Size>
 		<Layers>
 			<Layer>
 				<FontString name="$parentMessage" justifyH="LEFT" inherits="GameFontNormal">
 					<Size>
-						<AbsDimension x="520" y="16"/>
+						<AbsDimension x="670" y="16"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
@@ -29,7 +28,7 @@
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="430" y="0"/>
+								<AbsDimension x="580" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -69,13 +68,13 @@
 	</Button>
 	
 	<!-- Main configuration frame -->
-	<Frame name="ThalizFrame" parent="UIParent" inherits="BackdropTemplate" hidden="true">
+	<Frame name="ThalizFrame" parent="UIParent" inherits="BackdropTemplate" hidden="true" frameStrata="HIGH">
 		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+			<KeyValue key="backdropInfo" value="BACKDROP_ARENA_32_32" type="global"/>
 			<KeyValue key="backdropColor" value="BLACK" type="global"/>
 			<KeyValue key="backdropBorderColor" value="WHITE" type="global"/>
 		</KeyValues>
-		<Size x="690" y="516" />
+		<Size x="840" y="516" />
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -84,7 +83,7 @@
 			<!-- Message list frame -->
 			<ScrollFrame name="$parentTableList" inherits="FauxScrollFrameTemplate, BackdropTemplate">
 				<Size>
-					<AbsDimension x="630" y="330"/>
+					<AbsDimension x="780" y="330"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -213,7 +212,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						_G[self:GetName().."Text"]:SetText("Whisper the Target with:")
+						_G[self:GetName().."Text"]:SetText("Whisper the Target:")
 					</OnLoad>
 					<OnClick>
 						Thaliz_HandleCheckbox(self);
@@ -242,7 +241,9 @@
 						<Offset x="200" y="-420"/>
 					</Anchor>
 				</Anchors>
-				<FontString inherits="GameFontNormal"/>
+				<FontString inherits="GameFontNormal">
+					<Color r="0.9" g="0.9" b="0.9" />
+				</FontString>
 			</EditBox>
 			<!-- OK button -->
 			<Button name="CloseButton" inherits="UIPanelButtonTemplate" movable="true" text="OK">
@@ -250,12 +251,26 @@
 					<AbsDimension x="100" y="23" />
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="245" y="-456" />
+					<Anchor point="BOTTOM">
+						<Offset x="-110" y="20" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>Thaliz_OKButton_OnClick();</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Profile button -->
+			<Button name="ProfileButton" inherits="UIPanelButtonTemplate" movable="true" text="Profiles">
+				<Size>
+					<AbsDimension x="100" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset x="0" y="20" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Thaliz_ProfileButton_OnClick();</OnClick>
 				</Scripts>
 			</Button>
 			<!-- Close button -->
@@ -264,8 +279,8 @@
 					<AbsDimension x="100" y="23" />
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="350" y="-456" />
+					<Anchor point="BOTTOM">
+						<Offset x="110" y="20" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -298,9 +313,9 @@
 				</FontString>			
 				<FontString name="ThalizVersionString" inherits="GameFontNormal" text="Thaliz Classic x - by y">
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentHeaderTexture">
+						<Anchor point="BOTTOM" relativeTo="$parent">
 							<Offset>
-								<AbsDimension x="0" y="-500"/>
+								<AbsDimension x="0" y="4"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -368,7 +383,7 @@
 	</Frame>
 
 	<!-- Message editor frame -->
-	<Frame name="ThalizMsgEditorFrame" parent="UIParent" inherits="BackdropTemplate" toplevel="true" hidden="true">
+	<Frame name="ThalizMsgEditorFrame" parent="UIParent" inherits="BackdropTemplate" toplevel="true" hidden="true" frameStrata="HIGH">
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
 			<KeyValue key="backdropColor" value="BLACK" type="global"/>
@@ -632,6 +647,97 @@
 		</Scripts>
 	</Frame>
 
+	<!-- Profile management frame -->
+	<Frame name="ThalizProfileFrame" parent="UIParent" inherits="BackdropTemplate" toplevel="true" hidden="true" frameStrata="HIGH">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
+			<KeyValue key="backdropColor" value="BLACK" type="global"/>
+			<KeyValue key="backdropBorderColor" value="WHITE" type="global"/>
+		</KeyValues>
+		<Size>
+			<AbsDimension x="390" y="165" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="ThalizFrame">
+				<Offset x="0" y="0" />
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<!-- Profile list -->
+			<Button name="DropDownProfileButton" inherits="UIDropDownMenuTemplate">
+				<Size>
+					<AbsDimension x="300" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="20" y="-40"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(self, Thaliz_DropDownProfiles_Initialize);
+					</OnLoad>
+				</Scripts>
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Copy messages from">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parent">
+									<Offset x="0" y="20"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+			<!-- Import (overwrite old) -->
+			<Button name="ReplaceWithProfileButton" inherits="UIPanelButtonTemplate" text="Replace with Profile">
+				<Size>
+					<AbsDimension x="150" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="DropDownProfileButton">
+						<Offset x="-80" y="-30" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Thaliz_ReplaceWithProfile_OnClick();</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Import (merge) -->
+			<Button name="MergeWithProfileButton" inherits="UIPanelButtonTemplate" text="Merge with Profile">
+				<Size>
+					<AbsDimension x="150" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="DropDownProfileButton">
+						<Offset x="80" y="-30" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Thaliz_MergeWithProfile_OnClick();</OnClick>
+				</Scripts>
+			</Button>
+
+
+			<!-- Close button -->
+			<Button name="CloseProfileButton" inherits="UIPanelButtonTemplate" text="Close">
+				<Size>
+					<AbsDimension x="100" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset x="0" y="15" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Thaliz_CloseProfileButton_OnClick();</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>	
+	</Frame>
+
+	<!-- The Rez Button -->
 	<Button name="RezButton" inherits="SecureActionButtonTemplate" parent="UIParent" toplevel="true" hidden="false" frameStrata="LOW" movable="true">
 		<Size>
 			<AbsDimension x="32" y="32" />
@@ -675,7 +781,6 @@
 			</OnDragStop>
 		</Scripts>
 	</Button>
-
 
 	<!-- Dummy event frame -->
 	<Frame name="ThalizEventFrame">
