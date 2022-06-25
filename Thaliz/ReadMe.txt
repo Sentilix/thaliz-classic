@@ -104,3 +104,19 @@ Version 3.0.6
 Version 3.0.5
 * Update: minor fixes to avoid taint.
 
+
+Thaliz 3.0.4:
+* Updated for 9.2.5 client.
+
+
+Thaliz 3.0.3:
+* Added Wago ID to TOC. No functional changes.
+
+
+Thaliz 3.0.2:
+* Added CurseForce and WowInterface ID to TOC. No functional changes.
+
+
+Thaliz 3.0.1:
+* Fixed a bug in TBC where other peoples resses caused YOU to fire a ressing macro.
+
