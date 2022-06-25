@@ -100,7 +100,7 @@ Thaliz Versions
 Version 3.1.0
 * Added option to copy/merge profiles
 * Update: UI has been refreshed.
-* Update: Config menu cannow be opened by right-click.
+* Update: Config menu can now be opened by right-clicking the Rezz button.
 
 
 Version 3.0.6
