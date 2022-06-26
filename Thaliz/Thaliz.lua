@@ -975,12 +975,14 @@ function Thaliz_ParseProfileNames()
 
 		if type(realmInfo) == "table" then
 			for playerName, playerInfo in next, realmInfo do
-				local messages = playerInfo["ResurrectionMessages"];
-				if messages and type(messages) == "table" and table.getn(messages) > 0 then	
-					local playerRealm = playerName .."-".. string.gsub(realmName, " ", "");
+				if type(playerInfo) == "table" then
+					local messages = playerInfo["ResurrectionMessages"];
+					if messages and type(messages) == "table" and table.getn(messages) > 0 then	
+						local playerRealm = playerName .."-".. string.gsub(realmName, " ", "");
 
-					tinsert(Thaliz_ProfileTable, { ["realm"] = realmName, ["name"] = playerName, ["count"] = table.getn(messages), ["fullname"] = playerRealm });
-				end;
+						tinsert(Thaliz_ProfileTable, { ["realm"] = realmName, ["name"] = playerName, ["count"] = table.getn(messages), ["fullname"] = playerRealm });
+					end;
+				end
 			end;
 		end;
 	end;
