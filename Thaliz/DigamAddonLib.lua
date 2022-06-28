@@ -11,7 +11,7 @@
 
 
 local DIGAM_IsDebugBuild					= false;
-local DIGAM_BuildVersion					= 4;
+local DIGAM_BuildVersion					= 6;
 
 local DIGAM_COLOR_BEGIN						= "|c80";
 local DIGAM_CHAT_END						= "|r";
@@ -65,6 +65,11 @@ function DigamAddonLib:new(addonSettings)
 		addonVersion = _addonVersion,
 		addonAuthor = GetAddOnMetadata(_addonName, "Author") or "",
 		addonExpansionLevel = tonumber(GetAddOnMetadata(_addonName, "X-Expansion-Level")),
+
+		localPlayerName = self:getPlayerAndRealm("player"),
+		localPlayerClass = self:getUnitClass("player"),
+		localPlayerRealm = self:getPlayerRealm("player"),
+		localPlayerGUID = UnitGUID("player"),
 
 		chatColorNormal = DIGAM_COLOR_BEGIN .. (addonSettings["NORMALCHATCOLOR"] or DIGAM_DEFAULT_ColorNormal),
 		chatColorHot = DIGAM_COLOR_BEGIN..(addonSettings["HOTCHATCOLOR"] or DIGAM_DEFAULT_ColorHot),
@@ -199,7 +204,7 @@ function DigamAddonLib:getChannelInfo(channelName)
 end;
 
 function DigamAddonLib:sendWhisper(receiver, message)
-	if receiver == self:getPlayerAndRealm("player") then
+	if receiver == self.localPlayerName then
 		self:echo(message);
 	else
 		SendChatMessage(message, WHISPER_CHANNEL, nil, receiver);
@@ -285,7 +290,7 @@ function DigamAddonLib:stripRealmName(nameAndRealm)
 end;
 
 function DigamAddonLib:getFullPlayerName(playerName)
-	local _, _, name, realm = string.find(playerName, "([^-]*)-(%S*)");
+	local _, _, name, realm = string.find(playerName, "([^-]*)-([%S ]*)");
 	
 	if realm then
 		if string.find(realm, " ") then
@@ -294,23 +299,47 @@ function DigamAddonLib:getFullPlayerName(playerName)
 		end;
 	else
 		name = playerName;
-		realm = self:getMyRealm();
+		realm = self.localPlayerRealm;
 	end;
 
 	return name .."-".. realm;
 end;
 
-function DigamAddonLib:getPlayerAndRealm(unitid)
+function DigamAddonLib:getPlayerAndRealm(unitid, keepRealmnameSpaces)
 	local playername, realmname = UnitName(unitid);
 	if not playername then return nil; end;
 
 	if not realmname or realmname == "" then
-		realmname = self:getMyRealm();
+		realmname = GetRealmName();
+	end;
+
+	if not keepRealmnameSpaces and string.find(realmname, " ") then
+		local _, _, name1, name2 = string.find(realmname, "([a-zA-Z]*) ([a-zA-Z]*)");
+		realmname = name1 .. name2; 
 	end;
 
 	return playername.."-".. realmname;
 end;
 
+function DigamAddonLib:getUnitClass(unitid)
+	local _, classname = UnitClass(unitid);
+	return classname;
+end;
+
+function DigamAddonLib:getPlayerRealm(unitid)
+	local playername, realmname = UnitName(unitid);
+	if not realmname or realmname == "" then
+		realmname = GetRealmName();
+	end;
+	
+	if string.find(realmname, " ") then
+		local _, _, name1, name2 = string.find(realmname, "([a-zA-Z]*) ([a-zA-Z]*)");
+		realmname = name1 .. name2; 
+	end;
+	return realmname;
+end;
+
+--	Deprecated, use self.localPlayerRealm
 function DigamAddonLib:getMyRealm()
 	local realmname = GetRealmName();
 	
@@ -335,10 +364,7 @@ function DigamAddonLib:unitClass(unitid)
 	return classname;
 end;
 
-function DigamAddonLib:getUnitidFromName(playerName)
-	local currentRealm = self:getMyRealm()
-	local currentPlayer = self:getPlayerAndRealm("player");
-
+function DigamAddonLib:getUnitidFromName(playerName, keepRealmnameSpaces)
 	local unitid, unitname;
 	if IsInRaid() then
 		for n = 1, 40, 1 do
@@ -346,7 +372,7 @@ function DigamAddonLib:getUnitidFromName(playerName)
 			unitname = UnitName(unitid);
 			if not unitname then return nil; end;
 
-			unitname = self:getPlayerAndRealm(unitid);
+			unitname = self:getPlayerAndRealm(unitid, keepRealmnameSpaces);
 			if playerName == unitname then
 				return unitid;
 			end;
@@ -359,14 +385,14 @@ function DigamAddonLib:getUnitidFromName(playerName)
 				unitid = "player"; 
 			end;
 		
-			unitname = self:getPlayerAndRealm(unitid);
+			unitname = self:getPlayerAndRealm(unitid, keepRealmnameSpaces);
 			if playerName == unitname then
 				return unitid;
 			end;
 		end;
 	else
 		--	Solo:
-		if playerName == currentPlayer then
+		if playerName == self.localPlayerName then
 			return "player";
 		end;
 	end;

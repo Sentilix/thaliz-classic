@@ -5,13 +5,13 @@
 	<!-- template for Message list entries -->
 	<Button name="Thaliz_CellTemplate" hidden="true" virtual="true">
 		<Size>
-			<AbsDimension x="770" y="16"/>
+			<AbsDimension x="870" y="16"/>
 		</Size>
 		<Layers>
 			<Layer>
 				<FontString name="$parentMessage" justifyH="LEFT" inherits="GameFontNormal">
 					<Size>
-						<AbsDimension x="670" y="16"/>
+						<AbsDimension x="680" y="16"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
@@ -28,7 +28,7 @@
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="580" y="0"/>
+								<AbsDimension x="680" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -40,7 +40,7 @@
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="490" y="0"/>
+								<AbsDimension x="750" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -74,7 +74,7 @@
 			<KeyValue key="backdropColor" value="BLACK" type="global"/>
 			<KeyValue key="backdropBorderColor" value="WHITE" type="global"/>
 		</KeyValues>
-		<Size x="840" y="516" />
+		<Size x="940" y="516" />
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -83,7 +83,7 @@
 			<!-- Message list frame -->
 			<ScrollFrame name="$parentTableList" inherits="FauxScrollFrameTemplate, BackdropTemplate">
 				<Size>
-					<AbsDimension x="780" y="330"/>
+					<AbsDimension x="880" y="330"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -393,8 +393,8 @@
 			<AbsDimension x="600" y="250" />
 		</Size>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset x="0" y="0" />
+			<Anchor point="CENTER" relativeTo="ThalizFrame">
+				<Offset x="0" y="100" />
 			</Anchor>
 		</Anchors>
 		<Frames>
@@ -632,7 +632,7 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
+		<!--<Scripts>
 			<OnLoad inherit="prepend">
 				self:SetMovable(true)
 				self:SetUserPlaced(true)
@@ -644,7 +644,7 @@
 			<OnDragStop>
 				self:StopMovingOrSizing()
 			</OnDragStop>
-		</Scripts>
+		</Scripts>-->
 	</Frame>
 
 	<!-- Profile management frame -->

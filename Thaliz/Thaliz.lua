@@ -44,47 +44,85 @@ local EMOTE_GROUP_RACE						= "Race";
 
 --	List of valid class names with priority and resurrection spell name (if any)
 --	classname, priority, spellname (translated runtime), spellID
+
+local Thaliz_ClassMatrix = {
+	["DEATH KNIGHT"] = {
+		["class"] = "Death Knight",
+		["priority"] = 20,
+		["spellid"] = nil,
+		["color"] = { 196, 30, 58 },
+	},
+	["DEMON HUNTER"] = {
+		["class"] = "Demon Hunter",
+		["priority"] = 30,
+		["spellid"] = nil,
+		["color"] = { 163, 48, 201 },
+	},
+	["DRUID"] = {
+		["class"] = "Druid",
+		["priority"] = 40,
+		["spellid"] = 50769,
+		["combatres"] = 20484,
+		["color"] = { 255, 125, 10 },
+	},
+	["HUNTER"] = {
+		["class"] = "Hunter",
+		["priority"] = 30,
+		["spellid"] = nil,
+		["color"] = { 171, 212, 115 },
+	},
+	["MAGE"] = {
+		["class"] = "Mage",
+		["priority"] = 40,
+		["spellid"] = nil,
+		["color"] = { 105, 204, 240 },
+	},
+	["MONK"] = {
+		["class"] = "Monk",
+		["priority"] = 50,
+		["spellid"] = 115178,
+		["color"] = { 0, 255, 150 },
+	},
+	["PALADIN"] = {
+		["class"] = "Paladin",
+		["priority"] = 50,
+		["spellid"] = 7328,
+		["color"] = { 245, 140, 186 },
+	},
+	["PRIEST"] = {
+		["class"] = "Priest",
+		["priority"] = 50,
+		["spellid"] = 2006,
+		["color"] = { 255, 255, 255 },
+	},
+	["ROGUE"] = {
+		["class"] = "Rogue",
+		["priority"] = 10,
+		["spellid"] = nil,
+		["color"] = { 255, 245, 105 },
+	},
+	["SHAMAN"] = {
+		["class"] = "Shaman",
+		["priority"] = 50,
+		["spellid"] = 2008,
+		["color"] = { 0, 112, 221 },
+	},
+	["WARLOCK"] = {
+		["class"] = "Warlock",
+		["priority"] = 30,
+		["spellid"] = nil,
+		["color"] = { 148, 130, 201 },
+	},
+	["WARRIOR"] = {
+		["class"] = "Warrior",
+		["priority"] = 20,
+		["spellid"] = nil,
+		["color"] = { 199, 156, 110 },
+	},
+}
+
+
 local Thaliz_classInfo = { }
-
-local Thaliz_classInfo_Classic = {
-	{ "Druid",          40, nil,	20484	},	-- Rebirth
-	{ "Hunter",         30, nil,	nil		},
-	{ "Mage",           40, nil,	nil		},
-	{ "Paladin",        50, nil,	7328	},	-- Redemption
-	{ "Priest",         50, nil,	2006	},	-- Resurrection
-	{ "Rogue",          10, nil,	nil		},
-	{ "Shaman",         50, nil,	2008	},	-- Ancestral Spirit
-	{ "Warlock",        30, nil,	nil		},
-	{ "Warrior",        20, nil,	nil		}
-};
-
-local Thaliz_classInfo_WotLK = {
-	{ "Death Knight",   20,	nil,	nil		},
-	{ "Druid",          40, nil,	50769	},	-- Revive (rebirth is now ignored)
-	{ "Hunter",         30, nil,	nil		},
-	{ "Mage",           40, nil,	nil		},
-	{ "Paladin",        50, nil,	7328	},	-- Redemption
-	{ "Priest",         50, nil,	2006	},	-- Resurrection
-	{ "Rogue",          10, nil,	nil		},
-	{ "Shaman",         50, nil,	2008	},	-- Ancestral Spirit
-	{ "Warlock",        30, nil,	nil		},
-	{ "Warrior",        20, nil,	nil		}
-};
-
-local Thaliz_classInfo_Retail = {
-	{ "Death Knight",   20,	nil,	nil		},
-	{ "Demon Hunter",   30,	nil,	nil		},
-	{ "Druid",          40, nil,	50769	},	-- Revive
-	{ "Hunter",         30, nil,	nil		},
-	{ "Mage",           40, nil,	nil		},
-	{ "Paladin",        50, nil,	7328	},	-- Redemption
-	{ "Priest",         50, nil,	2006	},	-- Resurrection
-	{ "Rogue",          10, nil,	nil		},
-	{ "Shaman",         50, nil,	2008	},	-- Ancestral Spirit
-	{ "Warlock",        30, nil,	nil		},
-	{ "Warrior",        20, nil,	nil		},
-	{ "Monk",           50, nil,	115178	}	-- Resuscitate
-};
 
 
 --	Table: { Name, Sample, Pattern }
@@ -140,7 +178,6 @@ local Thaliz_Blacklist_Spellcast = 10;
 local Thaliz_Blacklist_Resurrect = 30;
 local Thaliz_Blacklist_Timeout = Thaliz_Blacklist_Spellcast + Thaliz_Blacklist_Resurrect;
 
-local Thaliz_PlayerNameAndRealm = "";
 local Thaliz_LastRandomMessageIndex = -1;
 local Thaliz_Enabled = true;
 local ThalizConfigDialogOpen = false;
@@ -248,7 +285,7 @@ local Thaliz_DefaultResurrectionMessages_TBC = {
 local function partyEcho(msg)
 	if IsInRaid() then
 		SendChatMessage(msg, RAID_CHANNEL)
-	elseif Thaliz_IsInParty() then
+	elseif A:isInParty() then
 		SendChatMessage(msg, PARTY_CHANNEL)
 	end
 end
@@ -329,10 +366,10 @@ end
 ]]
 SLASH_THALIZ_VERSION1 = "/thalizversion"
 SlashCmdList["THALIZ_VERSION"] = function(msg)
-	if IsInRaid() or Thaliz_IsInParty() then
-		Thaliz_SendAddonMessage("TX_VERSION##");
+	if IsInRaid() or A:isInParty() then
+		A:sendAddonMessage("TX_VERSION##");
 	else
-		A:echo(string.format("%s is using Thaliz version %s", A:getPlayerAndRealm("player"), A.addonVersion));
+		A:echo(string.format("%s is using Thaliz version %s", a.localPlayerName, A.addonVersion));
 	end
 end
 
@@ -590,26 +627,11 @@ function Thaliz_RefreshVisibleMessageList(offset)
 			prmColor = { 0.8, 0.8, 0.0 }
 		elseif grp == EMOTE_GROUP_CLASS then
 			grpColor = { 0.8, 0.0, 1.0 }
-			
-			if prm == "DRUID" then
-				prmColor = { 1.00, 0.49, 0.04 }
-			elseif prm == "HUNTER" then
-				prmColor = { 0.67, 0.83, 0.45 }
-			elseif prm == "MAGE" then
-				prmColor = { 0.41, 0.80, 0.94 }
-			elseif prm == "PALADIN" then
-				prmColor = { 0.96, 0.55, 0.73 }
-			elseif prm == "PRIEST" then
-				prmColor = { 1.00, 1.00, 1.00 }
-			elseif prm == "ROGUE" then
-				prmColor = { 1.00, 0.96, 0.41 }
-			elseif prm == "SHAMAN" then
-				prmColor = { 0.00, 0.44, 0.87 }
-			elseif prm == "WARLOCK" then
-				prmColor = { 0.58, 0.51, 0.79 }
-			elseif prm == "WARRIOR" then
-				prmColor = { 0.78, 0.61, 0.43 }
-			end;			
+
+			local classinfo = Thaliz_ClassMatrix[prm];
+			if classinfo then
+				prmColor = { classinfo["color"][1] / 255, classinfo["color"][2] / 255, classinfo["color"][3] / 255 };
+			end;
 		elseif grp == EMOTE_GROUP_RACE then
 			grpColor = { 0.80, 0.80, 0.00 }			
 			if prm == "DWARF" or prm == "GNOME" or prm == "HUMAN" or prm == "NIGHT ELF" or prm == "DRAENAI" then
@@ -725,7 +747,6 @@ function Thaliz_SaveMessageButton_OnClick()
 		end;
 	end
 
-	--echo(string.format("Saving, ID=%d, Offset=%d, Msg=%s, Grp=%s, Val=%s", currentObjectId, offset, msg, grp, prm));
 	Thaliz_CloseMsgEditorButton_OnClick();	
 	Thaliz_UpdateResurrectionMessage(currentObjectId, offset, msg, grp, prm);
 	Thaliz_UpdateMessageList();
@@ -971,8 +992,6 @@ function Thaliz_ParseProfileNames()
 	Thaliz_ProfileTable = { };
 
 	for realmName, realmInfo in next, Thaliz_Options do
-		--A:echo(string.format("key:%s, type:%s", realmName or "nil", type(realmInfo) or "nil"));
-
 		if type(realmInfo) == "table" then
 			for playerName, playerInfo in next, realmInfo do
 				if type(playerInfo) == "table" then
@@ -989,28 +1008,6 @@ function Thaliz_ParseProfileNames()
 end;
 
 
-
-function Thaliz_GetUnitID(playername)
-	local groupsize, grouptype;
-		
-	groupsize = GetNumGroupMembers();
-	if IsInRaid() then
-		grouptype = "raid";	
-	else
-		grouptype = "party";
-	end;
-
-	for n=1, groupsize, 1 do
-		unitid = grouptype..n
-
-		--if UnitName(unitid) == playername then
-		if GetUnitName(unitid, true) == playername then
-			return unitid;
-		end
-	end
-
-	return nil;
-end
 
 --[[
 	Convert a msg so first letter is uppercase, and rest as lower case.
@@ -1043,9 +1040,10 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		return;
 	end
 
+	playername = A:getFullPlayerName(playername);
+
 	if not unitid then
-		unitid = Thaliz_GetUnitID(playername);			
-		
+		unitid = A:getUnitidFromName(playername);
 		if not unitid then
 			return;
 		end
@@ -1054,7 +1052,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	local playershortname = Thaliz_StripRealmName(playername);
 	local guildname = GetGuildInfo(unitid);
 	local race = string.upper(UnitRace(unitid));
-	local _, class = UnitClass(unitid);
+	local class = A:unitClass(unitid);
 	local charname = string.upper(playershortname);
 
 	if guildname then
@@ -1064,9 +1062,6 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		guildname = "(No Guild)";
 		UCGuildname = "";
 	end;	
-
-	--echo(string.format("Ressing: player=%s, unitid=%s", playername, unitid));
-	--echo(string.format("Guild=%s, class=%s, race=%s", guildname, class, race));
 
 	-- This is a list of ALL messages.
 	-- Now identify the macros suitable for this player only:
@@ -1217,6 +1212,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		echo(message);
 	end
 	
+
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
 		local whisperMsg = Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage);
 		if whisperMsg and not(whisperMsg == "") then
@@ -1307,15 +1303,6 @@ function Thaliz_UpdateResurrectionMessage(index, offset, message, group, param)
 	_G[frame:GetName().."Param"]:SetText(param);
 end
 
-function Thaliz_TranslateSpellnames()
-	for key, val in next, Thaliz_classInfo do 
-		if type(val[4]) == "number" then
-			local spellname, _ = GetSpellInfo(val[4]);
-			val[3] = spellname;
-		end
-	end
-end;
-
 
 
 --  *******************************************************
@@ -1382,9 +1369,6 @@ function Thaliz_ScanRaid()
 		return;
 	end
 
-	local classinfo = Thaliz_GetClassinfo(Thaliz_UnitClass("player"));
-	local spellname = classinfo[4];
-
 	local grouptype = "party";
 	if IsInRaid() then
 		grouptype = "raid";
@@ -1394,7 +1378,7 @@ function Thaliz_ScanRaid()
 	local warlocksAlive = false;
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
-		if not UnitIsDead(unitid) and UnitIsConnected(unitid) and UnitIsVisible(unitid) and Thaliz_UnitClass(unitid) == "WARLOCK" then
+		if not UnitIsDead(unitid) and UnitIsConnected(unitid) and UnitIsVisible(unitid) and A:unitClass(unitid) == "WARLOCK" then
 			warlocksAlive = true;
 			break;
 		end
@@ -1402,7 +1386,9 @@ function Thaliz_ScanRaid()
 
 	Thaliz_CleanupBlacklistedPlayers();
 
-	local spellnameStr = GetSpellInfo(spellname);
+	local classinfo = Thaliz_GetClassinfo(A.localPlayerClass);
+
+	local spellnameStr = GetSpellInfo(classinfo["spellid"]);
 
 	--Fetch current assigned target (if any):
 	local currentPrio = 0;
@@ -1411,31 +1397,28 @@ function Thaliz_ScanRaid()
 	local currentTarget = "";
 	unitid = RezButton:GetAttribute("unit");
 	if unitid then
-		--currentTarget = UnitName(unitid);
-		currentTarget = GetUnitName(unitid, true);
+		currentTarget = A:getPlayerAndRealm(unitid);
 	end;
 
 	local masterLooter = nil;
 	if IsInRaid() then
 		local lootMethod, _, raidIndex = GetLootMethod();
 		if lootMethod == "master" then
-			masterLooter = GetUnitName("raid"..raidIndex, true);
+			masterLooter = A:getPlayerAndRealm("raid"..raidIndex);
 		end;
 	end;
 
 	local targetprio;
 	local corpseTable = { };
-	local playername, classinfo, targetname;
+	local playername, classinfo, targetname, isBlacklisted;
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
+		playername = A:getPlayerAndRealm(unitid);
+		isBlacklisted = false;
 
-		--playername = UnitName(unitid)
-		playername = GetUnitName(unitid, true);
-	
-		local isBlacklisted = false;
 		for b=1, table.getn(blacklistedTable), 1 do
 			blacklistInfo = blacklistedTable[b];
-			blacklistTick = blacklistInfo[2];		
+			blacklistTick = blacklistInfo[2];
 			
 			if blacklistInfo[1] == playername then
 				isBlacklisted = true;
@@ -1446,8 +1429,7 @@ function Thaliz_ScanRaid()
 			end
 		end
 		
-		--targetname = UnitName("playertarget");
-		targetname = GetUnitName("playertarget", true);
+		targetname = A:getPlayerAndRealm("playertarget");
 
 		if (isBlacklisted == false) and 
 			UnitIsDead(unitid) and 
@@ -1456,8 +1438,8 @@ function Thaliz_ScanRaid()
 			UnitIsVisible(unitid) and 
 			(IsSpellInRange(spellnameStr, unitid) == 1) 
 		then
-			classinfo = Thaliz_GetClassinfo(Thaliz_UnitClass(unitid));
-			targetprio = classinfo[2];
+			classinfo = Thaliz_GetClassinfo(A:unitClass(unitid));
+			targetprio = classinfo["priority"];
 			if targetname and targetname == playername then
 				targetprio = PriorityToCurrentTarget;
 			end
@@ -1467,7 +1449,7 @@ function Thaliz_ScanRaid()
 				targetprio = PriorityToMasterLooter;
 			end;
 
-			if not warlocksAlive and classinfo[1] == "Warlock" and PriorityToFirstWarlock > targetprio then
+			if not warlocksAlive and classinfo["class"] == "Warlock" and PriorityToFirstWarlock > targetprio then
 				targetprio = PriorityToFirstWarlock;				
 			end
 
@@ -1522,8 +1504,7 @@ function Thaliz_ScanRaid()
 		RezButton:SetAttribute("unit", unitid);
 	end;
 
-	--Thaliz_SetRezTargetText(UnitName(unitid));
-	Thaliz_SetRezTargetText(GetUnitName(unitid, true));
+	Thaliz_SetRezTargetText(A:getPlayerAndRealm(unitid));
 	Thaliz_SetButtonTexture(THALIZ_RezBtn_Active, true);
 end;
 
@@ -1544,10 +1525,7 @@ function Thaliz_BroadcastResurrection(self)
 		return; 
 	end;
 
-	--local playername = UnitName(unitid);
-	local playername = GetUnitName(unitid, true);
-
-	Thaliz_SendAddonMessage(string.format("TX_RESBEGIN#%s#", playername));
+	A:sendAddonMessage(string.format("TX_RESBEGIN#%s#", A:getPlayerAndRealm(unitid)));
 end;
 
 
@@ -1569,7 +1547,7 @@ end;
 
 
 function Thaliz_InitClassSpecificStuff()
-	local _, classname = UnitClass("player");
+	local classname = A.localPlayerClass;
 
 	THALIZ_RezBtn_Passive = THALIZ_ICON_OTHER_PASSIVE;
 	THALIZ_RezBtn_Active = THALIZ_ICON_OTHER_PASSIVE;
@@ -1608,16 +1586,12 @@ function Thaliz_InitClassSpecificStuff()
 
 	if expansionLevel == 1 then
 		Thaliz_DefaultResurrectionMessages = Thaliz_DefaultResurrectionMessages_Classic;
-		Thaliz_classInfo = Thaliz_classInfo_Classic;
 	elseif expansionLevel == 2 then
 		Thaliz_DefaultResurrectionMessages = Thaliz_DefaultResurrectionMessages_TBC;	
-		Thaliz_classInfo = Thaliz_classInfo_Classic;
 	elseif expansionLevel == 3 then
 		Thaliz_DefaultResurrectionMessages = Thaliz_DefaultResurrectionMessages_TBC;	
-		Thaliz_classInfo = Thaliz_classInfo_WotLK;
 	else
 		Thaliz_DefaultResurrectionMessages = Thaliz_DefaultResurrectionMessages_TBC;	
-		Thaliz_classInfo = Thaliz_classInfo_Retail;
 	end;
 end;
 
@@ -1637,14 +1611,7 @@ end;
 
 
 function Thaliz_GetClassinfo(classname)
-	classname = Thaliz_UCFirst(classname);
-
-	for key, val in next, Thaliz_classInfo do 
-		if val[1] == classname then
-			return val;
-		end
-	end
-	return nil;
+	return Thaliz_ClassMatrix[string.upper(classname)];
 end
 
 
@@ -1737,18 +1704,6 @@ function Thaliz_StripRealmName(playername)
 	return string.gsub(playername, "(.*)-.*", "%1");
 end;
 
-function Thaliz_IsInParty()
-	if not IsInRaid() then
-		return ( GetNumGroupMembers() > 0 );
-	end
-	return false
-end
-
-function Thaliz_UnitClass(unitid)
-	local _, classname = UnitClass(unitid);
-	return classname;
-end;
-
 function Thaliz_SortTableDescending(sourcetable, index)
 	local doSort = true
 	while doSort do
@@ -1779,8 +1734,8 @@ end
 ]]
 function Thaliz_OnGroupRosterUpdate(event, ...)
 	if THALIZ_CURRENT_VERSION > 0 and not THALIZ_UPDATE_MESSAGE_SHOWN then
-		if IsInRaid() or Thaliz_IsInParty() then
-			Thaliz_SendAddonMessage(string.format("TX_VERCHECK#%s#", A.addonVersion));
+		if IsInRaid() or A:isInParty() then
+			A:sendAddonMessage(string.format("TX_VERCHECK#%s#", A.addonVersion));
 		end
 	end
 end
@@ -1832,21 +1787,6 @@ end
 --
 --  *******************************************************
 
-function Thaliz_SendAddonMessage(message)
-	local memberCount = GetNumGroupMembers();
-	if memberCount > 0 then
-		local channel = nil;
-		if IsInRaid() then
-			channel = "RAID";
-		elseif Thaliz_IsInParty() then
-			channel = "PARTY";
-		end;
-		C_ChatInfo.SendAddonMessage(A.addonPrefix, message, channel);
-	end;
-end
-
-
-
 --[[
 	Respond to a TX_VERSION command.
 	Input:
@@ -1857,7 +1797,7 @@ end
 	Thaliz:<sender (which is actually the receiver!)>:<version number>
 ]]
 function Thaliz_HandleTXVersion(message, sender)
-	Thaliz_SendAddonMessage("RX_VERSION#".. A.addonVersion .."#"..sender)
+	A:sendAddonMessage("RX_VERSION#".. A.addonVersion .."#"..sender)
 end
 
 function Thaliz_HandleTXResBegin(message, sender)
@@ -1898,25 +1838,6 @@ function Thaliz_GetMyRealm()
 	return realmname;
 end;
 
-
-function Thaliz_GetPlayerAndRealm(unitid)
-	local playername = GetUnitName(unitid, true);
-
-	if not string.find(playername, "-") then
-		playername = playername .."-".. Thaliz_GetMyRealm();
-	end;
-
-	return playername;
-end;
-
-function Thaliz_GetPlayerAndRealmFromName(playername)
-	if not string.find(playername, "-") then
-		playername = playername .."-".. Thaliz_GetMyRealm();
-	end;
-
-	return playername;
-end;
-
 function Thaliz_HandleThalizMessage(msg, sender)
 	local _, _, cmd, message, recipient = string.find(msg, "([^#]*)#([^#]*)#([^#]*)");	
 
@@ -1925,9 +1846,9 @@ function Thaliz_HandleThalizMessage(msg, sender)
 	if recipient ~= "" then
 		-- Note: recipient comes with realmname. We need to compare
 		-- with realmname too, even GetUnitName() does not return one:
-		recipient = Thaliz_GetPlayerAndRealmFromName(recipient);
+		recipient = A:getFullPlayerName(recipient);
 
-		if recipient ~= Thaliz_PlayerNameAndRealm then
+		if recipient ~= A.localPlayerName then
 			return
 		end
 	end
@@ -1953,39 +1874,18 @@ function Thaliz_SpellIsResurrect(spellId)
 	local resSpell = false;
 
 	if spellId then
-		spellId = tonumber(spellId);
-		local spellName = GetSpellInfo(spellId);
+		local incRessName = GetSpellInfo(spellId);
 
-		if IsPriest then
-			--Resurrection, rank 1=2006
-			if spellName == GetSpellInfo(2006) then	-- Lowest ress spell, thats all we need to compare against:
-				resSpell = true;
-			end;
-		elseif IsMonk then
-			-- Resuscitate, rank 1=115178:
-			if spellName == GetSpellInfo(115178) then
-				resSpell = true;
-			end;
-		elseif IsPaladin then
-			-- Redemption, rank 1=7328
-			if spellName == GetSpellInfo(7328) then
-				resSpell = true;
-			end;
-		elseif IsShaman then
-			--Ancestral Spirit, rank 1=2008
-			if spellName == GetSpellInfo(2008) then
-				resSpell = true;
-			end;
-		elseif IsDruid then
-			--Rebirth, rank 1=20484
-			if spellName == GetSpellInfo(20484) then
-				resSpell = true;
-			end;
-			--Revive, rank 1=50769
-			if spellName == GetSpellInfo(50769) then
-				resSpell = true;
-			end;
+		local classinfo = Thaliz_ClassMatrix[A.localPlayerClass];
+
+		local classRessName = "";
+		if classinfo["spellid"] then
+			classRessName = GetSpellInfo(classinfo["spellid"]);
+		elseif classinfo["combatres"] then
+			classRessName = GetSpellInfo(classinfo["combatres"]);
 		end;
+
+		resSpell = (incRessName == classRessName);
 	end;
 
 	return resSpell;
@@ -2098,10 +1998,10 @@ function Thaliz_RepositionateButton(self)
 
 	RezButton:SetSize(THALIZ_REZBUTTON_SIZE, THALIZ_REZBUTTON_SIZE);
 
-	local classinfo = Thaliz_GetClassinfo(Thaliz_UnitClass("player"));
+	local classinfo = Thaliz_GetClassinfo(A.localPlayerClass);
 
-	local spellname = classinfo[4];
-	if spellname then
+	local spellId = classinfo["spellid"];
+	if spellId then
 		RezButton:Show();
 	else
 		RezButton:Hide();
@@ -2278,7 +2178,7 @@ function Thaliz_OnEvent(self, event, ...)
 		if(resser == "player") then
 			if (target ~= "Unknown") then
 				if(debug) then 
-					echo(string.format("**DEBUG**: UNIT_SPELLCAST_SENT, SpellId=%s", spellId));
+					print(string.format("**DEBUG**: UNIT_SPELLCAST_SENT, SpellId=%s", spellId));
 				end;
 				if not Thaliz_IsPlayerBlacklisted(target) then
 					if Thaliz_SpellIsResurrect(spellId) then
@@ -2339,11 +2239,11 @@ function Thaliz_OnEvent(self, event, ...)
 			SpellcastIsStarted = timerTick;
 			if IsInRaid() then
 				if Thaliz_BeginsWith(arg1, 'raid') then
-					Thaliz_SetCurrentResurrectedTarget(GetUnitName(arg1, true));
+					Thaliz_SetCurrentResurrectedTarget(A:getPlayerAndRealm(arg1));
 				end;
 			else
 				if Thaliz_BeginsWith(arg1, 'party') then
-					Thaliz_SetCurrentResurrectedTarget(GetUnitName(arg1, true));
+					Thaliz_SetCurrentResurrectedTarget(A:getPlayerAndRealm(arg1));
 				end;
 			end;
 
@@ -2376,14 +2276,14 @@ function Thaliz_OnEvent(self, event, ...)
 				echo(string.format("**DEBUG**: COMBAT_LOG_EVENT_UNFILTERED, subevent=%s, sourceName=%s, spellId=%s", subevent, sourceName, spellId));
 			end;
 
-			if (sourceName == GetUnitName("player", true)) then
+			if (sourceName == A.localPlayerName) then
 				if Thaliz_SpellIsResurrect(spellId) then
 					SpellcastIsStarted = timerTick;
 				end;
 			end
 
 		elseif subevent == "SPELL_RESURRECT" then
-			if sourceName ~= GetUnitName("player", true) then
+			if sourceName ~= A.localPlayerName then
 				Thaliz_BlacklistPlayer(destName, Thaliz_Blacklist_Resurrect);
 			end;
 		end
@@ -2411,7 +2311,6 @@ end
 
 function Thaliz_OnLoad()
 	msgEditorIsOpen = false;
-	Thaliz_PlayerNameAndRealm = Thaliz_GetPlayerAndRealm("player");
 
 	THALIZ_CURRENT_VERSION = A:calculateVersion(A.addonVersion);
 
@@ -2432,12 +2331,9 @@ function Thaliz_OnLoad()
 
 	C_ChatInfo.RegisterAddonMessagePrefix(A.addonPrefix);
 
-	Thaliz_TranslateSpellnames();
 	Thaliz_InitClassSpecificStuff();
     Thaliz_InitializeListElements();
 	Thaliz_RefreshProfileButtons();
 
 	Thaliz_RepositionateButton(RezButton);
 end
-
-
