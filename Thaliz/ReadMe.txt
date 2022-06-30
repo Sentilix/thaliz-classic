@@ -98,7 +98,7 @@ RIP Thaliz.
 Thaliz Versions
 ---------------
 Version 3.1.2
-* Update: UP made a little bigger (again), so messages are now shown correct.
+* Update: UI made a little bigger (again), so messages are now shown correct.
 * Bugfix: Added a typecheck on imported profiles (thanks to Exoridus)
 * Cleanup: some dirty old code handling the spellnames<->spellid refactored.
 
