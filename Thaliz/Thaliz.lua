@@ -320,6 +320,8 @@ SlashCmdList["THALIZ_THALIZ"] = function(msg)
 		SlashCmdList["THALIZ_DISABLE"]();
 	elseif option == "ENABLE" then
 		SlashCmdList["THALIZ_ENABLE"]();
+	elseif option == "RESETBUTTON" then
+		SlashCmdList["THALIZ_RESETBUTTON"]();
 	elseif option == "HELP" then
 		SlashCmdList["THALIZ_HELP"]();
 	elseif option == "SHOW" then
@@ -407,6 +409,30 @@ SlashCmdList["THALIZ_ENABLE"] = function(msg)
 	A:echo("Resurrection announcements has been enabled.");
 end
 
+--[[
+	Enable Thaliz' messages
+	Syntax: /thaliz resetbutton
+	Added in: 3.1.3
+]]
+SLASH_THALIZ_RESETBUTTON1 = "/thalizresetbutton"
+SlashCmdList["THALIZ_RESETBUTTON"] = function(msg)
+
+	RezButton:ClearAllPoints();
+	RezButton:SetPoint("CENTER", "UIParent", "CENTER", 0, 0);
+	RezButton:SetSize(THALIZ_REZBUTTON_SIZE, THALIZ_REZBUTTON_SIZE);
+
+	if Thaliz_OPTION_RezButtonVisible_Default == "1" then
+		RezButton:Show();
+	end;
+
+	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, 0);
+	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosY, 0);
+
+	A:echo("The Resurrection button has been reset.");
+end
+
+
+
 
 
 --[[
@@ -446,6 +472,7 @@ SlashCmdList["THALIZ_HELP"] = function(msg)
 	A:echo("    Config       (default) Open the configuration dialogue,");
 	A:echo("    Disable      Disable Thaliz resurrection messages.");
 	A:echo("    Enable       Enable Thaliz resurrection messages again.");
+	A:echo("    ResetButton  Resets the position of the Rez Button.");
 	A:echo("    Help         This help.");
 	A:echo("    Show         Shows the resurrection button.");
 	A:echo("    Hide         Hides the resurrection button.");

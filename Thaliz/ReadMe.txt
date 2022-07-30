@@ -97,6 +97,12 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.1.3
+* Added command to reset the rez button position: "/thaliz resetbutton".
+* Added support for Wrath of the Lich King Classic.
+* Bugfix: Fixed a LUA error when doing "/thaliz version".
+
+
 Version 3.1.2
 * Update: UI made a little bigger (again), so messages are now shown correct.
 * Bugfix: Added a typecheck on imported profiles (thanks to Exoridus)

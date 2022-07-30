@@ -1,10 +1,10 @@
-## Title: Thaliz - One-button resurrection
+## Title: Thaliz - One-button resurrection (TBC)
 ## Notes: Smart addon to handle ressing party / raid members
-## Version: 3.1.2
+## Version: 3.1.3
 ## Author: Mimma @ <EU-Pyrewood Village>
-## Interface: 90205
+## Interface: 30400
 ## SavedVariables: Thaliz_Options
-## X-Expansion-Level: 9
+## X-Expansion-Level: 3
 ## X-Curse-Project-ID: 346116
 ## X-WoWI-ID: 25437
 ## X-Wago-ID: ZQ6aoqGW
