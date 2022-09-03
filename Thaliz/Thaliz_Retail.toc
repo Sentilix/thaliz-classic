@@ -2,7 +2,7 @@
 ## Notes: Smart addon to handle ressing party / raid members
 ## Version: 3.1.4
 ## Author: Mimma @ <EU-Pyrewood Village>
-## Interface: 90205
+## Interface: 90207
 ## SavedVariables: Thaliz_Options
 ## X-Expansion-Level: 9
 ## X-Curse-Project-ID: 346116

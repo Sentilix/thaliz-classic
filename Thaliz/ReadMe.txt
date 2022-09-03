@@ -98,8 +98,10 @@ RIP Thaliz.
 Thaliz Versions
 ---------------
 Version 3.1.4
+* Bumped retail version number to 9.2.7 client.
 * Bugfix: Deathknight classname detection fixed.
 * Bugfix: Fixed another LUA error when doing "/thaliz version".
+* Removed TBC Classic support.
 
 
 Version 3.1.3
