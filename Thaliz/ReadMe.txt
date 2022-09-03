@@ -97,6 +97,11 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.1.4
+* Bugfix: Deathknight classname detection fixed.
+* Bugfix: Fixed another LUA error when doing "/thaliz version".
+
+
 Version 3.1.3
 * Added command to reset the rez button position: "/thaliz resetbutton".
 * Added support for Wrath of the Lich King Classic.

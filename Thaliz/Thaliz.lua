@@ -46,7 +46,7 @@ local EMOTE_GROUP_RACE						= "Race";
 --	classname, priority, spellname (translated runtime), spellID
 
 local Thaliz_ClassMatrix = {
-	["DEATH KNIGHT"] = {
+	["DEATHKNIGHT"] = {
 		["class"] = "Death Knight",
 		["priority"] = 20,
 		["spellid"] = nil,
@@ -371,7 +371,7 @@ SlashCmdList["THALIZ_VERSION"] = function(msg)
 	if IsInRaid() or A:isInParty() then
 		A:sendAddonMessage("TX_VERSION##");
 	else
-		A:echo(string.format("%s is using Thaliz version %s", a.localPlayerName, A.addonVersion));
+		A:echo(string.format("%s is using Thaliz version %s", A.localPlayerName, A.addonVersion));
 	end
 end
 
