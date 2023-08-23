@@ -252,7 +252,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOM">
-						<Offset x="-110" y="20" />
+						<Offset x="-160" y="20" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -266,11 +266,25 @@
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOM">
-						<Offset x="0" y="20" />
+						<Offset x="-50" y="20" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>Thaliz_ProfileButton_OnClick();</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Preset button -->
+			<Button name="PresetsButton" inherits="UIPanelButtonTemplate" movable="true" text="Presets">
+				<Size>
+					<AbsDimension x="100" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset x="60" y="20" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Thaliz_PresetButton_OnClick();</OnClick>
 				</Scripts>
 			</Button>
 			<!-- Close button -->
@@ -280,7 +294,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOM">
-						<Offset x="110" y="20" />
+						<Offset x="170" y="20" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -632,19 +646,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<!--<Scripts>
-			<OnLoad inherit="prepend">
-				self:SetMovable(true)
-				self:SetUserPlaced(true)
-				self:RegisterForDrag("LeftButton")
-			</OnLoad>
-			<OnDragStart>
-				self:StartMoving()
-			</OnDragStart>
-			<OnDragStop>
-				self:StopMovingOrSizing()
-			</OnDragStop>
-		</Scripts>-->
 	</Frame>
 
 	<!-- Profile management frame -->
@@ -718,8 +719,6 @@
 					<OnClick>Thaliz_MergeWithProfile_OnClick();</OnClick>
 				</Scripts>
 			</Button>
-
-
 			<!-- Close button -->
 			<Button name="CloseProfileButton" inherits="UIPanelButtonTemplate" text="Close">
 				<Size>
@@ -735,6 +734,95 @@
 				</Scripts>
 			</Button>
 		</Frames>	
+	</Frame>
+
+	<!-- Preset management frame -->
+	<Frame name="ThalizPresetFrame" parent="UIParent" inherits="BackdropTemplate" toplevel="true" hidden="true" frameStrata="HIGH">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
+			<KeyValue key="backdropColor" value="BLACK" type="global"/>
+			<KeyValue key="backdropBorderColor" value="WHITE" type="global"/>
+		</KeyValues>
+		<Size>
+			<AbsDimension x="390" y="165" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="ThalizFrame">
+				<Offset x="0" y="0" />
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<!-- Preset list -->
+			<Button name="DropDownPresetButton" inherits="UIDropDownMenuTemplate">
+				<Size>
+					<AbsDimension x="300" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="20" y="-40"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(self, Thaliz_DropDownPresets_Initialize);
+					</OnLoad>
+				</Scripts>
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Copy messages from">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parent">
+									<Offset x="0" y="20"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+			<!-- Import (overwrite old) -->
+			<Button name="ReplaceWithPresetButton" inherits="UIPanelButtonTemplate" text="Replace with Preset">
+				<Size>
+					<AbsDimension x="150" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="DropDownPresetButton">
+						<Offset x="-80" y="-30" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Thaliz_ReplaceWithPreset_OnClick();</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Import (merge) -->
+			<Button name="MergeWithPresetButton" inherits="UIPanelButtonTemplate" text="Merge with Preset">
+				<Size>
+					<AbsDimension x="150" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="DropDownPresetButton">
+						<Offset x="80" y="-30" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Thaliz_MergeWithPreset_OnClick();</OnClick>
+				</Scripts>
+			</Button>
+
+			<!-- Close button -->
+			<Button name="ClosePresetButton" inherits="UIPanelButtonTemplate" text="Close">
+				<Size>
+					<AbsDimension x="100" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset x="0" y="15" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Thaliz_ClosePresetButton_OnClick();</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
 	</Frame>
 
 	<!-- The Rez Button -->

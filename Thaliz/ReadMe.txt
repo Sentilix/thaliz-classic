@@ -97,6 +97,16 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.2.0
+* Bumped for Xlassic client version 1.14.4
+* Bumped for Wrath client version 3.4.2
+* Added Preset: list of 6 x 20 pre-defined messages.
+
+
+Version 3.1.5
+* Excluded Retail (version 10.0.0 / Dragonflight) after heavy API changes.
+
+
 Version 3.1.4
 * Bumped retail version number to 9.2.7 client.
 * Bugfix: Deathknight classname detection fixed.

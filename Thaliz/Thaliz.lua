@@ -213,70 +213,8 @@ local Thaliz_DebugFunction = nil;
 --	{realmname}{playername}{parameter}
 Thaliz_Options = { }
 
-
--- List of resurrection messages
---	{ "Message", "Group", "Group parameter value" }
-local Thaliz_DefaultResurrectionMessages = { }
-
-local Thaliz_DefaultResurrectionMessages_Classic = {
-	-- UBRS
-	{ "(Ressing) THIS CANNOT BE!!! %s, deal with these insects.",		EMOTE_GROUP_DEFAULT, "" },	-- Rend Blackhand (UBRS)
-	-- ZG
-	{ "(Ressing) I\'m keeping my eye on you, %s!",						EMOTE_GROUP_DEFAULT, "" },	-- Bloodlord Mandokir (Raptor boss)
-	{ "(Ressing) %s, fill me with your RAGE!",							EMOTE_GROUP_DEFAULT, "" },	-- High Priest Thekal (Tiger boss)
-	{ "(Ressing) Fleeing will do you no good, %s!",						EMOTE_GROUP_DEFAULT, "" },	-- Hakkar
-	-- AQ20
-	{ "(Ressing) Master %c %s, continue the fight!",					EMOTE_GROUP_DEFAULT, "" },	-- General Rajaxx
-	-- MC	
-	{ "(Ressing) Perhaps you'll need another lesson in pain, %s!",		EMOTE_GROUP_DEFAULT, "" },	-- Majordomo Executus
-	{ "(Ressing) Too soon, %s - you have died too soon!",				EMOTE_GROUP_DEFAULT, "" },	-- Ragnaros
-	{ "(Ressing) You have failed me, %s! Justice is met, indeed!",		EMOTE_GROUP_DEFAULT, "" }, 	-- Ragnaros
-	-- BWL
-	{ "(Ressing) Forgive me %s, your death only adds to my failure.",	EMOTE_GROUP_DEFAULT, "" },	-- Vaelastrasz
-	-- AQ40
-	{ "(Ressing) Let your death serve as an example, %s!",				EMOTE_GROUP_DEFAULT, "" },	-- Prophet Skeram
-	{ "(Ressing) Only flesh and bone. %cs are such easy prey, %s!",		EMOTE_GROUP_DEFAULT, "" },	-- Emperor Vek'lor (Twins)	
-	{ "(Ressing) Your friends will abandon you, %s!",					EMOTE_GROUP_DEFAULT, "" },	-- C'Thun
-	-- Naxx
-	{ "(Ressing) Shhh, %s... it will all be over soon.",				EMOTE_GROUP_DEFAULT, "" },	-- Anub'Rekhan
-	{ "(Ressing) Slay %s in the masters name!",							EMOTE_GROUP_DEFAULT, "" },	-- Grand Widow Faerlina
-	{ "(Ressing) Rise, %s! Rise and fight once more!",					EMOTE_GROUP_DEFAULT, "" },	-- Noth the Plaguebringer
-	{ "(Ressing) You should have stayed home, %s!",						EMOTE_GROUP_DEFAULT, "" },	-- Instructor Razuvious
-	{ "(Ressing) Death is the only escape, %s.",						EMOTE_GROUP_DEFAULT, "" },	-- Gothik the Harvester
-	{ "(Ressing) The first res goes to %s! Anyone care to wager?",		EMOTE_GROUP_DEFAULT, "" },	-- Lady Blaumeux (4HM)
-	{ "(Ressing) No more play, %s?",									EMOTE_GROUP_DEFAULT, "" },	-- Patchwerk
-	{ "(Ressing) %s, you are too late... I... must... OBEY!",			EMOTE_GROUP_DEFAULT, "" } 	-- Thaddius
-}
-
-local Thaliz_DefaultResurrectionMessages_TBC = {
-	-- Karazhan
-	{ "(Ressing) Perhaps you would rather test yourself against a more formidable opponent, %s",	EMOTE_GROUP_DEFAULT, "" },	-- Attumen the Huntsman
-	{ "(Ressing) Come, gentle night; and give me back my %s!",										EMOTE_GROUP_DEFAULT, "" },	-- Romeo and Julie
-	{ "(Ressing) You rang, %s?",																	EMOTE_GROUP_DEFAULT, "" },	-- Moroes
-	{ "(Ressing) %s is no longer op... er... ation... al.",											EMOTE_GROUP_DEFAULT, "" },	-- Curator
-	{ "(Ressing) Please, accept this humble offering, oh great %s.",								EMOTE_GROUP_DEFAULT, "" },	-- Terestian Illhoof
-	{ "(Ressing) You've wasted enough of my time... let these games be finished, %s!",				EMOTE_GROUP_DEFAULT, "" },	-- Shade of Aran
-	{ "(Ressing) Your greed, your foolishness has brought you to this end, %s.",					EMOTE_GROUP_DEFAULT, "" },	-- Prince Malchezaar
-	-- Gruuls Lair
-	{ "(Ressing) You will not defeat the Hand of %s!",												EMOTE_GROUP_DEFAULT, "" }, 	-- High King Maulgar
-	-- Tempest Keep/The Eye
-	{ "(Ressing) Let us see how your nerves hold up against the Darkener, %s.",						EMOTE_GROUP_DEFAULT, "" },	-- Kael'thas Sunstrider
-	-- Battle for Mount Hyjal
-	{ "(Ressing) All of your efforts have been in vain, %s!",										EMOTE_GROUP_DEFAULT, "" },	-- Archimonde
-	{ "(Ressing) %s has returned to finish what was begun so many years ago.",						EMOTE_GROUP_DEFAULT, "" },	-- Azgalor
-	--	Black Temple
-	{ "(Ressing) Is this it, %s? Is this all the fury you can muster?",								EMOTE_GROUP_DEFAULT, "" },	-- Illidan Stormrage
-	{ "(Ressing) You play, you pay, %s!",															EMOTE_GROUP_DEFAULT, "" },	-- Mother Shahraz
-	{ "(Ressing) %s, You can have anything you desire... for a price.",								EMOTE_GROUP_DEFAULT, "" },	-- Reliquary of Souls
-	{ "(Ressing) So much time has passed. %s have a lot of catching up to do...",					EMOTE_GROUP_DEFAULT, "" },	-- Teron Gorefiend
-	--	Serpentshrine Cavern
-	{ "(Ressing) I did not wish to lower myself by ressing %s, but you leave me little choice!",	EMOTE_GROUP_DEFAULT, "" },	-- Lady Vashj
-	{ "(Ressing) Your overconfidence will be your undoing! %s, lend me your strength!",				EMOTE_GROUP_DEFAULT, "" },	-- Fathom-Lord Karathress
-	{ "(Ressing) %s ... Be gone trifling %r. I'm in control now.",									EMOTE_GROUP_DEFAULT, "" },	-- Leotheras the Blind
-	--	Sunwell Plataeu
-	{ "(Ressing) The expendible have perished... So be it! Now I shall succeed where %s could not!",EMOTE_GROUP_DEFAULT, "" },	-- Kil'jaeden
-	{ "(Ressing) Your luck has run its course, %s!",												EMOTE_GROUP_DEFAULT, "" } 	-- Eredar Twins
-}
+-- First-time messages: use the DAD JOKES, beware! :-D
+local Thaliz_DefaultPresetGroup							= 5;		
 
 
 --[[
@@ -509,6 +447,7 @@ end
 function Thaliz_CloseConfigurationDialogue()
 	Thaliz_CloseMsgEditorButton_OnClick();
 	Thaliz_CloseProfileButton_OnClick();
+	Thaliz_ClosePresetButton_OnClick();
 
 	ThalizConfigDialogOpen = false;
 	ThalizFrame:Hide();
@@ -697,6 +636,7 @@ end
 local currentObjectId;	-- A small hack: the object ID is lost when using own frame
 local msgEditorIsOpen;
 local profileFrameIsOpen;
+local presetFrameIsOpen;
 function Thaliz_OnMessageClick(object)
 	Thaliz_CloseMsgEditorButton_OnClick();
 
@@ -1274,9 +1214,20 @@ function Thaliz_SetResurrectionMessages(resurrectionMessages)
 end
 
 function Thaliz_ResetResurrectionMessages()
-	Thaliz_SetResurrectionMessages( Thaliz_DefaultResurrectionMessages );
+	local preset = Thaliz_PresetMessages[Thaliz_DefaultPresetGroup];
+
+	local presetMessages = preset["messages"];
+	if not presetMessages or type(presetMessages) ~= "table" then return; end;
+
+	local resurrectionMessages = { };
+	for _, message in next, presetMessages do
+		tinsert(resurrectionMessages, { message, EMOTE_GROUP_DEFAULT, "" });
+	end;
+
+	Thaliz_SetResurrectionMessages(resurrectionMessages);
+	Thaliz_UpdateMessageList();
 	
-	return Thaliz_DefaultResurrectionMessages;
+	return resurrectionMessages;
 end
 
 function Thaliz_AddResurrectionMessage(message, group, param)
@@ -1607,18 +1558,6 @@ function Thaliz_InitClassSpecificStuff()
 
 	if not IsResser then
 		Thaliz_OPTION_RezButtonVisible_Default = "0";
-	end;
-
-	local expansionLevel = 1 * A.addonExpansionLevel;
-
-	if expansionLevel == 1 then
-		Thaliz_DefaultResurrectionMessages = Thaliz_DefaultResurrectionMessages_Classic;
-	elseif expansionLevel == 2 then
-		Thaliz_DefaultResurrectionMessages = Thaliz_DefaultResurrectionMessages_TBC;	
-	elseif expansionLevel == 3 then
-		Thaliz_DefaultResurrectionMessages = Thaliz_DefaultResurrectionMessages_TBC;	
-	else
-		Thaliz_DefaultResurrectionMessages = Thaliz_DefaultResurrectionMessages_TBC;	
 	end;
 end;
 
@@ -1969,11 +1908,21 @@ function Thaliz_ProfileButton_OnClick()
 	ThalizProfileFrame:Show();
 end;
 
+function Thaliz_PresetButton_OnClick()
+	if msgEditorIsOpen then
+		Thaliz_CloseMsgEditorButton_OnClick();
+	end;
+
+	ThalizPresetFrame:Show();
+end;
+
 function Thaliz_CloseButton_OnClick()
 	if msgEditorIsOpen then
 		Thaliz_CloseMsgEditorButton_OnClick();
 	elseif profileFrameIsOpen then
 		Thaliz_CloseProfileButton_OnClick();
+	elseif presetFrameIsOpen then
+		Thaliz_ClosePresetButton_OnClick();
 	else
 		Thaliz_CloseConfigurationDialogue();
 	end;
@@ -1982,6 +1931,11 @@ end
 function Thaliz_CloseProfileButton_OnClick()
 	ThalizProfileFrame:Hide();
 	profileFrameIsOpen = false;
+end;
+
+function Thaliz_ClosePresetButton_OnClick()
+	ThalizPresetFrame:Hide();
+	presetFrameIsOpen = false;
 end;
 
 function Thaliz_CloseMsgEditorButton_OnClick()
@@ -2056,12 +2010,31 @@ function Thaliz_DropDownProfiles_Initialize(frame, level, menuList)
 	end
 end;
 
+function Thaliz_DropDownPresets_Initialize(frame, level, menuList)
+	UIDropDownMenu_SetWidth(DropDownPresetButton, 300);
+
+	for index=1, table.getn(Thaliz_PresetMessages) do
+		local preset = Thaliz_PresetMessages[index];
+
+		local info = UIDropDownMenu_CreateInfo();
+		info.text			= string.format("%s - %s", preset["name"], preset["description"]);
+		info.notCheckable	= true;
+		info.func			= function() Thaliz_DropDownPreset_OnClick(this, preset) end;
+		UIDropDownMenu_AddButton(info);
+	end;
+end;
+
 function Thaliz_DropDownProfiles_OnClick(sender, profile)
 	Thaliz_SelectedProfile = profile;
 	UIDropDownMenu_SetText(DropDownProfileButton, string.format("%s - %s (%d)", profile["realm"], profile["name"], profile["count"]));
 	Thaliz_RefreshProfileButtons();
 end;
 
+function Thaliz_DropDownPreset_OnClick(sender, preset)
+	Thaliz_SelectedPreset = preset;
+	UIDropDownMenu_SetText(DropDownPresetButton, string.format("%s - %s", preset["name"], preset["description"]));
+	Thaliz_RefreshPresetButtons();
+end;
 
 function Thaliz_InitializeNameEnclosures()
 	local playername = UnitName('Player');
@@ -2116,12 +2089,32 @@ function Thaliz_RefreshProfileButtons()
 	end;
 end;
 
+function Thaliz_RefreshPresetButtons()
+	local presetText = UIDropDownMenu_GetText(DropDownPresetButton) or "";
+
+	if presetText == "" then
+		ReplaceWithPresetButton:Disable();
+		MergeWithPresetButton:Disable();
+	else
+		ReplaceWithPresetButton:Enable();
+		MergeWithPresetButton:Enable();
+	end;
+end;
+
 function Thaliz_ReplaceWithProfile_OnClick()
 	Thaliz_ImportProfile();
 end;
 
+function Thaliz_ReplaceWithPreset_OnClick()
+	Thaliz_ImportPreset();
+end;
+
 function Thaliz_MergeWithProfile_OnClick()
 	Thaliz_ImportProfile(true);
+end;
+
+function Thaliz_MergeWithPreset_OnClick()
+	Thaliz_ImportPreset(true);
 end;
 
 function Thaliz_ImportProfile(keepExistingMessages)
@@ -2179,7 +2172,48 @@ function Thaliz_ImportProfile(keepExistingMessages)
 	end;
 end;
 
+function Thaliz_ImportPreset(keepExistingMessages)
+	if not Thaliz_SelectedPreset then return; end;
+	local preset = Thaliz_SelectedPreset;
 
+	local presetMessages = preset["messages"];
+	if not presetMessages or type(presetMessages) ~= "table" then return; end;
+
+	local resurrectionMessages = { };
+	if keepExistingMessages then
+		resurrectionMessages = Thaliz_GetResurrectionMessages();
+	end;
+
+	--	Check if we already have this macro in our list:
+	local messageAddedCounter = 0;
+	for _, importMessage in next, presetMessages do
+		local alreadyExists = false;
+		for _, myMessage in next, resurrectionMessages do
+			if myMessage[1] == importMessage then
+				alreadyExists = true;
+				break;
+			end;
+		end;
+
+		if not alreadyExists then
+			messageAddedCounter = messageAddedCounter + 1;
+			tinsert(resurrectionMessages, { importMessage, EMOTE_GROUP_DEFAULT, "" });
+		end;
+	end;
+
+	if messageAddedCounter > 0 then
+		Thaliz_SetResurrectionMessages(resurrectionMessages);
+		if keepExistingMessages then
+			A:echo(string.format("%d message(s) was merged from presets.", messageAddedCounter));
+		else
+			A:echo(string.format("%d message(s) was imported from presets.", messageAddedCounter));
+		end;
+
+		Thaliz_UpdateMessageList();
+	else
+		A:echo("No messages was imported from preset.");
+	end;
+end;
 
 
 
