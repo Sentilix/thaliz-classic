@@ -97,8 +97,18 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.2.2
+* Bumped for Classic client version 1.15.1
+
+
+Version 3.2.1
+* Bumped for Classic client version 1.15.0
+* Bumped for Wrath client version 3.4.3
+* Added more Dad jokes
+
+
 Version 3.2.0
-* Bumped for Xlassic client version 1.14.4
+* Bumped for Classic client version 1.14.4
 * Bumped for Wrath client version 3.4.2
 * Added Preset: list of 6 x 20 pre-defined messages.
 
