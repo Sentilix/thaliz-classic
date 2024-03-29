@@ -107,7 +107,7 @@ Thaliz_PresetMessages = {
 	},
 	[5] = {
 		["name"] = "Dad Jokes",
-		["description"] = "Insanely bad jokes!",
+		["description"] = "40 jokes of questionable quality.",
 		["messages"] = {
 			"(Ressing) %s, did you know Albert Einstein had a brother called Frank? Apparently, he was a real monster.",
 			"(Ressing) %s stole my copy of Microsoft Office. But I will get it back - you have my Word!",
@@ -150,9 +150,56 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s sued an airline company after it lost his luggage. Sadly, he lost his case.",
 			"(Ressing) %s changed his iPod's name to Titanic. It's syncing now.",
 			"(Ressing) %s just joined the amateur autopsy club. Tuesday is open Mike night!",
+		},
+	},	
+	[6] = {
+		["name"] = "Dad Jokes",
+		["description"] = "40 more jokes. Same low quality.",
+		["messages"] = {		
+			"(Ressing) %s, did you hear about the surgeon who enjoyed performing quick surgeries on insects? He did one on the fly.",		
+			"(Ressing) %s, don't spell \"part\" backwards. It's a trap!",
+			"(Ressing) %s, what's the difference between a hippo and a zippo? One is really heavy and the other's a little lighter.",
+			"(Ressing) %s, there is a fine line between a numerator and a denominator. Only a fraction of people will get this!",
+			"(Ressing) %s just got fired from the keyboard factory. He was not doing enough shifts.",
+			"(Ressing) %s searched for a lighter on Amazon, but all he could find were 6,000 matches.",
+			"(Ressing) %s invented the shovel. It was a ground-breaking invention.",
+			"(Ressing) There's only one thing %s can't deal with, and that's a deck of cards glued together.",
+			"(Ressing) %s have a fear of speed bumps, but is slowly getting over it.",
+			"(Ressing) %s have a fear of elevators, but have now taking steps to avoid it.",
+			"(Ressing) %s, did you hear about the cartoonist found dead at his home? Details are sketchy.",
+			"(Ressing) %s, what does \"idk\" stand for? Everyone I ask says, \"I don't know.\"",
+			"(Ressing) %s says that England doesn't have a kidney bank. But it does have a Liverpool.",
+			"(Ressing) %s is making apocalypse jokes like there is no tomorrow!",
+			"(Ressing) %s thinks sausage puns are the wurst.",
+			"(Ressing) %s, tip of the day: Never discuss infinity with a mathematician, they can go on about it forever.",
+			"(Ressing) %s met some aliens from outer space. They were pretty down to Earth.",
+			"(Ressing) I thought I saw a spider on my laptop, but %s said it was just a bug.",
+			"(Ressing) %s bought a wooden whistle but it wooden whistle.",
+			"(Ressing) %s freed some aquatic mammals from cages in zoo. It was otter chaos.",
+			
+			"(Ressing) %s hate negative numbers and will stop at nothing to avoid them.",
+			"(Ressing) %s, do you need an ark? I Noah guy!",
+			"(Ressing) %s, how did Darth Vader know what Luke got him for Christmas? He felt his presents!",
+			"(Ressing) What time did %s go to the dentist? Tooth hurt-y!",
+			"(Ressing) %s ... do I enjoy making courthouse puns? Guilty.",
+			"(Ressing) %s loves algebra and maybe a little calculus, but geometry is where he draw the line.",
+			"(Ressing) %s got angry when I told him \"Sky is the limit for you\". He wants to be an astronaut.",
+			"(Ressing) %s, what kind of noise does a witch's vehicle make? Brrrooomm, brrrooom",
+			"(Ressing) Cosmetic surgery used to be such a taboo subject. Now %s talks about Botox and nobody raises an eyebrow.",
+			"(Ressing) %s, how did the pirate get his ship so cheap? It was on sail...",
+			"(Ressing) %s, the problem with kleptomaniacs is that they always take things literally.",
+			"(Ressing) %s asked what Deja Vu means. I think I expained him earlier.",
+			"(Ressing) %s, most people are shocked when they find out how bad I am as an electrician.",
+			"(Ressing) %s, people who use selfie sticks really need to have a good, long look at themselves.",
+			"(Ressing) %s, recent study has found that women who carry a little extra weight live longer than the men who mention it.",
+			"(Ressing) %s, last night my girlfriend was complaining that I never listen to her... or something like that.",
+			"(Ressing) %s, what do you call a laughing jar of mayonnaise? LMAYO.",
+			"(Ressing) %s, I didn't think orthopedic shoes would help, but I stand corrected.",
+			"(Ressing) %s was explaining electricity to me, but I was like, \"Watt?\"",
+			"(Ressing) %s has been thinking about taking up meditation. It's better than sitting around doing nothing.",
 		}
 	},
-	[6] = {
+	[7] = {
 		["name"] = "Warcraft Jokes",
 		["description"] = "Jokes from the Warcraft universe",
 		["messages"] = {
@@ -176,6 +223,13 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s, where does Ragnaros go for his back treatments? The pyro-practor.",
 			"(Ressing) %s, why do Hunters get smashed in bars? Because they’re always multi-shotting.",
 			"(Ressing) %s, what do you call a Gnome Priest? A compact disc.",
+		},
+	},
+	[8] = {
+		["name"] = "Simple",
+		["description"] = "Simple resurrection message",
+		["messages"] = {
+			"Resurrecting %s ...",
 		},
 	}
 };
