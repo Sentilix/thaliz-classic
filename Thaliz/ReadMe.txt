@@ -97,6 +97,12 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.2.3
+* Bumped for Classic client version 1.15.2
+* Added 40 more dad jokes.
+* Added a simple resurrection message option (aka non-RP style)
+
+
 Version 3.2.2
 * Bumped for Classic client version 1.15.1
 
