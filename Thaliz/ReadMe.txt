@@ -97,6 +97,10 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.2.4
+* Fixed annoying LUA error when playing Druid.
+
+
 Version 3.2.3
 * Bumped for Classic client version 1.15.2
 * Added 40 more dad jokes.

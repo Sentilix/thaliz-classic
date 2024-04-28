@@ -61,8 +61,7 @@ local Thaliz_ClassMatrix = {
 	["DRUID"] = {
 		["class"] = "Druid",
 		["priority"] = 40,
-		["spellid"] = 50769,
-		["combatres"] = 20484,
+		["spellid"] = 20747,		--50769,
 		["color"] = { 255, 125, 10 },
 	},
 	["HUNTER"] = {
@@ -1847,8 +1846,6 @@ function Thaliz_SpellIsResurrect(spellId)
 		local classRessName = "";
 		if classinfo["spellid"] then
 			classRessName = GetSpellInfo(classinfo["spellid"]);
-		elseif classinfo["combatres"] then
-			classRessName = GetSpellInfo(classinfo["combatres"]);
 		end;
 
 		resSpell = (incRessName == classRessName);
