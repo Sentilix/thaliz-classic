@@ -107,7 +107,7 @@
 				</Scripts>
 			</ScrollFrame>
 			<!-- 1st line options: Radio buttons for chat destination -->
-			<CheckButton name="$parentCheckbuttonRaid" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonRaid" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-354"/>
@@ -122,7 +122,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCheckbuttonSay" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonSay" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="144" y="-354"/>
@@ -137,7 +137,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCheckbuttonYell" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonYell" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="272" y="-354"/>
@@ -152,7 +152,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCheckbuttonIncludeDefault" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonIncludeDefault" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="428" y="-354"/>
@@ -168,7 +168,7 @@
 				</Scripts>
 			</CheckButton>
 			<!-- 2nd line options: msg options -->
-			<CheckButton name="$parentCheckbuttonPerCharacter" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonPerCharacter" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-386"/>
@@ -204,7 +204,7 @@
 			</Button>
 
 			<!-- 3nd line options: whisper text -->
-			<CheckButton name="$parentCheckbuttonWhisper" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonWhisper" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-418"/>
@@ -487,7 +487,7 @@
 				</Scripts>
 			</Button>
 			<!-- Options for showing -->
-			<CheckButton name="$parentCheckbuttonAlways" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonAlways" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="32" y="-60"/>
@@ -502,7 +502,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCheckbuttonGuild" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonGuild" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="32" y="-90"/>
@@ -517,7 +517,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCheckbuttonCharacter" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonCharacter" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="32" y="-120"/>
@@ -532,7 +532,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCheckbuttonClass" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonClass" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="32" y="-150"/>
@@ -547,7 +547,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCheckbuttonRace" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonRace" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="32" y="-180"/>

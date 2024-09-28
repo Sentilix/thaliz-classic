@@ -97,6 +97,11 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.2.7
+* Fixed broken checkboxes after updating to 1.15.4 API.
+  Thanks Blizzard for changing API in a #nochanges game.
+
+
 Version 3.2.6
 * Bumped for Classic client version 1.15.4
 
