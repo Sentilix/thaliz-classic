@@ -28,7 +28,7 @@ When a corpse is being resurrected (unreleased or not), a random message is
 displayed on the screen. This can be configured to be either a /SAY, /YELL
 or in /RAID chat, together with an optional whisper to the target.
 
-Up to 200 random messages in total can be configured. The addon ships with
+Up to 400 random messages in total can be configured. The addon ships with
 20 pre-configured messages; mostly with quotes from famous World of Warcraft
 bosses.
 
@@ -97,6 +97,13 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.3.0
+* Resurrection priorities are now configurable via UI.
+* Doubled the amount of possible macros (from 200 to 400).
+* Added more dad/bad jokes.
+* Added more wow jokes.
+
+
 Version 3.2.7
 * Fixed broken checkboxes after updating to 1.15.4 API.
   Thanks Blizzard for changing API in a #nochanges game.

@@ -252,7 +252,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOM">
-						<Offset x="-160" y="20" />
+						<Offset x="-230" y="20" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -266,7 +266,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOM">
-						<Offset x="-50" y="20" />
+						<Offset x="-120" y="20" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -280,11 +280,25 @@
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOM">
-						<Offset x="60" y="20" />
+						<Offset x="-10" y="20" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>Thaliz_PresetButton_OnClick();</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Priorities button -->
+			<Button name="PrioritiesButton" inherits="UIPanelButtonTemplate" movable="true" text="Priorities">
+				<Size>
+					<AbsDimension x="100" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset x="100" y="20" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Thaliz_PriorityButton_OnClick();</OnClick>
 				</Scripts>
 			</Button>
 			<!-- Close button -->
@@ -294,7 +308,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOM">
-						<Offset x="170" y="20" />
+						<Offset x="210" y="20" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -825,6 +839,419 @@
 		</Frames>
 	</Frame>
 
+	<!-- Priority editor frame -->
+	<Frame name="ThalizPriorityFrame" parent="UIParent" inherits="BackdropTemplate" toplevel="true" hidden="true" frameStrata="HIGH">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+			<KeyValue key="backdropColor" value="BLACK" type="global"/>
+			<KeyValue key="backdropBorderColor" value="WHITE" type="global"/>
+		</KeyValues>
+		<Size>
+			<AbsDimension x="430" y="540" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="ThalizFrame">
+				<Offset x="0" y="0" />
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<!-- (1/12) Paladin -->
+			<Slider name="$parentPaladin" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+				<Size x="250" y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="130" y="-40" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if ThalizPriorityFrame_OnPriorityChanged then
+						ThalizPriorityFrame_OnPriorityChanged(self, "Paladin");
+						end;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<!-- (2/12) Priest -->
+			<Slider name="$parentPriest" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+				<Size x="250" y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="130" y="-75" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if ThalizPriorityFrame_OnPriorityChanged then
+						ThalizPriorityFrame_OnPriorityChanged(self, "Priest");
+						end;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<!-- (3/12) Shaman -->
+			<Slider name="$parentShaman" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+				<Size x="250" y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="130" y="-110" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if ThalizPriorityFrame_OnPriorityChanged then
+						ThalizPriorityFrame_OnPriorityChanged(self, "Shaman");
+						end;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<!-- (4/12) Druid -->
+			<Slider name="$parentDruid" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+				<Size x="250" y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="130" y="-145" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if ThalizPriorityFrame_OnPriorityChanged then
+						ThalizPriorityFrame_OnPriorityChanged(self, "Druid");
+						end;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<!-- (5/12) Hunter -->
+			<Slider name="$parentHunter" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+				<Size x="250" y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="130" y="-180" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if ThalizPriorityFrame_OnPriorityChanged then
+						ThalizPriorityFrame_OnPriorityChanged(self, "Hunter");
+						end;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<!-- (6/12) Mage -->
+			<Slider name="$parentMage" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+				<Size x="250" y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="130" y="-215" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if ThalizPriorityFrame_OnPriorityChanged then
+						ThalizPriorityFrame_OnPriorityChanged(self, "Mage");
+						end;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<!-- (7/12) Warlock -->
+			<Slider name="$parentWarlock" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+				<Size x="250" y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="130" y="-250" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if ThalizPriorityFrame_OnPriorityChanged then
+						ThalizPriorityFrame_OnPriorityChanged(self, "Warlock");
+						end;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<!-- (8/12) Rogue -->
+			<Slider name="$parentRogue" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+				<Size x="250" y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="130" y="-285" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if ThalizPriorityFrame_OnPriorityChanged then
+						ThalizPriorityFrame_OnPriorityChanged(self, "Rogue");
+						end;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<!-- (9/12) Warrior -->
+			<Slider name="$parentWarrior" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+				<Size x="250" y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="130" y="-320" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if ThalizPriorityFrame_OnPriorityChanged then
+						ThalizPriorityFrame_OnPriorityChanged(self, "Warrior");
+						end;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<!-- (10/12) Target -->
+			<Slider name="$parentTarget" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+				<Size x="250" y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="130" y="-390" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if ThalizPriorityFrame_OnPriorityChanged then
+						ThalizPriorityFrame_OnPriorityChanged(self, "Target");
+						end;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<!-- (11/12) Master(looter) -->
+			<Slider name="$parentMaster" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+				<Size x="250" y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="130" y="-425" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if ThalizPriorityFrame_OnPriorityChanged then
+						ThalizPriorityFrame_OnPriorityChanged(self, "Master");
+						end;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<!-- (12/12) First Warlock -->
+			<Slider name="$parentFirstLock" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+				<Size x="250" y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="130" y="-460" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if ThalizPriorityFrame_OnPriorityChanged then
+						ThalizPriorityFrame_OnPriorityChanged(self, "FirstLock");
+						end;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<!-- Close button -->
+			<Button name="CloseButton" inherits="UIPanelButtonTemplate" movable="true" text="Close">
+				<Size>
+					<AbsDimension x="100" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset x="0" y="20" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Thaliz_CloseButton_OnClick();</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeaderTexture" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="400" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="ThalizPriorityConfigHeaderText" inherits="GameFontNormal" text="Resurrection Priority List">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeaderTexture">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<!-- slider captions -->
+				<!-- Paladin -->
+				<FontString name="$parentPaladinCaption" inherits="GameFontNormal" text="Paladin">
+					<Anchors>
+						<Anchor point="LEFT" x="-100" y="0" relativeTo="ThalizPriorityFramePaladin"/>
+					</Anchors>
+					<Color r="0.96" g="0.55" b="0.73" a="1.0"/>
+				</FontString>
+				<FontString name="$parentPaladinPercent" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="256" y="0" relativeTo="ThalizPriorityFramePaladin"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<!-- Priest -->
+				<FontString name="$parentPriestCaption" inherits="GameFontNormal" text="Priest">
+					<Anchors>
+						<Anchor point="LEFT" x="-100" y="0" relativeTo="ThalizPriorityFramePriest"/>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
+				</FontString>
+				<FontString name="$parentPriestPercent" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="256" y="0" relativeTo="ThalizPriorityFramePriest"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<!-- Shaman -->
+				<FontString name="$parentShamanCaption" inherits="GameFontNormal" text="Shaman">
+					<Anchors>
+						<Anchor point="LEFT" x="-100" y="0" relativeTo="ThalizPriorityFrameShaman"/>
+					</Anchors>
+					<Color r="0.0" g="0.44" b="0.87" a="1.0"/>
+				</FontString>
+				<FontString name="$parentShamanPercent" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="256" y="0" relativeTo="ThalizPriorityFrameShaman"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<!-- Druid -->
+				<FontString name="$parentDruidCaption" inherits="GameFontNormal" text="Druid">
+					<Anchors>
+						<Anchor point="LEFT" x="-100" y="0" relativeTo="ThalizPriorityFrameDruid"/>
+					</Anchors>
+					<Color r="1.0" g="0.49" b="0.04" a="1.0"/>
+				</FontString>
+				<FontString name="$parentDruidPercent" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="256" y="0" relativeTo="ThalizPriorityFrameDruid"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<!-- Hunter -->
+				<FontString name="$parentHunterCaption" inherits="GameFontNormal" text="Hunter">
+					<Anchors>
+						<Anchor point="LEFT" x="-100" y="0" relativeTo="ThalizPriorityFrameHunter"/>
+					</Anchors>
+					<Color r="0.67" g="0.83" b="0.45" a="1.0"/>
+				</FontString>
+				<FontString name="$parentHunterPercent" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="256" y="0" relativeTo="ThalizPriorityFrameHunter"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<!-- Mage -->
+				<FontString name="$parentMageCaption" inherits="GameFontNormal" text="Mage">
+					<Anchors>
+						<Anchor point="LEFT" x="-100" y="0" relativeTo="ThalizPriorityFrameMage"/>
+					</Anchors>
+					<Color r="0.41" g="0.80" b="0.94" a="1.0"/>
+				</FontString>
+				<FontString name="$parentMagePercent" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="256" y="0" relativeTo="ThalizPriorityFrameMage"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<!-- Warlock -->
+				<FontString name="$parentWarlockCaption" inherits="GameFontNormal" text="Warlock">
+					<Anchors>
+						<Anchor point="LEFT" x="-100" y="0" relativeTo="ThalizPriorityFrameWarlock"/>
+					</Anchors>
+					<Color r="0.58" g="0.51" b="0.79" a="1.0"/>
+				</FontString>
+				<FontString name="$parentWarlockPercent" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="256" y="0" relativeTo="ThalizPriorityFrameWarlock"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<!-- Rogue -->
+				<FontString name="$parentRogueCaption" inherits="GameFontNormal" text="Rogue">
+					<Anchors>
+						<Anchor point="LEFT" x="-100" y="0" relativeTo="ThalizPriorityFrameRogue"/>
+					</Anchors>
+					<Color r="1.0" g="0.96" b="0.41" a="1.0"/>
+				</FontString>
+				<FontString name="$parentRoguePercent" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="256" y="0" relativeTo="ThalizPriorityFrameRogue"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<!-- Warrior -->
+				<FontString name="$parentWarriorCaption" inherits="GameFontNormal" text="Warrior">
+					<Anchors>
+						<Anchor point="LEFT" x="-100" y="0" relativeTo="ThalizPriorityFrameWarrior"/>
+					</Anchors>
+					<Color r="0.78" g="0.61" b="0.43" a="1.0"/>
+				</FontString>
+				<FontString name="$parentWarriorPercent" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="256" y="0" relativeTo="ThalizPriorityFrameWarrior"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<!-- (Current) Target -->
+				<FontString name="$parentTargetCaption" inherits="GameFontNormal" text="Current target">
+					<Anchors>
+						<Anchor point="LEFT" x="-100" y="0" relativeTo="ThalizPriorityFrameTarget"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<FontString name="$parentTargetPercent" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="256" y="0" relativeTo="ThalizPriorityFrameTarget"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<!-- Master (Looter) -->
+				<FontString name="$parentMasterCaption" inherits="GameFontNormal" text="Master looter">
+					<Anchors>
+						<Anchor point="LEFT" x="-100" y="0" relativeTo="ThalizPriorityFrameMaster"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<FontString name="$parentMasterPercent" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="256" y="0" relativeTo="ThalizPriorityFrameMaster"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<!-- First Warlock -->
+				<FontString name="$parentFirstLockCaption" inherits="GameFontNormal" text="First Warlock">
+					<Anchors>
+						<Anchor point="LEFT" x="-100" y="0" relativeTo="ThalizPriorityFrameFirstLock"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+				<FontString name="$parentFirstLockPercent" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="256" y="0" relativeTo="ThalizPriorityFrameFirstLock"/>
+					</Anchors>
+					<Color r="0.9" g="0.8" b="0.2" a="1.0"/>
+				</FontString>
+
+				<!-- Labels -->
+				<FontString name="$parentCaption1Low" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="20" relativeTo="ThalizPriorityFramePaladin"/>
+					</Anchors>
+					<Color r="0.8" g="0.8" b="0.8" a="1.0"/>
+				</FontString>
+				<FontString name="$parentCaption1High" inherits="GameFontNormal" text="100%">
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="20" relativeTo="ThalizPriorityFramePaladin"/>
+					</Anchors>
+					<Color r="0.8" g="0.8" b="0.8" a="1.0"/>
+				</FontString>
+				<FontString name="$parentCaption2Low" inherits="GameFontNormal" text="0%">
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="20" relativeTo="ThalizPriorityFrameTarget"/>
+					</Anchors>
+					<Color r="0.8" g="0.8" b="0.8" a="1.0"/>
+				</FontString>
+				<FontString name="$parentCaption2High" inherits="GameFontNormal" text="100%">
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="20" relativeTo="ThalizPriorityFrameTarget"/>
+					</Anchors>
+					<Color r="0.8" g="0.8" b="0.8" a="1.0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	
 	<!-- The Rez Button -->
 	<Button name="RezButton" inherits="SecureActionButtonTemplate" parent="UIParent" toplevel="true" hidden="false" frameStrata="LOW" movable="true">
 		<Size>

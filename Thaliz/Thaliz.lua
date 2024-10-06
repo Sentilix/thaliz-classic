@@ -28,7 +28,7 @@ local YELL_CHANNEL							= "YELL"
 local SAY_CHANNEL							= "SAY"
 local WARN_CHANNEL							= "RAID_WARNING"
 local GUILD_CHANNEL							= "GUILD"
-local THALIZ_MAX_MESSAGES					= 200
+local THALIZ_MAX_MESSAGES					= 400
 local THALIZ_MAX_VISIBLE_MESSAGES			= 20
 local THALIZ_EMPTY_MESSAGE					= "(Empty)"
 
@@ -46,22 +46,10 @@ local EMOTE_GROUP_RACE						= "Race";
 --	classname, priority, spellname (translated runtime), spellID
 
 local Thaliz_ClassMatrix = {
-	["DEATHKNIGHT"] = {
-		["class"] = "Death Knight",
-		["priority"] = 20,
-		["spellid"] = nil,
-		["color"] = { 196, 30, 58 },
-	},
-	["DEMON HUNTER"] = {
-		["class"] = "Demon Hunter",
-		["priority"] = 30,
-		["spellid"] = nil,
-		["color"] = { 163, 48, 201 },
-	},
 	["DRUID"] = {
 		["class"] = "Druid",
 		["priority"] = 40,
-		["spellid"] = 20747,		--50769,
+		["spellid"] = 20747,
 		["color"] = { 255, 125, 10 },
 	},
 	["HUNTER"] = {
@@ -75,12 +63,6 @@ local Thaliz_ClassMatrix = {
 		["priority"] = 40,
 		["spellid"] = nil,
 		["color"] = { 105, 204, 240 },
-	},
-	["MONK"] = {
-		["class"] = "Monk",
-		["priority"] = 50,
-		["spellid"] = 115178,
-		["color"] = { 0, 255, 150 },
 	},
 	["PALADIN"] = {
 		["class"] = "Paladin",
@@ -118,6 +100,26 @@ local Thaliz_ClassMatrix = {
 		["spellid"] = nil,
 		["color"] = { 199, 156, 110 },
 	},
+	--	Non-playable classes:
+	["TARGET"] = {
+		["class"] = "Current Target",
+		["priority"] = 100,
+		["spellid"] = nil,
+		["color"] = { 0, 0, 0 },
+	},
+	["MASTER"] = {
+		["class"] = "Master Looter",
+		["priority"] = 60,
+		["spellid"] = nil,
+		["color"] = { 0, 0, 0 },
+	},
+	["FIRSTLOCK"] = {
+		["class"] = "First Warlock",
+		["priority"] = 45,
+		["spellid"] = nil,
+		["color"] = { 0, 0, 0 },
+	},
+
 }
 
 
@@ -165,10 +167,6 @@ local THALIZ_ICON_SHAMAN_PASSIVE	= "Interface\\Icons\\INV_Jewelry_Talisman_04";
 local THALIZ_ICON_SHAMAN_ACTIVE		= "Interface\\Icons\\spell_holy_resurrection";
 
 
-local PriorityToFirstWarlock  = 45;     -- Prio below ressers if no warlocks are alive
-local PriorityToMasterLooter  = 60;     -- Prio above ressers if master looter
-local PriorityToCurrentTarget = 100;	-- Prio over all if target i selected
-
 -- List of blacklisted (already ressed) people
 -- Table { PlayerName-RealmName, TimerTick }
 local blacklistedTable = {}
@@ -205,6 +203,22 @@ local Thaliz_OPTION_ResurrectionMessages				= "ResurrectionMessages";
 local Thaliz_OPTION_RezButtonPosX						= "RezButtonPosX";
 local Thaliz_OPTION_RezButtonPosY						= "RezButtonPosY";
 local Thaliz_OPTION_RezButtonVisible					= "ResurrectionButtonVisible";
+
+local Thaliz_OPTION_ResurrectionPriority				= "ResurrectionPriority";
+local Thaliz_Configuration_Default_Priority = {
+	["Druid"]			= { ["Priority"] = 40 },
+	["Hunter"]			= { ["Priority"] = 30 },
+	["Mage"]			= { ["Priority"] = 40 },
+	["Paladin"]			= { ["Priority"] = 50 },
+	["Priest"]			= { ["Priority"] = 50 },
+	["Rogue"]			= { ["Priority"] = 10 },
+	["Shaman"]			= { ["Priority"] = 50 },
+	["Warlock"]			= { ["Priority"] = 30 },
+	["Warrior"]			= { ["Priority"] = 20 },
+	["CurrentTarget"]	= { ["Priority"] = 100 },
+	["MasterLooter"]	= { ["Priority"] = 60 },
+	["FirstWarlock"]	= { ["Priority"] = 45 },
+}
 
 local Thaliz_DebugFunction = nil;
 
@@ -447,6 +461,7 @@ function Thaliz_CloseConfigurationDialogue()
 	Thaliz_CloseMsgEditorButton_OnClick();
 	Thaliz_CloseProfileButton_OnClick();
 	Thaliz_ClosePresetButton_OnClick();
+	Thaliz_ClosePriorityButton_OnClick();
 
 	ThalizConfigDialogOpen = false;
 	ThalizFrame:Hide();
@@ -636,6 +651,7 @@ local currentObjectId;	-- A small hack: the object ID is lost when using own fra
 local msgEditorIsOpen;
 local profileFrameIsOpen;
 local presetFrameIsOpen;
+local priorityFrameIsOpen;
 function Thaliz_OnMessageClick(object)
 	Thaliz_CloseMsgEditorButton_OnClick();
 
@@ -898,6 +914,40 @@ function Thaliz_InitializeConfigSettings()
 
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionNameEnclosure, Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE"));
 	Thaliz_InitializeNameEnclosures();
+
+
+	--	Resurrection priorities:
+	--	Validate this is actually a valid structure:
+	local priorities = Thaliz_GetOption(Thaliz_OPTION_ResurrectionPriority, Thaliz_Configuration_Default_Priority);
+	if	not priorities or 
+		not priorities.Druid or not priorities.Druid.Priority or
+		not priorities.Hunter or not priorities.Hunter.Priority or
+		not priorities.Mage or not priorities.Mage.Priority or
+		not priorities.Paladin or not priorities.Paladin.Priority or
+		not priorities.Priest or not priorities.Priest.Priority or
+		not priorities.Rogue or not priorities.Rogue.Priority or
+		not priorities.Shaman or not priorities.Shaman.Priority or
+		not priorities.Warlock or not priorities.Warlock.Priority or
+		not priorities.Warrior or not priorities.Warrior.Priority or
+		not priorities.CurrentTarget or not priorities.CurrentTarget.Priority or
+		not priorities.MasterLooter or not priorities.MasterLooter.Priority or
+		not priorities.FirstWarlock or not priorities.FirstWarlock.Priority then
+		priorities = Thaliz_Configuration_Default_Priority;
+	end;
+	Thaliz_SetOption(Thaliz_OPTION_ResurrectionPriority, priorities);
+
+	Thaliz_ClassMatrix.DRUID.priority	= priorities.Druid.Priority;
+	Thaliz_ClassMatrix.HUNTER.priority	= priorities.Hunter.Priority;
+	Thaliz_ClassMatrix.MAGE.priority	= priorities.Mage.Priority;
+	Thaliz_ClassMatrix.PALADIN.priority	= priorities.Paladin.Priority;
+	Thaliz_ClassMatrix.PRIEST.priority	= priorities.Priest.Priority;
+	Thaliz_ClassMatrix.ROGUE.priority	= priorities.Rogue.Priority;
+	Thaliz_ClassMatrix.SHAMAN.priority	= priorities.Shaman.Priority;
+	Thaliz_ClassMatrix.WARLOCK.priority	= priorities.Warlock.Priority;
+	Thaliz_ClassMatrix.WARRIOR.priority	= priorities.Warrior.Priority;
+	Thaliz_ClassMatrix.TARGET.priority	= priorities.CurrentTarget.Priority;
+	Thaliz_ClassMatrix.MASTER.priority	= priorities.MasterLooter.Priority;
+	Thaliz_ClassMatrix.FIRSTLOCK.priority= priorities.FirstWarlock.Priority;
 
 
 	local x,y = RezButton:GetPoint();
@@ -1366,6 +1416,11 @@ function Thaliz_ScanRaid()
 	local classinfo = Thaliz_GetClassinfo(A.localPlayerClass);
 
 	local spellnameStr = GetSpellInfo(classinfo["spellid"]);
+
+	local PriorityToCurrentTarget = Thaliz_ClassMatrix.TARGET.priority;			-- Prio over all if target i selected
+	local PriorityToMasterLooter  = Thaliz_ClassMatrix.MASTER.priority;			-- Prio above ressers if master looter
+	local PriorityToFirstWarlock  = Thaliz_ClassMatrix.FIRSTLOCK.priority;		-- Prio below ressers if no warlocks are alive
+
 
 	--Fetch current assigned target (if any):
 	local currentPrio = 0;
@@ -1913,6 +1968,64 @@ function Thaliz_PresetButton_OnClick()
 	ThalizPresetFrame:Show();
 end;
 
+function Thaliz_PriorityButton_OnClick()
+	if msgEditorIsOpen then
+		Thaliz_CloseMsgEditorButton_OnClick();
+	end;
+
+	ThalizPriorityFrame_UpdateValues();
+
+	ThalizPriorityFrame:Show();
+end;
+
+function ThalizPriorityFrame_UpdateValues()
+	ThalizPriorityFrameDruid:SetValue(Thaliz_ClassMatrix.DRUID.priority);
+	ThalizPriorityFrameHunter:SetValue(Thaliz_ClassMatrix.HUNTER.priority);
+	ThalizPriorityFrameMage:SetValue(Thaliz_ClassMatrix.MAGE.priority);
+	ThalizPriorityFramePaladin:SetValue(Thaliz_ClassMatrix.PALADIN.priority);
+	ThalizPriorityFramePriest:SetValue(Thaliz_ClassMatrix.PRIEST.priority);
+	ThalizPriorityFrameRogue:SetValue(Thaliz_ClassMatrix.ROGUE.priority);
+	ThalizPriorityFrameShaman:SetValue(Thaliz_ClassMatrix.SHAMAN.priority);
+	ThalizPriorityFrameWarlock:SetValue(Thaliz_ClassMatrix.WARLOCK.priority);
+	ThalizPriorityFrameWarrior:SetValue(Thaliz_ClassMatrix.WARRIOR.priority);
+
+	ThalizPriorityFrameTarget:SetValue(Thaliz_ClassMatrix.TARGET.priority);
+	ThalizPriorityFrameMaster:SetValue(Thaliz_ClassMatrix.MASTER.priority);
+	ThalizPriorityFrameFirstLock:SetValue(Thaliz_ClassMatrix.FIRSTLOCK.priority);
+end;
+
+
+
+function ThalizPriorityFrame_OnPriorityChanged(object, className)
+	local value = math.floor(object:GetValue());
+
+	value = (math.floor(value / 5)) * 5;
+	object:SetValueStep(5);
+	object:SetValue(value);
+
+	local uClassName = string.upper(className);
+	if value ~= Thaliz_ClassMatrix[uClassName].priority then
+		Thaliz_ClassMatrix[uClassName].priority = value;
+
+		local priorities = Thaliz_Configuration_Default_Priority;
+		priorities.Druid.Priority			= Thaliz_ClassMatrix.DRUID.priority;
+		priorities.Hunter.Priority			= Thaliz_ClassMatrix.HUNTER.priority;
+		priorities.Mage.Priority			= Thaliz_ClassMatrix.MAGE.priority;
+		priorities.Paladin.Priority			= Thaliz_ClassMatrix.PALADIN.priority;
+		priorities.Priest.Priority			= Thaliz_ClassMatrix.PRIEST.priority;
+		priorities.Rogue.Priority			= Thaliz_ClassMatrix.ROGUE.priority;
+		priorities.Shaman.Priority			= Thaliz_ClassMatrix.SHAMAN.priority;
+		priorities.Warlock.Priority			= Thaliz_ClassMatrix.WARLOCK.priority;
+		priorities.Warrior.Priority			= Thaliz_ClassMatrix.WARRIOR.priority;
+		priorities.CurrentTarget.Priority	= Thaliz_ClassMatrix.TARGET.priority;
+		priorities.MasterLooter.Priority	= Thaliz_ClassMatrix.MASTER.priority;
+		priorities.FirstWarlock.Priority	= Thaliz_ClassMatrix.FIRSTLOCK.priority;
+		Thaliz_SetOption(Thaliz_OPTION_ResurrectionPriority, priorities);
+	end;
+	
+	_G['ThalizPriorityFrame'..className..'Percent']:SetText(string.format('%s %%', value));
+end;
+
 function Thaliz_CloseButton_OnClick()
 	if msgEditorIsOpen then
 		Thaliz_CloseMsgEditorButton_OnClick();
@@ -1920,6 +2033,8 @@ function Thaliz_CloseButton_OnClick()
 		Thaliz_CloseProfileButton_OnClick();
 	elseif presetFrameIsOpen then
 		Thaliz_ClosePresetButton_OnClick();
+	elseif priorityFrameIsOpen then
+		Thaliz_ClosePriorityButton_OnClick();
 	else
 		Thaliz_CloseConfigurationDialogue();
 	end;
@@ -1933,6 +2048,11 @@ end;
 function Thaliz_ClosePresetButton_OnClick()
 	ThalizPresetFrame:Hide();
 	presetFrameIsOpen = false;
+end;
+
+function Thaliz_ClosePriorityButton_OnClick()
+	ThalizPriorityFrame:Hide();
+	priorityFrameIsOpen = false;
 end;
 
 function Thaliz_CloseMsgEditorButton_OnClick()
