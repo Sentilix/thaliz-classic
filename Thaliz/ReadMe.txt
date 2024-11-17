@@ -97,6 +97,10 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.3.1
+* Bumped for Classic client version 1.15.5
+
+
 Version 3.3.0
 * Resurrection priorities are now configurable via UI.
 * Doubled the amount of possible macros (from 200 to 400).
