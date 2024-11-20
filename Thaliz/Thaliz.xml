@@ -220,7 +220,7 @@
 				</Scripts>
 			</CheckButton>
 			<!-- Dummy input field to claim frame focus -->
-			<EditBox name="$parentDummy" letters="1" visible="false">
+			<EditBox name="$parentDummy" letters="1" hidden="true">
 				<Size>
 					<AbsDimension x="0" y="0"/>
 				</Size>
