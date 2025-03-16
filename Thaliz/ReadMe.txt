@@ -97,6 +97,10 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.3.4
+* Bumped for Classic client version 1.15.7
+
+
 Version 3.3.3
 * Bumped for Classic client version 1.15.6
 
