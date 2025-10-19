@@ -142,6 +142,11 @@ local THALIZ_NAME_ENCLOSURES = {
 	{ "DOUBLEQ",	'"%s"',		'"%s"'		}
 }
 
+local THALIZ_MESSAGE_ORDERS = {
+	{ "RANDOM",		"Random"		},
+	{ "SEQUENTIAL",	"Sequential"	},
+}
+
 local IsPaladin = false;
 local IsPriest = false;
 local IsShaman = false;
@@ -182,6 +187,7 @@ local ThalizDoScanRaid = true;
 local ThalizScanFrequency = 0.2;		-- Scan 5 times per second
 local Thaliz_ProfileTable = { };
 local Thaliz_SelectedProfile = nil;
+local Thaliz_ResurrectionNextMessage = 1;
 
 -- Configuration constants:
 local Thaliz_Configuration_Default_Level				= "Character";	-- Can be "Character" or "Realm"
@@ -197,6 +203,8 @@ local Thaliz_ROOT_OPTION_CharacterBasedSettings			= "CharacterBasedSettings";
 local Thaliz_OPTION_ResurrectionMessageTargetChannel	= "ResurrectionMessageTargetChannel";
 local Thaliz_OPTION_ResurrectionMessageTargetWhisper	= "ResurrectionMessageTargetWhisper";
 local Thaliz_OPTION_ResurrectionNameEnclosure			= "ResurrectionNameEnclosure";
+local Thaliz_OPTION_ResurrectionMessageOrder			= "ResurrectionMessageOrder";
+local Thaliz_OPTION_ResurrectionNextMessage				= "ResurrectionNextMessage";
 local Thaliz_OPTION_AlwaysIncludeDefaultGroup			= "AlwaysIncludeDefaultGroup";
 local Thaliz_OPTION_ResurrectionWhisperMessage			= "ResurrectionWhisperMessage";
 local Thaliz_OPTION_ResurrectionMessages				= "ResurrectionMessages";
@@ -915,6 +923,11 @@ function Thaliz_InitializeConfigSettings()
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionNameEnclosure, Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE"));
 	Thaliz_InitializeNameEnclosures();
 
+	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageOrder, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageOrder, "RANDOM"));
+	Thaliz_UpdateMessageOrderText();
+
+	Thaliz_SetOption(Thaliz_OPTION_ResurrectionNextMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionNextMessage, "1"));
+	TThaliz_ResurrectionNextMessage = Thaliz_GetOption(Thaliz_OPTION_ResurrectionNextMessage, "1");
 
 	--	Resurrection priorities:
 	--	Validate this is actually a valid structure:
@@ -1065,6 +1078,9 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		end
 	end
 
+	-- 3.4.0: Supports RANDOM and SEQUENTIAL:
+	local messageOrder = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageOrder, "RANDOM");
+
 	local playershortname = Thaliz_StripRealmName(playername);
 	local guildname = GetGuildInfo(unitid);
 	local race = string.upper(UnitRace(unitid));
@@ -1127,7 +1143,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		end;		
 	end
 	
-	-- Now generate list, using the found criterias above:
+	-- Now generate list, using the found criteria above:
 	local macros = { }
 	local index = 0;
 	for n=1, table.getn( gmacro ), 1 do
@@ -1182,18 +1198,33 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		playershortname = string.format(enclosure[3], playershortname);
 	end;
 
-
-	--	This prevents the same message being shown twice:
-	local randomMsgIndex = random(validCount);
-	if randomMsgIndex == Thaliz_LastRandomMessageIndex then
-		randomMsgIndex = randomMsgIndex + 1;
-		if randomMsgIndex > validCount then
-			randomMsgIndex = 1;
+	local selectedMessageIndex = 1;
+	if messageOrder == "SEQUENTIAL" then
+		--	SEQUENTIAL message order:
+		--	Note: special message (for guild for example) are not taken into account:
+		selectedMessageIndex = Thaliz_ResurrectionNextMessage;
+		Thaliz_ResurrectionNextMessage = Thaliz_ResurrectionNextMessage + 1;
+		if (selectedMessageIndex > validCount) then
+			selectedMessageIndex = 1;
 		end;
-	end;
-	Thaliz_LastRandomMessageIndex = randomMsgIndex;
+		if (Thaliz_ResurrectionNextMessage > validCount) then
+			Thaliz_ResurrectionNextMessage = 1;
+		end;
+	else
+		--  RANDOM message order:
+		--	This prevents the same message being shown twice:
+		selectedMessageIndex = random(validCount);
+		if selectedMessageIndex == Thaliz_LastRandomMessageIndex then
+			selectedMessageIndex = selectedMessageIndex + 1;
+			if selectedMessageIndex > validCount then
+				selectedMessageIndex = 1;
+			end;
+		end;
+		Thaliz_LastRandomMessageIndex = selectedMessageIndex;
+	end
 
-	local message = validMessages[ randomMsgIndex ];
+
+	local message = validMessages[ selectedMessageIndex ];
 
 	--	%m (male/female specific message):
 	--	Syntax: "%m{male text:female text}"
@@ -2088,6 +2119,34 @@ function Thaliz_GetNameEnclosure(optionname)
 	return enclosure;
 end;
 
+function Thaliz_DropDownMessageOrderButton_OnClick(self, arg1, arg2, checked)
+	if arg1 then
+		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageOrder, arg1);
+	end;
+
+	Thaliz_UpdateMessageOrderText();
+end;
+
+function Thaliz_UpdateMessageOrderText()
+	local msgOrder = Thaliz_GetMessageOrder(Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageOrder, "RANDOM"));
+	if msgOrder then
+		UIDropDownMenu_SetText(DropDownMessageOrderButton, msgOrder[2]);
+	end;
+end;
+
+function Thaliz_GetMessageOrder(optionname)
+	local msgOrder = nil;
+
+	for n=1, table.getn(THALIZ_MESSAGE_ORDERS), 1 do
+		if THALIZ_MESSAGE_ORDERS[n][1] == optionname then
+			msgOrder = THALIZ_MESSAGE_ORDERS[n];
+			break;
+		end;
+	end;	
+	
+	return msgOrder;
+end;
+
 function Thaliz_RepositionateButton(self)
 	local x, y = self:GetLeft(), self:GetTop() - UIParent:GetHeight();
 
@@ -2111,6 +2170,12 @@ function Thaliz_DropDownNameEnclosure_Initialize(frame, level, menuList)
 	_delayed_owner = this;
 	Thaliz_DelayInitialization = true;
 	Thaliz_DelayedDropDownNameEnclosure_Initialize();
+end;
+
+function Thaliz_DropDownMessageOrder_Initialize(frame, level, menuList)
+	_delayed_owner = this;
+	Thaliz_DelayInitialization = true;
+	Thaliz_DelayedDropDownMessageOrder_Initialize();
 end;
 
 function Thaliz_DropDownProfiles_Initialize(frame, level, menuList)
@@ -2184,6 +2249,32 @@ function Thaliz_DelayedDropDownNameEnclosure_Initialize()
 		info.text       = THALIZ_NAME_ENCLOSURES[n][2];
 		info.checked	= checked;
 		info.func       = function() Thaliz_DropDownNameEnclosureButton_OnClick(_delayed_owner, THALIZ_NAME_ENCLOSURES[n][1]) end;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function Thaliz_DelayedDropDownMessageOrder_Initialize()
+	if not CompactRaidFrame1  then
+		if not SkipTaintCheck then
+			return;
+		end;
+	end;
+
+	Thaliz_DelayInitialization = false;
+
+	local CurOption = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageOrder, "RANDOM");
+
+
+	for n=1, table.getn(THALIZ_MESSAGE_ORDERS), 1 do
+		local checked = false;
+		if CurOption == THALIZ_MESSAGE_ORDERS[n][1] then 
+			checked = true;
+		end;
+
+		local info = UIDropDownMenu_CreateInfo();
+		info.text       = THALIZ_MESSAGE_ORDERS[n][2];
+		info.checked	= checked;
+		info.func       = function() Thaliz_DropDownMessageOrderButton_OnClick(_delayed_owner, THALIZ_MESSAGE_ORDERS[n][1]) end;
 		UIDropDownMenu_AddButton(info);
 	end
 end

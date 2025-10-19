@@ -203,6 +203,25 @@
 				</Scripts>
 			</Button>
 
+			<Button name="DropDownMessageOrderButton" inherits="UIDropDownMenuTemplate">
+				<Size>
+					<AbsDimension x="200" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="750" y="-384"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(self, Thaliz_DropDownMessageOrder_Initialize);
+					</OnLoad>
+					<OnClick>
+						Thaliz_DropDownMessageOrderButton_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+
 			<!-- 3nd line options: whisper text -->
 			<CheckButton name="$parentCheckbuttonWhisper" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
@@ -353,6 +372,13 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="276" y="-392"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Message order">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="675" y="-392"/>
 						</Anchor>
 					</Anchors>
 				</FontString>

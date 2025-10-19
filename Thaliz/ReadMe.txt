@@ -97,8 +97,8 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
-Version 3.3.5
-* Bumped for Classic client version 1.15.8
+Version 3.4.0
+* Added message selection orders option
 
 
 Version 3.3.4
