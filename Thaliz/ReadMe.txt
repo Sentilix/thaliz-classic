@@ -97,6 +97,14 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.4.2
+* Fixed LUA error after 1.15.8 API was added.
+
+
+Version 3.4.1
+* Bumped for Classic client version 1.15.8
+
+
 Version 3.4.0
 * Added message selection orders option
 
