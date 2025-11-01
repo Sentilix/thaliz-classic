@@ -1466,7 +1466,7 @@ function Thaliz_ScanRaid()
 	local masterLooter = nil;
 	if IsInRaid() then
 		local lootMethod, _, raidIndex = C_PartyInfo.GetLootMethod();
-		if lootMethod == "master" then
+		if lootMethod == 2 then
 			masterLooter = A:getPlayerAndRealm("raid"..raidIndex);
 		end;
 	end;
