@@ -97,6 +97,12 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.4.3
+* Bugfix: Master looter is now detected and prioritized correct (bugged since 1.15.8)
+* Added a few extra Warcraft jokes
+* Added jokes in categories for Crocodiles, Fishes and Christmas.
+
+
 Version 3.4.2
 * Fixed LUA error after 1.15.8 API was added.
 
