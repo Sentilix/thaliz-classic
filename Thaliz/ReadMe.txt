@@ -97,6 +97,10 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.5.0-beta1
+* TBC: Made a few changes to make addon work in TBC.
+
+
 Version 3.4.3
 * Bugfix: Master looter is now detected and prioritized correct (bugged since 1.15.8)
 * Added a few extra Warcraft jokes
