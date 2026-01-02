@@ -1295,7 +1295,7 @@
 				self:EnableMouse(true);
 				self:EnableKeyboard(false);
 				self:RegisterForDrag("LeftButton");
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("AnyUp", "AnyDown");
 
 				self:SetScript("PreClick", Thaliz_OnRezClick);
 

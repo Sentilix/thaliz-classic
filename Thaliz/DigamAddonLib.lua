@@ -11,7 +11,7 @@
 
 
 local DIGAM_IsDebugBuild					= false;
-local DIGAM_BuildVersion					= 6;
+local DIGAM_BuildVersion					= 7;
 
 local DIGAM_COLOR_BEGIN						= "|c80";
 local DIGAM_CHAT_END						= "|r";
@@ -56,15 +56,15 @@ function DigamAddonLib:new(addonSettings)
 	local _addonName = addonSettings["ADDONNAME"] or "Unnamed";
 	local _addonShortName = addonSettings["SHORTNAME"] or _addonName;
 	local _addonPrefix = addonSettings["PREFIX"] or _addonShortName;
-	local _addonVersion = GetAddOnMetadata(_addonName, "Version") or 0;
+	local _addonVersion = C_AddOns.GetAddOnMetadata(_addonName, "Version") or 0;
 
 	local parent = {
 		addonName = _addonName,
 		addonShortName = _addonShortName,
 		addonPrefix = _addonPrefix,
 		addonVersion = _addonVersion,
-		addonAuthor = GetAddOnMetadata(_addonName, "Author") or "",
-		addonExpansionLevel = tonumber(GetAddOnMetadata(_addonName, "X-Expansion-Level")),
+		addonAuthor = C_AddOns.GetAddOnMetadata(_addonName, "Author") or "",
+		addonExpansionLevel = tonumber(C_AddOns.GetAddOnMetadata(_addonName, "X-Expansion-Level")),
 
 		localPlayerName = self:getPlayerAndRealm("player"),
 		localPlayerClass = self:getUnitClass("player"),

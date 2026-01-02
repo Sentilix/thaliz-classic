@@ -1559,12 +1559,12 @@ function Thaliz_ScanRaid()
 
 		if(debug) then 
 			if not spellnameStr then spellnameStr = "nil"; end;
-			echo(string.format("**DEBUG**: corpse=%s, unitid=%s, spell=%s", UnitName(unitid), unitid, spellnameStr));
+			print(string.format("**DEBUG**: corpse=%s, unitid=%s, spell=%s", UnitName(unitid), unitid, spellnameStr));
 		end;
 
+		RezButton:SetAttribute("unit", unitid);
 		RezButton:SetAttribute("type", "spell");
 		RezButton:SetAttribute("spell", spellnameStr);
-		RezButton:SetAttribute("unit", unitid);
 	end;
 
 	Thaliz_SetRezTargetText(A:getPlayerAndRealm(unitid));
