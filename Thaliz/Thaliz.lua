@@ -1,4 +1,4 @@
-﻿--[[
+--[[
 Author:			Mimma @ <EU-Pyrewood Village>
 Create Date:	2015-05-10 17:50:57
 
@@ -2165,18 +2165,9 @@ function Thaliz_RepositionateButton(self)
 	end;
 end
 
-local SkipTaintCheck = true;
-function Thaliz_DropDownNameEnclosure_Initialize(frame, level, menuList)
-	_delayed_owner = this;
-	Thaliz_DelayInitialization = true;
-	Thaliz_DelayedDropDownNameEnclosure_Initialize();
-end;
 
-function Thaliz_DropDownMessageOrder_Initialize(frame, level, menuList)
-	_delayed_owner = this;
-	Thaliz_DelayInitialization = true;
-	Thaliz_DelayedDropDownMessageOrder_Initialize();
-end;
+local Thaliz_SkipTaintCheck = true;
+local Thaliz_delayed_owner = nil;
 
 function Thaliz_DropDownProfiles_Initialize(frame, level, menuList)
 	UIDropDownMenu_SetWidth(DropDownProfileButton, 300);
@@ -2186,7 +2177,6 @@ function Thaliz_DropDownProfiles_Initialize(frame, level, menuList)
 
 		local info = UIDropDownMenu_CreateInfo();
 		info.text			= string.format("%s - %s (%d)", profile["realm"], profile["name"], profile["count"]);
-		info.notCheckable	= true;
 		info.func			= function() Thaliz_DropDownProfiles_OnClick(this, profile) end;
 		UIDropDownMenu_AddButton(info);
 	end
@@ -2200,7 +2190,6 @@ function Thaliz_DropDownPresets_Initialize(frame, level, menuList)
 
 		local info = UIDropDownMenu_CreateInfo();
 		info.text			= string.format("%s - %s", preset["name"], preset["description"]);
-		info.notCheckable	= true;
 		info.func			= function() Thaliz_DropDownPreset_OnClick(this, preset) end;
 		UIDropDownMenu_AddButton(info);
 	end;
@@ -2227,17 +2216,8 @@ function Thaliz_InitializeNameEnclosures()
 	Thaliz_UpdateNameEnclosureText();
 end;
 
-function Thaliz_DelayedDropDownNameEnclosure_Initialize()
-	if not CompactRaidFrame1  then
-		if not SkipTaintCheck then
-			return;
-		end;
-	end;
-
-	Thaliz_DelayInitialization = false;
-
+function Thaliz_DropDownNameEnclosure_Initialize(frame, level, menuList)
 	local CurOption = Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE");
-
 
 	for n=1, table.getn(THALIZ_NAME_ENCLOSURES), 1 do
 		local checked = false;
@@ -2246,24 +2226,15 @@ function Thaliz_DelayedDropDownNameEnclosure_Initialize()
 		end;
 
 		local info = UIDropDownMenu_CreateInfo();
+		info.func       = Thaliz_DropDownNameEnclosureButton_OnClick;
+		info.arg1		= THALIZ_NAME_ENCLOSURES[n][1];
 		info.text       = THALIZ_NAME_ENCLOSURES[n][2];
-		info.checked	= checked;
-		info.func       = function() Thaliz_DropDownNameEnclosureButton_OnClick(_delayed_owner, THALIZ_NAME_ENCLOSURES[n][1]) end;
 		UIDropDownMenu_AddButton(info);
 	end
 end
 
-function Thaliz_DelayedDropDownMessageOrder_Initialize()
-	if not CompactRaidFrame1  then
-		if not SkipTaintCheck then
-			return;
-		end;
-	end;
-
-	Thaliz_DelayInitialization = false;
-
+function Thaliz_DropDownMessageOrder_Initialize(frame, level, menuList)
 	local CurOption = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageOrder, "RANDOM");
-
 
 	for n=1, table.getn(THALIZ_MESSAGE_ORDERS), 1 do
 		local checked = false;
@@ -2272,9 +2243,9 @@ function Thaliz_DelayedDropDownMessageOrder_Initialize()
 		end;
 
 		local info = UIDropDownMenu_CreateInfo();
+		info.func       = Thaliz_DropDownMessageOrderButton_OnClick;
+		info.arg1		= THALIZ_MESSAGE_ORDERS[n][1];
 		info.text       = THALIZ_MESSAGE_ORDERS[n][2];
-		info.checked	= checked;
-		info.func       = function() Thaliz_DropDownMessageOrderButton_OnClick(_delayed_owner, THALIZ_MESSAGE_ORDERS[n][1]) end;
 		UIDropDownMenu_AddButton(info);
 	end
 end
