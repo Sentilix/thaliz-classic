@@ -97,6 +97,11 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.5.1
+* Added a new joke theme for Cars!
+* Fixed a taint bug
+
+
 Version 3.5.0-beta1
 * TBC: Made a few changes to make addon work in TBC.
 
