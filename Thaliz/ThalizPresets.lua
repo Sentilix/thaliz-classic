@@ -10,8 +10,9 @@
 	6	Warcraft Jokes		50 Jokes in World of Warcraft
 	7	Theme: Crocodiles	Jokes with a bite!
 	8	Theme: Fishes		Salty Fish jokes
-	9	Theme: Christmas	December jokes in a cold time
-	10	Lyrics				Songs as resurrection messages
+	9	Theme: Cars			Driving you Crazy!
+	10	Theme: Christmas	December jokes in a cold time
+	11	Lyrics				Songs as resurrection messages
 	
 --]]
 
@@ -543,6 +544,43 @@ Thaliz_PresetMessages = {
 		},
 	},
 	[9] = {
+		["name"] = "Theme: Cars",
+		["description"] = "These will drive you crazy!",
+		["messages"] = {
+			"(Ressing) %s is washing the car with his son. His son asks -\"Dad, why can't you just use a sponge?\"",
+			"(Ressing) %s, working at a Land Rover factory is so interesting. I make a new Discovery every day.",
+			"(Ressing) %s use BMW to go to work. Bus, Metro, Walk.",
+			"(Ressing) %s yells: What do we want? Race car noises!!! When do we want them? Neeeooowwwww!",
+			"(Ressing) %s is trying to get a job at Citroen. He send them 2 CVs already.",
+			"(Ressing) %s, how does a German cowboy say hello? Audi!",
+			"(Ressing) %s invented the rearview mirror for cars... After that, there was no looking back.",
+			"(Ressing) %s was looking for a book on how to fix automatic gearboxes, but the library only had manuals.",
+			"(Ressing) %s threw his spare tire into the woods when he got lost. Where there's a wheel, there's a way.",
+			"(Ressing) Someone complimented %s on his driving the other day. They left a note on the windscreen - Parking Fine!",
+			"(Ressing) %s, I wish I knew who kicked the jack out from under the car that I was working on? The suspension is killing me.",
+			"(Ressing) %s, Shania Twain has been boasting online about her new Subaru. That don't Impreza me much...",
+			"(Ressing) %s, children in the back seat cause accidents. And accidents in the back seat cause children.",
+			"(Ressing) %s, if I owned a DeLorean... I'd probably only drive it from time to time.",
+			"(Ressing) %s just got nine out of 10 on his driver's test. The last guy was able to get out of the way.",
+			"(Ressing) %s, what's the best part of Audi's customer service? They answer within four rings.",
+			"(Ressing) %s, that's not a leak... My car just marking its territory.",
+			"(Ressing) %s, a pair of jumper cables walk into a bar. The bartender says, I'm fine to serve you but you better not start anything.",
+			"(Ressing) %s, why does it cost so much to put air in a tire? Inflation.",
+			"(Ressing) %s, half of all Hyundai's ever made are still on the road today. The other half made it home.",
+			"(Ressing) %s, If you drive a Subaru in reverse, what are you? U r a bus.",
+			"(Ressing) %s, when you can't find a parking spot, do you also turn down the volume to see better?",
+			"(Ressing) %s, the worst thing about parallel parking is witnesses.",
+			"(Ressing) %s, new Teslas don't come with a new car smell they come with an Elon Musk.",
+			"(Ressing) %s, I really need to get my car fixed. What body shop do you wreck-amend?",
+			"(Ressing) %s, what's a car's favorite meal? Brake-fast.",
+			"(Ressing) %s, how do you know a car is a good price? If it is a-Ford-able.",
+			"(Ressing) %s has been stealing wheels from police cars. Police are working tirelessly to catch him.",
+			"(Ressing) It's probably not safe for %s to be driving his car right now. But hey, bad brakes have never stopped him before.",
+			"(Ressing) %s, as I put my car in reverse, I thought to myself... \"Ah, this takes me back.\"",
+			"(Ressing) %s, if a piano player is called a pianist, wouldn't a racecar driver be called a racist?",
+		},
+	},	
+	[10] = {
 		["name"] = "Theme: Christmas",
 		["description"] = "December jokes in a cold time",
 		["messages"] = {
@@ -581,7 +619,7 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s, how did the snowman pay for his groceries? With cold cash.",
 		},
 	},
-	[10] = {
+	[11] = {
 		["name"] = "Lyrics",
 		["description"] = "Music lyrics quotes",
 		["messages"] = {
