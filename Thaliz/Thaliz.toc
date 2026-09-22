@@ -10,5 +10,6 @@
 ## X-Wago-ID: ZQ6aoqGW
 
 DigamAddonLib.lua
+DigamAddonLib-Forever.lua
 ThalizPresets.lua
 Thaliz.xml

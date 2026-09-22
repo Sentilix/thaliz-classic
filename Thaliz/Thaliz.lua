@@ -11,7 +11,6 @@ https://github.com/Sentilix/thaliz-classic
 Please see the ReadMe.txt for addon details.
 ]]
 
-
 local addonMetadata = {
 	["ADDONNAME"]		= "Thaliz",
 	["SHORTNAME"]		= "THALIZ",
@@ -19,7 +18,10 @@ local addonMetadata = {
 	["NORMALCHATCOLOR"]	= "40A0F8",
 	["HOTCHATCOLOR"]	= "00F0F0",
 };
-local A = DigamAddonLib:new(addonMetadata);
+
+Thaliz = select(2, ...)
+Thaliz.lib = DigamAddonLib:new(addonMetadata);
+Thaliz.API = Thaliz.lib.API;
 
 
 local PARTY_CHANNEL							= "PARTY"
@@ -45,7 +47,7 @@ local EMOTE_GROUP_RACE						= "Race";
 --	List of valid class names with priority and resurrection spell name (if any)
 --	classname, priority, spellname (translated runtime), spellID
 
-local Thaliz_ClassMatrix = {
+Thaliz.ClassMatrix = {
 	["DRUID"] = {
 		["class"] = "Druid",
 		["priority"] = 40,
@@ -123,9 +125,6 @@ local Thaliz_ClassMatrix = {
 }
 
 
-local Thaliz_classInfo = { }
-
-
 --	Table: { Name, Sample, Pattern }
 --	At runtime Sample ("%") is replaced with UnitName('Player').
 --	Pattern is used when the macros are shown.
@@ -154,10 +153,10 @@ local IsDruid = false;
 local IsMonk = false;
 local IsResser = false;
 
-local THALIZ_RezBtn_Passive			= "";
-local THALIZ_RezBtn_Active			= "";
-local THALIZ_RezBtn_Combat			= "Interface\\Icons\\Ability_dualwield";
-local THALIZ_RezBtn_Dead			= "Interface\\Icons\\Ability_rogue_feigndeath";
+Thaliz.Icon_RezBtn_Passive			= "";
+Thaliz.Icon_RezBtn_Active			= "";
+Thaliz.Icon_RezBtn_Combat			= "Interface\\Icons\\Ability_dualwield";
+Thaliz.Icon_RezBtn_Dead				= "Interface\\Icons\\Ability_rogue_feigndeath";
 
 local THALIZ_ICON_OTHER_PASSIVE		= "Interface\\Icons\\INV_Misc_Gear_01";
 local THALIZ_ICON_DRUID_PASSIVE		= "Interface\\Icons\\INV_Misc_Monsterclaw_04";
@@ -176,44 +175,45 @@ local THALIZ_ICON_SHAMAN_ACTIVE		= "Interface\\Icons\\spell_holy_resurrection";
 -- Table { PlayerName-RealmName, TimerTick }
 local blacklistedTable = {}
 -- Corpses are blacklisted for 40 seconds (10 seconds cast time + 30 seconds waiting) as default
-local Thaliz_Blacklist_Spellcast = 10;
-local Thaliz_Blacklist_Resurrect = 30;
-local Thaliz_Blacklist_Timeout = Thaliz_Blacklist_Spellcast + Thaliz_Blacklist_Resurrect;
+Thaliz.BlacklistSpellcastTime = 10;
+Thaliz.BlacklistResurrectionTimeout = 30;
+Thaliz.BlacklistTimeout = Thaliz.BlacklistSpellcastTime + Thaliz.BlacklistResurrectionTimeout;
 
-local Thaliz_LastRandomMessageIndex = -1;
-local Thaliz_Enabled = true;
+Thaliz.LastRandomMessageIndex = -1;
+Thaliz.Enabled = true;
+Thaliz.ScanFrequency = 0.2;		-- Scan 5 times per second
+Thaliz.ProfileTable = { };
+Thaliz.SelectedImportProfile = nil;
+Thaliz.ResurrectionNextMessage = 1;
+
 local ThalizConfigDialogOpen = false;
 local ThalizDoScanRaid = true;
-local ThalizScanFrequency = 0.2;		-- Scan 5 times per second
-local Thaliz_ProfileTable = { };
-local Thaliz_SelectedProfile = nil;
-local Thaliz_ResurrectionNextMessage = 1;
 
--- Configuration constants:
-local Thaliz_Configuration_Default_Level				= "Character";	-- Can be "Character" or "Realm"
-local Thaliz_Target_Channel_Default						= "RAID";
-local Thaliz_Target_Whisper_Default						= "0";
-local Thaliz_Resurrection_Whisper_Message_Default		= "Resurrection incoming in 10 seconds!";
-local Thaliz_Include_Default_Group_Default				= "1";
-local Thaliz_OPTION_RezButtonVisible_Default			= "1";
+-- Configuration values:
+Thaliz.Configuration_Default_Level				= "Character";	-- Can be "Character" or "Realm"
+Thaliz.Target_Channel_Default					= "RAID";
+Thaliz.Target_Whisper_Default					= "0";
+Thaliz.Resurrection_Whisper_Message_Default		= "Resurrection incoming in 10 seconds!";
+Thaliz.Include_Default_Group_Default			= "1";
+Thaliz.OPTION_RezButtonVisible_Default			= "1";
 
-local Thaliz_ConfigurationLevel							= Thaliz_Configuration_Default_Level;
+Thaliz.ConfigurationLevel						= Thaliz.Configuration_Default_Level;
 
-local Thaliz_ROOT_OPTION_CharacterBasedSettings			= "CharacterBasedSettings";
-local Thaliz_OPTION_ResurrectionMessageTargetChannel	= "ResurrectionMessageTargetChannel";
-local Thaliz_OPTION_ResurrectionMessageTargetWhisper	= "ResurrectionMessageTargetWhisper";
-local Thaliz_OPTION_ResurrectionNameEnclosure			= "ResurrectionNameEnclosure";
-local Thaliz_OPTION_ResurrectionMessageOrder			= "ResurrectionMessageOrder";
-local Thaliz_OPTION_ResurrectionNextMessage				= "ResurrectionNextMessage";
-local Thaliz_OPTION_AlwaysIncludeDefaultGroup			= "AlwaysIncludeDefaultGroup";
-local Thaliz_OPTION_ResurrectionWhisperMessage			= "ResurrectionWhisperMessage";
-local Thaliz_OPTION_ResurrectionMessages				= "ResurrectionMessages";
-local Thaliz_OPTION_RezButtonPosX						= "RezButtonPosX";
-local Thaliz_OPTION_RezButtonPosY						= "RezButtonPosY";
-local Thaliz_OPTION_RezButtonVisible					= "ResurrectionButtonVisible";
+Thaliz.ROOT_OPTION_CharacterBasedSettings		= "CharacterBasedSettings";
+Thaliz.OPTION_ResurrectionMessageTargetChannel	= "ResurrectionMessageTargetChannel";
+Thaliz.OPTION_ResurrectionMessageTargetWhisper	= "ResurrectionMessageTargetWhisper";
+Thaliz.OPTION_ResurrectionNameEnclosure			= "ResurrectionNameEnclosure";
+Thaliz.OPTION_ResurrectionMessageOrder			= "ResurrectionMessageOrder";
+Thaliz.OPTION_ResurrectionNextMessage			= "ResurrectionNextMessage";
+Thaliz.OPTION_AlwaysIncludeDefaultGroup			= "AlwaysIncludeDefaultGroup";
+Thaliz.OPTION_ResurrectionWhisperMessage		= "ResurrectionWhisperMessage";
+Thaliz.OPTION_ResurrectionMessages				= "ResurrectionMessages";
+Thaliz.OPTION_RezButtonPosX						= "RezButtonPosX";
+Thaliz.OPTION_RezButtonPosY						= "RezButtonPosY";
+Thaliz.OPTION_RezButtonVisible					= "ResurrectionButtonVisible";
 
-local Thaliz_OPTION_ResurrectionPriority				= "ResurrectionPriority";
-local Thaliz_Configuration_Default_Priority = {
+Thaliz.OPTION_ResurrectionPriority				= "ResurrectionPriority";
+Thaliz.Configuration_Default_Priority = {
 	["Druid"]			= { ["Priority"] = 40 },
 	["Hunter"]			= { ["Priority"] = 30 },
 	["Mage"]			= { ["Priority"] = 40 },
@@ -228,27 +228,26 @@ local Thaliz_Configuration_Default_Priority = {
 	["FirstWarlock"]	= { ["Priority"] = 45 },
 }
 
-local Thaliz_DebugFunction = nil;
+Thaliz.DebugFunction = nil;
 
 -- Persisted information:
 --	{realmname}{playername}{parameter}
-Thaliz_Options = { }
+Thaliz.Options = { }
 
 -- First-time messages: use the DAD JOKES, beware! :-D
-local Thaliz_DefaultPresetGroup							= 5;		
+Thaliz.DefaultPresetGroup							= 5;		
 
 
 --[[
 	Echo in raid chat (if in raid) or party chat (if not)
 ]]
-local function partyEcho(msg)
-	if IsInRaid() then
-		SendChatMessage(msg, RAID_CHANNEL)
-	elseif A:isInParty() then
-		SendChatMessage(msg, PARTY_CHANNEL)
+function Thaliz.partyEcho(msg)
+	if Thaliz.API.IsInRaid() then
+		Thaliz.API.SendChatMessage(msg, RAID_CHANNEL)
+	elseif Thaliz.lib:isInParty() then
+		Thaliz.API.SendChatMessage(msg, PARTY_CHANNEL)
 	end
 end
-
 
 
 
@@ -290,7 +289,7 @@ SlashCmdList["THALIZ_THALIZ"] = function(msg)
 	elseif option == "VERSION" then
 		SlashCmdList["THALIZ_VERSION"]();
 	else
-		A:echo(string.format("Unknown command: %s", option));
+		Thaliz.lib:echo(string.format("Unknown command: %s", option));
 	end
 end
 
@@ -303,7 +302,7 @@ end
 SLASH_THALIZ_SHOW1 = "/thalizshow"	
 SlashCmdList["THALIZ_SHOW"] = function(msg)
 	RezButton:Show();
-	Thaliz_SetOption(Thaliz_OPTION_RezButtonVisible, "1");
+	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonVisible, "1");
 end
 
 
@@ -316,7 +315,7 @@ end
 SLASH_THALIZ_HIDE1 = "/thalizhide"	
 SlashCmdList["THALIZ_HIDE"] = function(msg)
 	RezButton:Hide();
-	Thaliz_SetOption(Thaliz_OPTION_RezButtonVisible, "0");
+	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonVisible, "0");
 end
 
 --[[
@@ -327,10 +326,10 @@ end
 ]]
 SLASH_THALIZ_VERSION1 = "/thalizversion"
 SlashCmdList["THALIZ_VERSION"] = function(msg)
-	if IsInRaid() or A:isInParty() then
-		A:sendAddonMessage("TX_VERSION##");
+	if Thaliz.API.IsInRaid() or Thaliz.lib:isInParty() then
+		Thaliz.lib:sendAddonMessage("TX_VERSION##");
 	else
-		A:echo(string.format("%s is using Thaliz version %s", A.localPlayerName, A.addonVersion));
+		Thaliz.lib:echo(string.format("%s is using Thaliz version %s", Thaliz.lib.localPlayerName, Thaliz.lib.addonVersion));
 	end
 end
 
@@ -343,7 +342,7 @@ end
 SLASH_THALIZ_CONFIG1 = "/thalizconfig"
 SLASH_THALIZ_CONFIG2 = "/thalizcfg"
 SlashCmdList["THALIZ_CONFIG"] = function(msg)
-	Thaliz_OpenConfigurationDialogue();
+	Thaliz.OpenConfigurationDialogue();
 end
 
 --[[
@@ -353,8 +352,8 @@ end
 ]]
 SLASH_THALIZ_DISABLE1 = "/thalizdisable"
 SlashCmdList["THALIZ_DISABLE"] = function(msg)
-	Thaliz_Enabled = false;
-	A:echo("Resurrection announcements has been disabled.");
+	Thaliz.Enabled = false;
+	Thaliz.lib:echo("Resurrection announcements has been disabled.");
 end
 
 --[[
@@ -364,8 +363,8 @@ end
 ]]
 SLASH_THALIZ_ENABLE1 = "/thalizenable"
 SlashCmdList["THALIZ_ENABLE"] = function(msg)
-	Thaliz_Enabled = true;
-	A:echo("Resurrection announcements has been enabled.");
+	Thaliz.Enabled = true;
+	Thaliz.lib:echo("Resurrection announcements has been enabled.");
 end
 
 --[[
@@ -380,17 +379,15 @@ SlashCmdList["THALIZ_RESETBUTTON"] = function(msg)
 	RezButton:SetPoint("CENTER", "UIParent", "CENTER", 0, 0);
 	RezButton:SetSize(THALIZ_REZBUTTON_SIZE, THALIZ_REZBUTTON_SIZE);
 
-	if Thaliz_OPTION_RezButtonVisible_Default == "1" then
+	if Thaliz.OPTION_RezButtonVisible_Default == "1" then
 		RezButton:Show();
 	end;
 
-	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, 0);
-	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosY, 0);
+	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonPosX, 0);
+	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonPosY, 0);
 
-	A:echo("The Resurrection button has been reset.");
+	Thaliz.lib:echo("The Resurrection button has been reset.");
 end
-
-
 
 
 
@@ -404,13 +401,13 @@ SlashCmdList["THALIZ_DEBUG"] = function(msg)
 	local _, _, dbgfunc = string.find(msg, "(%S*)");
 
 	if dbgfunc and dbgfunc ~= '' then
-		A:echo(string.format("Enabling debug for %s", dbgfunc));
-		ThalizScanFrequency = 1.0;
-		Thaliz_DebugFunction = dbgfunc;
+		Thaliz.lib:echo(string.format("Enabling debug for %s", dbgfunc));
+		Thaliz.ScanFrequency = 1.0;
+		Thaliz.DebugFunction = dbgfunc;
 	else
-		A:echo("Disabling debug");
-		ThalizScanFrequency = 0.2;
-		Thaliz_DebugFunction = nil;
+		Thaliz.lib:echo("Disabling debug");
+		Thaliz.ScanFrequency = 0.2;
+		Thaliz.DebugFunction = nil;
 	end;
 end
 
@@ -424,18 +421,18 @@ end
 ]]
 SLASH_THALIZ_HELP1 = "/thalizhelp"
 SlashCmdList["THALIZ_HELP"] = function(msg)
-	A:echo(string.format("Thaliz version %s options:", A.addonVersion));
-	A:echo("Syntax:");
-	A:echo("    /thaliz [option]");
-	A:echo("Where options can be:");
-	A:echo("    Config       (default) Open the configuration dialogue,");
-	A:echo("    Disable      Disable Thaliz resurrection messages.");
-	A:echo("    Enable       Enable Thaliz resurrection messages again.");
-	A:echo("    ResetButton  Resets the position of the Rez Button.");
-	A:echo("    Help         This help.");
-	A:echo("    Show         Shows the resurrection button.");
-	A:echo("    Hide         Hides the resurrection button.");
-	A:echo("    Version      Request version info from all clients.");
+	Thaliz.lib:echo(string.format("Thaliz version %s options:", Thaliz.lib.addonVersion));
+	Thaliz.lib:echo("Syntax:");
+	Thaliz.lib:echo("    /thaliz [option]");
+	Thaliz.lib:echo("Where options can be:");
+	Thaliz.lib:echo("    Config       (default) Open the configuration dialogue,");
+	Thaliz.lib:echo("    Disable      Disable Thaliz resurrection messages.");
+	Thaliz.lib:echo("    Enable       Enable Thaliz resurrection messages again.");
+	Thaliz.lib:echo("    ResetButton  Resets the position of the Rez Button.");
+	Thaliz.lib:echo("    Help         This help.");
+	Thaliz.lib:echo("    Show         Shows the resurrection button.");
+	Thaliz.lib:echo("    Hide         Hides the resurrection button.");
+	Thaliz.lib:echo("    Version      Request version info from all clients.");
 end
 
 
@@ -446,16 +443,16 @@ end
 --
 --  *******************************************************
 
-function Thaliz_ToggleConfigurationDialogue()
+function Thaliz.ToggleConfigurationDialogue()
 	if ThalizConfigDialogOpen then
 		Thaliz_CloseButton_OnClick();
 	else
-		Thaliz_OpenConfigurationDialogue();
+		Thaliz.OpenConfigurationDialogue();
 	end;
 end
 
-function Thaliz_OpenConfigurationDialogue()
-	local whisperMsg = Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage);
+function Thaliz.OpenConfigurationDialogue()
+	local whisperMsg = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionWhisperMessage);
 
 	if not whisperMsg then whisperMsg = ""; end;
 
@@ -465,7 +462,7 @@ function Thaliz_OpenConfigurationDialogue()
 	ThalizFrame:Show();
 end
 
-function Thaliz_CloseConfigurationDialogue()
+function Thaliz.CloseConfigurationDialogue()
 	Thaliz_CloseMsgEditorButton_OnClick();
 	Thaliz_CloseProfileButton_OnClick();
 	Thaliz_ClosePresetButton_OnClick();
@@ -476,13 +473,13 @@ function Thaliz_CloseConfigurationDialogue()
 end
 
 
-function Thaliz_RefreshVisibleMessageList(offset)
---	echo(string.format("Thaliz_RefreshVisibleMessageList: Offset=%d", offset));
-	local macros = Thaliz_GetResurrectionMessages();
+function Thaliz.RefreshVisibleMessageList(offset)
+--	echo(string.format("Thaliz.RefreshVisibleMessageList: Offset=%d", offset));
+	local macros = Thaliz.GetResurrectionMessages();
 	
 	-- Set a priority on each spell, and then sort them accordingly:
 	local macro, msg, grp, prm, prio
-	for n=1, table.getn(macros), 1 do
+	for n=1, #macros, 1 do
 		msg = macros[n][1];
 		grp = macros[n][2];
 		prm = macros[n][3];
@@ -542,6 +539,9 @@ function Thaliz_RefreshVisibleMessageList(offset)
 				prio = 122
 			elseif prm == "Zandalari Troll" then
 				prio = 123
+			-- Forever:
+			elseif prm == "Skyborne" then
+				prio = 124
 			end;			
 		elseif grp == EMOTE_GROUP_CLASS then
 			-- Class names are listed alphabetically:
@@ -578,7 +578,7 @@ function Thaliz_RefreshVisibleMessageList(offset)
 		macros[n][4] = prio;		
 	end
 	
-	Thaliz_SortTableDescending(macros, 4);
+	Thaliz.SortTableDescending(macros, 4);
 	
 	for n=1, THALIZ_MAX_VISIBLE_MESSAGES, 1 do
 		macro = macros[n + offset]
@@ -586,9 +586,9 @@ function Thaliz_RefreshVisibleMessageList(offset)
 			macro = { "", EMOTE_GROUP_DEFAULT, "" }
 		end
 		
-		local msg = Thaliz_CheckMessage(macro[1]);
-		local grp = Thaliz_CheckGroup(macro[2]);
-		local prm = Thaliz_CheckGroupValue(macro[3]);
+		local msg = Thaliz.CheckMessage(macro[1]);
+		local grp = Thaliz.CheckGroup(macro[2]);
+		local prm = Thaliz.CheckGroupValue(macro[3]);
 		
 		--echo(string.format("-> Msg=%s, Grp=%s, Value=%s", msg, grp, prm));
 		
@@ -616,7 +616,7 @@ function Thaliz_RefreshVisibleMessageList(offset)
 		elseif grp == EMOTE_GROUP_CLASS then
 			grpColor = { 0.8, 0.0, 1.0 }
 
-			local classinfo = Thaliz_ClassMatrix[prm];
+			local classinfo = Thaliz.ClassMatrix[prm];
 			if classinfo then
 				prmColor = { classinfo["color"][1] / 255, classinfo["color"][2] / 255, classinfo["color"][3] / 255 };
 			end;
@@ -641,10 +641,10 @@ function Thaliz_UpdateMessageList()
 	FauxScrollFrame_Update(ThalizFrameTableList, THALIZ_MAX_MESSAGES, 10, 20);
 	local offset = FauxScrollFrame_GetOffset(ThalizFrameTableList);
 	
-	Thaliz_RefreshVisibleMessageList(offset);
+	Thaliz.RefreshVisibleMessageList(offset);
 end
 
-function Thaliz_InitializeListElements()
+function Thaliz.InitializeListElements()
 	local entry = CreateFrame("Button", "$parentEntry1", ThalizFrameTableList, "Thaliz_CellTemplate");
 	entry:SetID(1);
 	entry:SetPoint("TOPLEFT", 4, -4);
@@ -673,8 +673,8 @@ function Thaliz_OnMessageClick(object)
 		msg = "";
 	end
 	
-	grp = Thaliz_CheckGroup(grp);
-	prm = Thaliz_CheckGroupValue(prm);
+	grp = Thaliz.CheckGroup(grp);
+	prm = Thaliz.CheckGroupValue(prm);
 
 	local frame = _G["ThalizMsgEditorFrame"];
 	_G[frame:GetName().."Message"]:SetText(msg);
@@ -724,7 +724,7 @@ function Thaliz_SaveMessageButton_OnClick()
 
 	if	grp == EMOTE_GROUP_CHARACTER or 
 		grp == EMOTE_GROUP_CLASS then
-		prm = Thaliz_UCFirst(prm)
+		prm = Thaliz.UCFirst(prm)
 	elseif grp == EMOTE_GROUP_RACE then
 		-- Allow both "nightelf" and "night elf".
 		-- This weird construction ensures all are shown with capital first letter.
@@ -733,12 +733,12 @@ function Thaliz_SaveMessageButton_OnClick()
 		elseif string.upper(prm) == "BLOODELF" or string.upper(prm) == "BLOOD ELF" then
 			prm = "Blood Elf"
 		else
-			prm = Thaliz_UCFirst(prm)
+			prm = Thaliz.UCFirst(prm)
 		end;
 	end
 
 	Thaliz_CloseMsgEditorButton_OnClick();	
-	Thaliz_UpdateResurrectionMessage(currentObjectId, offset, msg, grp, prm);
+	Thaliz.UpdateResurrectionMessage(currentObjectId, offset, msg, grp, prm);
 	Thaliz_UpdateMessageList();
 end
 
@@ -750,20 +750,20 @@ function Thaliz_HandleCheckbox(checkbox)
 	if checkboxname == "ThalizFrameCheckbuttonRaid" or checkboxname == "ThalizFrameCheckbuttonYell" or checkboxname == "ThalizFrameCheckbuttonSay" then	
 		if checkbox:GetChecked() then
 			if checkboxname == "ThalizFrameCheckbuttonRaid" then
-				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "RAID");
+				Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetChannel, "RAID");
 				ThalizFrameCheckbuttonSay:SetChecked();
 				ThalizFrameCheckbuttonYell:SetChecked();
 			elseif checkboxname == "ThalizFrameCheckbuttonYell" then
-				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "YELL");
+				Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetChannel, "YELL");
 				ThalizFrameCheckbuttonSay:SetChecked();
 				ThalizFrameCheckbuttonRaid:SetChecked();
 			elseif checkboxname == "ThalizFrameCheckbuttonSay" then
-				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "SAY");
+				Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetChannel, "SAY");
 				ThalizFrameCheckbuttonRaid:SetChecked();
 				ThalizFrameCheckbuttonYell:SetChecked();
 			end
 		else
-			Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "NONE");
+			Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetChannel, "NONE");
 			ThalizFrameCheckbuttonRaid:SetChecked();
 			ThalizFrameCheckbuttonSay:SetChecked();
 			ThalizFrameCheckbuttonYell:SetChecked();
@@ -772,21 +772,21 @@ function Thaliz_HandleCheckbox(checkbox)
 
 	-- "single" checkboxes (checkboxes with no impact on other checkboxes):
 	if ThalizFrameCheckbuttonWhisper:GetChecked() then
-		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, 1);
+		Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetWhisper, 1);
 	else
-		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, 0);
+		Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetWhisper, 0);
 	end	
 	
 	if ThalizFrameCheckbuttonIncludeDefault:GetChecked() then
-		Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, 1);
+		Thaliz.SetConfigOption(Thaliz.OPTION_AlwaysIncludeDefaultGroup, 1);
 	else
-		Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, 0);
+		Thaliz.SetConfigOption(Thaliz.OPTION_AlwaysIncludeDefaultGroup, 0);
 	end	
 		
 	if ThalizFrameCheckbuttonPerCharacter:GetChecked() then
-		Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, "Character");
+		Thaliz.SetRootConfigOption(Thaliz.ROOT_OPTION_CharacterBasedSettings, "Character");
 	else
-		Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, "Realm");
+		Thaliz.SetRootConfigOption(Thaliz.ROOT_OPTION_CharacterBasedSettings, "Realm");
 	end	
 	
 	-- Emote Groups: Only one can be active:
@@ -828,10 +828,10 @@ function Thaliz_HandleCheckbox(checkbox)
 	end;
 end
 
-function Thaliz_GetRootOption(parameter, defaultValue)
-	if Thaliz_Options then
-		if Thaliz_Options[parameter] then
-			local value = Thaliz_Options[parameter];
+function Thaliz.GetRootConfigOption(parameter, defaultValue)
+	if Thaliz.Options then
+		if Thaliz.Options[parameter] then
+			local value = Thaliz.Options[parameter];
 			if (type(value) == "table") or not(value == "") then
 				return value;
 			end
@@ -841,24 +841,28 @@ function Thaliz_GetRootOption(parameter, defaultValue)
 	return defaultValue;
 end
 
-function Thaliz_SetRootOption(parameter, value)
-	if not Thaliz_Options then
-		Thaliz_Options = {};
+function Thaliz.SetRootConfigOption(parameter, value)
+	if not parameter then
+		return
+	end;
+
+	if not Thaliz.Options then
+		Thaliz.Options = {};
 	end
 	
-	Thaliz_Options[parameter] = value;
+	Thaliz.Options[parameter] = value;
 end
 
-function Thaliz_GetOption(parameter, defaultValue)
-	local realmname = GetRealmName();
-	local playername = UnitName("player");
+function Thaliz.GetConfigOption(parameter, defaultValue)
+	local realmname = Thaliz.API.GetRealmName();
+	local playername = Thaliz.API.UnitName("player");
 
-	if Thaliz_ConfigurationLevel == "Character" then
+	if Thaliz.ConfigurationLevel == "Character" then
 		-- Character level
-		if Thaliz_Options[realmname] then
-			if Thaliz_Options[realmname][playername] then
-				if Thaliz_Options[realmname][playername][parameter] then
-					local value = Thaliz_Options[realmname][playername][parameter];
+		if Thaliz.Options[realmname] then
+			if Thaliz.Options[realmname][playername] then
+				if Thaliz.Options[realmname][playername][parameter] then
+					local value = Thaliz.Options[realmname][playername][parameter];
 					if (type(value) == "table") or not(value == "") then
 						return value;
 					end
@@ -867,9 +871,9 @@ function Thaliz_GetOption(parameter, defaultValue)
 		end
 	else
 		-- Realm level:
-		if Thaliz_Options[realmname] then
-			if Thaliz_Options[realmname][parameter] then
-				local value = Thaliz_Options[realmname][parameter];
+		if Thaliz.Options[realmname] then
+			if Thaliz.Options[realmname][parameter] then
+				local value = Thaliz.Options[realmname][parameter];
 				if (type(value) == "table") or not(value == "") then
 					return value;
 				end
@@ -880,58 +884,58 @@ function Thaliz_GetOption(parameter, defaultValue)
 	return defaultValue;
 end
 
-function Thaliz_SetOption(parameter, value)
-	local realmname = GetRealmName();
-	local playername = UnitName("player");
+function Thaliz.SetConfigOption(parameter, value)
+	local realmname = Thaliz.API.GetRealmName();
+	local playername = Thaliz.API.UnitName("player");
 
-	if Thaliz_ConfigurationLevel == "Character" then
+	if Thaliz.ConfigurationLevel == "Character" then
 		-- Character level:
-		if not Thaliz_Options[realmname] then
-			Thaliz_Options[realmname] = {};
+		if not Thaliz.Options[realmname] then
+			Thaliz.Options[realmname] = {};
 		end
 		
-		if not Thaliz_Options[realmname][playername] then
-			Thaliz_Options[realmname][playername] = {};
+		if not Thaliz.Options[realmname][playername] then
+			Thaliz.Options[realmname][playername] = {};
 		end
 		
-		Thaliz_Options[realmname][playername][parameter] = value;		
+		Thaliz.Options[realmname][playername][parameter] = value;		
 	else
 		-- Realm level:
-		if not Thaliz_Options[realmname] then
-			Thaliz_Options[realmname] = {};
+		if not Thaliz.Options[realmname] then
+			Thaliz.Options[realmname] = {};
 		end	
 		
-		Thaliz_Options[realmname][parameter] = value;
+		Thaliz.Options[realmname][parameter] = value;
 	end
 end
 
-function Thaliz_InitializeConfigSettings()
-	if not Thaliz_Options then
-		Thaliz_Options = { };
+function Thaliz.InitializeConfigSettings()
+	if not Thaliz.Options then
+		Thaliz.Options = { };
 	end
 
-	Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level))
-	Thaliz_ConfigurationLevel = Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level);
+	Thaliz.SetRootConfigOption(Thaliz.ROOT_OPTION_CharacterBasedSettings, Thaliz.GetRootConfigOption(Thaliz.ROOT_OPTION_CharacterBasedSettings, Thaliz.Configuration_Default_Level))
+	Thaliz.ConfigurationLevel = Thaliz.GetRootConfigOption(Thaliz.ROOT_OPTION_CharacterBasedSettings, Thaliz.Configuration_Default_Level);
 	
-	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_Target_Channel_Default))
-	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_Target_Whisper_Default))
-	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_Resurrection_Whisper_Message_Default))
-	Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_GetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, Thaliz_Include_Default_Group_Default))
+	Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetChannel, Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetChannel, Thaliz.Target_Channel_Default))
+	Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetWhisper, Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetWhisper, Thaliz.Target_Whisper_Default))
+	Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionWhisperMessage, Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionWhisperMessage, Thaliz.Resurrection_Whisper_Message_Default))
+	Thaliz.SetConfigOption(Thaliz.OPTION_AlwaysIncludeDefaultGroup, Thaliz.GetConfigOption(Thaliz.OPTION_AlwaysIncludeDefaultGroup, Thaliz.Include_Default_Group_Default))
 
-	Thaliz_SetOption(Thaliz_OPTION_RezButtonVisible, Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible, Thaliz_OPTION_RezButtonVisible_Default))
+	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonVisible, Thaliz.GetConfigOption(Thaliz.OPTION_RezButtonVisible, Thaliz.OPTION_RezButtonVisible_Default))
 
-	Thaliz_SetOption(Thaliz_OPTION_ResurrectionNameEnclosure, Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE"));
-	Thaliz_InitializeNameEnclosures();
+	Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionNameEnclosure, Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionNameEnclosure, "NONE"));
+	Thaliz.InitializeNameEnclosures();
 
-	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageOrder, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageOrder, "RANDOM"));
-	Thaliz_UpdateMessageOrderText();
+	Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionMessageOrder, Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageOrder, "RANDOM"));
+	Thaliz.UpdateMessageOrderText();
 
-	Thaliz_SetOption(Thaliz_OPTION_ResurrectionNextMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionNextMessage, "1"));
-	TThaliz_ResurrectionNextMessage = Thaliz_GetOption(Thaliz_OPTION_ResurrectionNextMessage, "1");
+	Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionNextMessage, Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionNextMessage, "1"));
+	Thaliz.ResurrectionNextMessage = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionNextMessage, "1");
 
 	--	Resurrection priorities:
 	--	Validate this is actually a valid structure:
-	local priorities = Thaliz_GetOption(Thaliz_OPTION_ResurrectionPriority, Thaliz_Configuration_Default_Priority);
+	local priorities = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionPriority, Thaliz.Configuration_Default_Priority);
 	if	not priorities or 
 		not priorities.Druid or not priorities.Druid.Priority or
 		not priorities.Hunter or not priorities.Hunter.Priority or
@@ -945,62 +949,62 @@ function Thaliz_InitializeConfigSettings()
 		not priorities.CurrentTarget or not priorities.CurrentTarget.Priority or
 		not priorities.MasterLooter or not priorities.MasterLooter.Priority or
 		not priorities.FirstWarlock or not priorities.FirstWarlock.Priority then
-		priorities = Thaliz_Configuration_Default_Priority;
+		priorities = Thaliz.Configuration_Default_Priority;
 	end;
-	Thaliz_SetOption(Thaliz_OPTION_ResurrectionPriority, priorities);
+	Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionPriority, priorities);
 
-	Thaliz_ClassMatrix.DRUID.priority	= priorities.Druid.Priority;
-	Thaliz_ClassMatrix.HUNTER.priority	= priorities.Hunter.Priority;
-	Thaliz_ClassMatrix.MAGE.priority	= priorities.Mage.Priority;
-	Thaliz_ClassMatrix.PALADIN.priority	= priorities.Paladin.Priority;
-	Thaliz_ClassMatrix.PRIEST.priority	= priorities.Priest.Priority;
-	Thaliz_ClassMatrix.ROGUE.priority	= priorities.Rogue.Priority;
-	Thaliz_ClassMatrix.SHAMAN.priority	= priorities.Shaman.Priority;
-	Thaliz_ClassMatrix.WARLOCK.priority	= priorities.Warlock.Priority;
-	Thaliz_ClassMatrix.WARRIOR.priority	= priorities.Warrior.Priority;
-	Thaliz_ClassMatrix.TARGET.priority	= priorities.CurrentTarget.Priority;
-	Thaliz_ClassMatrix.MASTER.priority	= priorities.MasterLooter.Priority;
-	Thaliz_ClassMatrix.FIRSTLOCK.priority= priorities.FirstWarlock.Priority;
+	Thaliz.ClassMatrix.DRUID.priority	= priorities.Druid.Priority;
+	Thaliz.ClassMatrix.HUNTER.priority	= priorities.Hunter.Priority;
+	Thaliz.ClassMatrix.MAGE.priority	= priorities.Mage.Priority;
+	Thaliz.ClassMatrix.PALADIN.priority= priorities.Paladin.Priority;
+	Thaliz.ClassMatrix.PRIEST.priority	= priorities.Priest.Priority;
+	Thaliz.ClassMatrix.ROGUE.priority	= priorities.Rogue.Priority;
+	Thaliz.ClassMatrix.SHAMAN.priority	= priorities.Shaman.Priority;
+	Thaliz.ClassMatrix.WARLOCK.priority= priorities.Warlock.Priority;
+	Thaliz.ClassMatrix.WARRIOR.priority= priorities.Warrior.Priority;
+	Thaliz.ClassMatrix.TARGET.priority	= priorities.CurrentTarget.Priority;
+	Thaliz.ClassMatrix.MASTER.priority	= priorities.MasterLooter.Priority;
+	Thaliz.ClassMatrix.FIRSTLOCK.priority= priorities.FirstWarlock.Priority;
 
 
 	local x,y = RezButton:GetPoint();
-	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosX, x))
-	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosY, Thaliz_GetOption(Thaliz_OPTION_RezButtonPosY, y))
+	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonPosX, Thaliz.GetConfigOption(Thaliz.OPTION_RezButtonPosX, x))
+	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonPosY, Thaliz.GetConfigOption(Thaliz.OPTION_RezButtonPosY, y))
 
-	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "RAID" then
+	if Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetChannel) == "RAID" then
 		ThalizFrameCheckbuttonRaid:SetChecked(1)
 	end
-	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "SAY" then
+	if Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetChannel) == "SAY" then
 		ThalizFrameCheckbuttonSay:SetChecked(1)
 	end
-	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "YELL" then
+	if Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetChannel) == "YELL" then
 		ThalizFrameCheckbuttonYell:SetChecked(1)
 	end
-	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
+	if Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetWhisper) == 1 then
 		ThalizFrameCheckbuttonWhisper:SetChecked(1)
 	end
-	if Thaliz_GetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup) == 1 then
+	if Thaliz.GetConfigOption(Thaliz.OPTION_AlwaysIncludeDefaultGroup) == 1 then
 		ThalizFrameCheckbuttonIncludeDefault:SetChecked(1)
 	end
-	if Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings) == "Character" then
+	if Thaliz.GetRootConfigOption(Thaliz.ROOT_OPTION_CharacterBasedSettings) == "Character" then
 		ThalizFrameCheckbuttonPerCharacter:SetChecked(1)
 	end    
-	if Thaliz_GetOption(Thaliz_OPTION_RezButtonVisible) == "1" then
+	if Thaliz.GetConfigOption(Thaliz.OPTION_RezButtonVisible) == "1" then
 		RezButton:Show();
 	else
 		RezButton:Hide()
 	end
 	
-	Thaliz_ParseProfileNames();
+	Thaliz.ParseProfileNames();
 
-	Thaliz_ValidateResurrectionMessages();
+	Thaliz.ValidateResurrectionMessages();
 end
 
-function Thaliz_ValidateResurrectionMessages()
-	local macros = Thaliz_GetResurrectionMessages();
+function Thaliz.ValidateResurrectionMessages()
+	local macros = Thaliz.GetResurrectionMessages();
 	local changed = False;
 	
-	for n=1, table.getn( macros ), 1 do
+	for n=1, #macros, 1 do
 		local macro = macros[n];
 		
 		if type(macro) == "table" then
@@ -1013,22 +1017,22 @@ function Thaliz_ValidateResurrectionMessages()
 	end;
 
 	if changed then	
-		Thaliz_SetResurrectionMessages(macros);	
+		Thaliz.SetResurrectionMessages(macros);	
 	end;
 end;
 
-function Thaliz_ParseProfileNames()
-	Thaliz_ProfileTable = { };
+function Thaliz.ParseProfileNames()
+	Thaliz.ProfileTable = { };
 
-	for realmName, realmInfo in next, Thaliz_Options do
+	for realmName, realmInfo in next, Thaliz.Options do
 		if type(realmInfo) == "table" then
 			for playerName, playerInfo in next, realmInfo do
 				if type(playerInfo) == "table" then
 					local messages = playerInfo["ResurrectionMessages"];
-					if messages and type(messages) == "table" and table.getn(messages) > 0 then	
+					if messages and type(messages) == "table" and #messages > 0 then	
 						local playerRealm = playerName .."-".. string.gsub(realmName, " ", "");
 
-						tinsert(Thaliz_ProfileTable, { ["realm"] = realmName, ["name"] = playerName, ["count"] = table.getn(messages), ["fullname"] = playerRealm });
+						tinsert(Thaliz.ProfileTable, { ["realm"] = realmName, ["name"] = playerName, ["count"] = #messages, ["fullname"] = playerRealm });
 					end;
 				end
 			end;
@@ -1041,7 +1045,7 @@ end;
 --[[
 	Convert a msg so first letter is uppercase, and rest as lower case.
 ]]
-function Thaliz_UCFirst(playername)
+function Thaliz.UCFirst(playername)
 	if not playername then
 		return ""
 	end	
@@ -1063,28 +1067,25 @@ end
 --	Resurrect message functions
 --
 --  *******************************************************
-function Thaliz_AnnounceResurrection(playername, unitid)
+function Thaliz.AnnounceResurrection(playername, unitid)
 
-	if not Thaliz_Enabled then
+	if not Thaliz.Enabled then
 		return;
 	end
 
-	playername = A:getFullPlayerName(playername);
+	playername = Thaliz.lib:getFullPlayerName(playername) or Thaliz.lib:getUnitidFromName(playername);
 
 	if not unitid then
-		unitid = A:getUnitidFromName(playername);
-		if not unitid then
-			return;
-		end
+		return;
 	end
 
 	-- 3.4.0: Supports RANDOM and SEQUENTIAL:
-	local messageOrder = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageOrder, "RANDOM");
+	local messageOrder = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageOrder, "RANDOM");
 
-	local playershortname = Thaliz_StripRealmName(playername);
-	local guildname = GetGuildInfo(unitid);
-	local race = string.upper(UnitRace(unitid));
-	local class = A:unitClass(unitid);
+	local playershortname = Thaliz.StripRealmName(playername);
+	local guildname = Thaliz.API.GetGuildInfo(unitid);
+	local race = string.upper(Thaliz.API.UnitRace(unitid));
+	local class = Thaliz.unitClass(unitid);
 	local charname = string.upper(playershortname);
 
 	if guildname then
@@ -1109,8 +1110,8 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	local cidx = 0;
 	local ridx = 0;
 	
-	local macros = Thaliz_GetResurrectionMessages();
-	for n=1, table.getn( macros ), 1 do
+	local macros = Thaliz.GetResurrectionMessages();
+	for n=1, #macros, 1 do
 		local macro = macros[n];
 		local param = "";
 		if macro[3] then
@@ -1146,19 +1147,19 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	-- Now generate list, using the found criteria above:
 	local macros = { }
 	local index = 0;
-	for n=1, table.getn( gmacro ), 1 do
+	for n=1, #gmacro, 1 do
 		index = index + 1;
 		macros[index] = gmacro[n];
 	end
-	for n=1, table.getn( nmacro ), 1 do
+	for n=1, #nmacro, 1 do
 		index = index + 1;
 		macros[index] = nmacro[n];
 	end
-	for n=1, table.getn( cmacro ), 1 do
+	for n=1, #cmacro, 1 do
 		index = index + 1;
 		macros[index] = cmacro[n];
 	end
-	for n=1, table.getn( rmacro ), 1 do
+	for n=1, #rmacro, 1 do
 		index = index + 1;
 		macros[index] = rmacro[n];
 	end;
@@ -1167,9 +1168,8 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	-- Include the default macro list if
 	-- * No macros matching group rules, or
 	-- * The "Include Default" option is selected.
-	if table.getn(macros) == 0 or 
-		Thaliz_GetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup) == 1 then
-		for n=1, table.getn( dmacro ), 1 do
+	if #macros == 0 or Thaliz.GetConfigOption(Thaliz.OPTION_AlwaysIncludeDefaultGroup) == 1 then
+		for n=1, #dmacro, 1 do
 			index = index + 1;
 			macros[index] = dmacro[n];
 		end;
@@ -1178,7 +1178,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	
 	local validMessages = {}
 	local validCount = 0;
-	for n=1, table.getn( macros ), 1 do
+	for n=1, #macros, 1 do
 		local msg = macros[n][1];
 		if msg and not (msg == "") then
 			validCount = validCount + 1;
@@ -1193,7 +1193,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	end
 
 	-- Check player name enclosure:
-	local enclosure = Thaliz_GetNameEnclosure(Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE"));
+	local enclosure = Thaliz.GetNameEnclosure(Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionNameEnclosure, "NONE"));
 	if enclosure then
 		playershortname = string.format(enclosure[3], playershortname);
 	end;
@@ -1202,25 +1202,25 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	if messageOrder == "SEQUENTIAL" then
 		--	SEQUENTIAL message order:
 		--	Note: special message (for guild for example) are not taken into account:
-		selectedMessageIndex = Thaliz_ResurrectionNextMessage;
-		Thaliz_ResurrectionNextMessage = Thaliz_ResurrectionNextMessage + 1;
+		selectedMessageIndex = Thaliz.ResurrectionNextMessage;
+		Thaliz.ResurrectionNextMessage = Thaliz.ResurrectionNextMessage + 1;
 		if (selectedMessageIndex > validCount) then
 			selectedMessageIndex = 1;
 		end;
-		if (Thaliz_ResurrectionNextMessage > validCount) then
-			Thaliz_ResurrectionNextMessage = 1;
+		if (Thaliz.ResurrectionNextMessage > validCount) then
+			Thaliz.ResurrectionNextMessage = 1;
 		end;
 	else
 		--  RANDOM message order:
 		--	This prevents the same message being shown twice:
 		selectedMessageIndex = random(validCount);
-		if selectedMessageIndex == Thaliz_LastRandomMessageIndex then
+		if selectedMessageIndex == Thaliz.LastRandomMessageIndex then
 			selectedMessageIndex = selectedMessageIndex + 1;
 			if selectedMessageIndex > validCount then
 				selectedMessageIndex = 1;
 			end;
 		end;
-		Thaliz_LastRandomMessageIndex = selectedMessageIndex;
+		Thaliz.LastRandomMessageIndex = selectedMessageIndex;
 	end
 
 
@@ -1228,7 +1228,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 
 	--	%m (male/female specific message):
 	--	Syntax: "%m{male text:female text}"
-	if UnitSex(unitid) == 2 then
+	if Thaliz.API.UnitSex(unitid) == 2 then
 		--	(male) Use first string
 		message = string.gsub(message, "%%m\{([^:^}]*):?([^}]*)\}", "%1");
 	else
@@ -1236,14 +1236,15 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		message = string.gsub(message, "%%m\{([^:^}]*):?([^}]*)\}", "%2");
 	end;
 
-	message = string.gsub(message, "%%c", Thaliz_UCFirst(class));
-	message = string.gsub(message, "%%r", Thaliz_UCFirst(race));
+	message = string.gsub(message, "%%c", UCFirst(class));
+	message = string.gsub(message, "%%r", UCFirst(race));
 	message = string.gsub(message, "%%g", guildname);
 	message = string.gsub(message, "%%s", playershortname);
 
-	local targetChannel = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel);
+	local targetChannel = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetChannel);
 
-	if not IsInInstance() then
+	--	FOREVER does not allow use of SAY and YELL in addons:
+	if not Thaliz.API.IsInInstance() or lib.addonExpansionLevel == 60 then
 		if targetChannel == "SAY" or targetChannel == "YELL" then
 			targetChannel = "RAID";
 		end;
@@ -1252,33 +1253,33 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	if targetChannel == "RAID" then
 		partyEcho(message);
 	elseif targetChannel == "SAY" then
-		SendChatMessage(message, SAY_CHANNEL)
+		Thaliz.API.SendChatMessage(message, SAY_CHANNEL)
 	elseif targetChannel == "YELL" then
-		SendChatMessage(message, YELL_CHANNEL)
+		Thaliz.API.SendChatMessage(message, YELL_CHANNEL)
 	else
 		echo(message);
 	end
 	
 
-	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
-		local whisperMsg = Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage);
+	if Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetWhisper) == 1 and not InCombatLockdown() then
+		local whisperMsg = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionWhisperMessage);
 		if whisperMsg and not(whisperMsg == "") then
-			SendChatMessage(whisperMsg, "WHISPER", nil, playername);
+			Thaliz.API.SendChatMessage(whisperMsg, "WHISPER", nil, playername);
 		end;
 	end
 end
 
-function Thaliz_GetResurrectionMessages()
-	local messages = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessages, nil);
+function Thaliz.GetResurrectionMessages()
+	local messages = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessages, nil);
 
-	if (not messages) or not(type(messages) == "table") or (table.getn(messages) == 0) then
-		messages = Thaliz_ResetResurrectionMessages(); 
+	if (not messages) or not(type(messages) == "table") or (#messages == 0) then
+		messages = Thaliz.ResetResurrectionMessages(); 
 	end
 	
 	return messages;
 end
 
-function Thaliz_RenumberTable(sourcetable)
+function Thaliz.RenumberTable(sourcetable)
 	local index = 1;
 	local temptable = { };
 	
@@ -1289,12 +1290,12 @@ function Thaliz_RenumberTable(sourcetable)
 	return temptable;
 end
 
-function Thaliz_SetResurrectionMessages(resurrectionMessages)
-	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessages, Thaliz_RenumberTable(resurrectionMessages));
+function Thaliz.SetResurrectionMessages(resurrectionMessages)
+	Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionMessages, Thaliz.RenumberTable(resurrectionMessages));
 end
 
-function Thaliz_ResetResurrectionMessages()
-	local preset = Thaliz_PresetMessages[Thaliz_DefaultPresetGroup];
+function Thaliz.ResetResurrectionMessages()
+	local preset = Thaliz_PresetMessages[Thaliz.DefaultPresetGroup];
 
 	local presetMessages = preset["messages"];
 	if not presetMessages or type(presetMessages) ~= "table" then return; end;
@@ -1304,53 +1305,53 @@ function Thaliz_ResetResurrectionMessages()
 		tinsert(resurrectionMessages, { message, EMOTE_GROUP_DEFAULT, "" });
 	end;
 
-	Thaliz_SetResurrectionMessages(resurrectionMessages);
+	Thaliz.SetResurrectionMessages(resurrectionMessages);
 	Thaliz_UpdateMessageList();
 	
 	return resurrectionMessages;
 end
 
-function Thaliz_AddResurrectionMessage(message, group, param)
+function Thaliz.AddResurrectionMessage(message, group, param)
 	if message and not (message == "") then
-		group = Thaliz_CheckGroup(group);
-		param = Thaliz_CheckGroupValue(param);
+		group = Thaliz.CheckGroup(group);
+		param = Thaliz.CheckGroupValue(param);
 
-		local resMsgs = Thaliz_GetResurrectionMessages();		
-		resMsgs[ table.getn(resMsgs) + 1] = { message, group, param }
+		local resMsgs = Thaliz.GetResurrectionMessages();		
+		resMsgs[ #resMsgs + 1] = { message, group, param }
 		
-		Thaliz_SetResurrectionMessages(resMsgs);
+		Thaliz.SetResurrectionMessages(resMsgs);
 	end
 end
 
-function Thaliz_CheckMessage(msg)
+function Thaliz.CheckMessage(msg)
 	if not msg or msg == "" then
 		msg = THALIZ_EMPTY_MESSAGE;
 	end
 	return msg;
 end
 
-function Thaliz_CheckGroup(group)
+function Thaliz.CheckGroup(group)
 	if not group or group == "" then
 		group = EMOTE_GROUP_DEFAULT;
 	end
 	return group;
 end
 
-function Thaliz_CheckGroupValue(param)
+function Thaliz.CheckGroupValue(param)
 	if not param then
 		param = "";
 	end
 	return param;
 end
 
-function Thaliz_UpdateResurrectionMessage(index, offset, message, group, param)
-	group = Thaliz_CheckGroup(group);
-	param = Thaliz_CheckGroupValue(param);
+function Thaliz.UpdateResurrectionMessage(index, offset, message, group, param)
+	group = Thaliz.CheckGroup(group);
+	param = Thaliz.CheckGroupValue(param);
 
-	local messages = Thaliz_GetResurrectionMessages();
+	local messages = Thaliz.GetResurrectionMessages();
 	messages[index + offset] = { message, group, param }
 	
-	Thaliz_SetResurrectionMessages( messages );
+	Thaliz.SetResurrectionMessages( messages );
 
 	--	Update the frame UI:
 	local frame = _G["ThalizFrameTableListEntry"..index];
@@ -1373,43 +1374,31 @@ end
 Scan the entire raid / group for corpses, and activate
 ress button if anyone found.
 --]]
-function Thaliz_ScanRaid()
-	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_ScanRaid");
+function Thaliz.ScanRaid()
 
 	if not ThalizDoScanRaid then 
-		Thaliz_SetRezTargetText();
-		if(debug) then 
-			echo("**DEBUG**: ThalizDoScanRaid=false");
-		end;
+		Thaliz.SetRezTargetText();
 		return;
 	end;
 
 	--	Jesus, this class can't even ress!! Disable event
 	if not IsResser then
 		ThalizDoScanRaid = false;
-		Thaliz_HideResurrectionButton();
-
-		if(debug) then 
-			echo("**DEBUG**: IsResser=false");
-		end;
+		Thaliz.HideResurrectionButton();
 		return;
 	end
 
 	-- Doh, 1! Can't ress while dead!
-	if UnitIsDeadOrGhost("player") then
-		Thaliz_SetRezTargetText();
-		Thaliz_SetButtonTexture(THALIZ_RezBtn_Dead);
-
-		if(debug) then 
-			echo("**DEBUG**: UnitIsDeadOrGhost=true");
-		end;
+	if Thaliz.API.UnitIsDeadOrGhost("player") then
+		Thaliz.SetRezTargetText();
+		Thaliz.SetRezButtonTexture(Thaliz.Icon_RezBtn_Dead);
 		return;
 	end;
 
 	-- Doh, 2! Can't ress while in combat. Sorry druids, you get a LUA error if you try :-(
-	if UnitAffectingCombat("player") then
-		Thaliz_SetRezTargetText();
-		Thaliz_SetButtonTexture(THALIZ_RezBtn_Combat);
+	if Thaliz.API.UnitAffectingCombat("player") then
+		Thaliz.SetRezTargetText();
+		Thaliz.SetRezButtonTexture(Thaliz.Icon_RezBtn_Combat);
 
 		if(debug) then 
 			echo("**DEBUG**: UnitAffectingCombat=true");
@@ -1417,18 +1406,14 @@ function Thaliz_ScanRaid()
 		return;
 	end;
 
-	local groupsize = GetNumGroupMembers();
+	local groupsize = Thaliz.API.GetNumGroupMembers();
 	if groupsize == 0 then
-		Thaliz_HideResurrectionButton();
-
-		if(debug) then 
-			echo("**DEBUG**: GetNumGroupMembers=0");
-		end;
+		Thaliz.HideResurrectionButton();
 		return;
 	end
 
 	local grouptype = "party";
-	if IsInRaid() then
+	if Thaliz.API.IsInRaid() then
 		grouptype = "raid";
 	end;
 
@@ -1436,21 +1421,21 @@ function Thaliz_ScanRaid()
 	local warlocksAlive = false;
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
-		if not UnitIsDead(unitid) and UnitIsConnected(unitid) and UnitIsVisible(unitid) and A:unitClass(unitid) == "WARLOCK" then
+		if not Thaliz.API.UnitIsDeadOrGhost(unitid) and Thaliz.API.UnitIsConnected(unitid) and Thaliz.API.UnitIsVisible(unitid) and Thaliz.lib:unitClass(unitid) == "WARLOCK" then
 			warlocksAlive = true;
 			break;
 		end
 	end
 
-	Thaliz_CleanupBlacklistedPlayers();
+	Thaliz.CleanupBlacklistedPlayers();
 
-	local classinfo = Thaliz_GetClassinfo(A.localPlayerClass);
+	local classinfo = Thaliz.GetClassInfo(lib.localPlayerClass);
 
-	local spellnameStr = GetSpellInfo(classinfo["spellid"]);
+	local spellnameStr = Thaliz.API.GetSpellName(classinfo["spellid"]);
 
-	local PriorityToCurrentTarget = Thaliz_ClassMatrix.TARGET.priority;			-- Prio over all if target i selected
-	local PriorityToMasterLooter  = Thaliz_ClassMatrix.MASTER.priority;			-- Prio above ressers if master looter
-	local PriorityToFirstWarlock  = Thaliz_ClassMatrix.FIRSTLOCK.priority;		-- Prio below ressers if no warlocks are alive
+	local PriorityToCurrentTarget = Thaliz.ClassMatrix.TARGET.priority;			-- Prio over all if target i selected
+	local PriorityToMasterLooter  = Thaliz.ClassMatrix.MASTER.priority;			-- Prio above ressers if master looter
+	local PriorityToFirstWarlock  = Thaliz.ClassMatrix.FIRSTLOCK.priority;		-- Prio below ressers if no warlocks are alive
 
 
 	--Fetch current assigned target (if any):
@@ -1460,14 +1445,14 @@ function Thaliz_ScanRaid()
 	local currentTarget = "";
 	unitid = RezButton:GetAttribute("unit");
 	if unitid then
-		currentTarget = A:getPlayerAndRealm(unitid);
+		currentTarget = Thaliz.lib:getPlayerAndRealm(unitid);
 	end;
 
 	local masterLooter = nil;
-	if IsInRaid() then
-		local lootMethod, _, raidIndex = C_PartyInfo.GetLootMethod();
+	if Thaliz.API.IsInRaid() then
+		local lootMethod, _, raidIndex = Thaliz.API.GetLootMethod();
 		if lootMethod == 2 then
-			masterLooter = A:getPlayerAndRealm("raid"..raidIndex);
+			masterLooter = Thaliz.lib:getPlayerAndRealm("raid"..raidIndex);
 		end;
 	end;
 
@@ -1476,32 +1461,29 @@ function Thaliz_ScanRaid()
 	local playername, classinfo, targetname, isBlacklisted;
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
-		playername = A:getPlayerAndRealm(unitid);
+		playername = Thaliz.lib:getPlayerAndRealm(unitid);
 		isBlacklisted = false;
 
-		for b=1, table.getn(blacklistedTable), 1 do
+		for b=1, #blacklistedTable, 1 do
 			blacklistInfo = blacklistedTable[b];
 			blacklistTick = blacklistInfo[2];
 			
 			if blacklistInfo[1] == playername then
 				isBlacklisted = true;
-				if(debug) then 
-					echo(string.format("**DEBUG**: Player %s is blacklisted ...", playername));
-				end;
 				break;
 			end
 		end
 		
-		targetname = A:getPlayerAndRealm("playertarget");
+		targetname = Thaliz.lib:getPlayerAndRealm("playertarget");
 
 		if (isBlacklisted == false) and 
-			UnitIsDead(unitid) and 
-			(UnitHasIncomingResurrection(unitid) == false) and 
-			UnitIsConnected(unitid) and 
-			UnitIsVisible(unitid) and 
-			(IsSpellInRange(spellnameStr, unitid) == 1) 
+			Thaliz.API.UnitIsDeadOrGhost(unitid) and 
+			not Thaliz.API.UnitHasIncomingResurrection(unitid) and 
+			Thaliz.API.UnitIsConnected(unitid) and 
+			Thaliz.API.UnitIsVisible(unitid) and 
+			Thaliz.API.IsSpellInRange(spellnameStr, unitid) 
 		then
-			classinfo = Thaliz_GetClassinfo(A:unitClass(unitid));
+			classinfo = Thaliz.GetClassInfo(Thaliz.lib:unitClass(unitid));
 			targetprio = classinfo["priority"];
 			if targetname and targetname == playername then
 				targetprio = PriorityToCurrentTarget;
@@ -1532,16 +1514,12 @@ function Thaliz_ScanRaid()
 			targetprio = targetprio + random();	
 
 			--echo(string.format("%s added, unitid=%s, priority=%f", playername, unitid, targetprio));			
-			corpseTable[ table.getn(corpseTable) + 1 ] = { unitid, targetprio } ;
+			corpseTable[#corpseTable + 1 ] = { unitid, targetprio } ;
 		end
 	end	
 
-	if (table.getn(corpseTable) == 0) then
-		Thaliz_HideResurrectionButton();
-
-		if(debug) then 
-			echo("**DEBUG**: corpseTable=(empty)");
-		end;
+	if #corpseTable == 0 then
+		Thaliz.HideResurrectionButton();
 		return;
 	end
 
@@ -1553,46 +1531,43 @@ function Thaliz_ScanRaid()
 	if not currentIsValid then
 		-- We found someone (or a new person) to ress.
 		-- Sort the corpses with highest priority in top:
-		Thaliz_SortTableDescending(corpseTable, 2);
+		Thaliz.SortTableDescending(corpseTable, 2);
 
 		unitid = corpseTable[1][1];
 
-		if(debug) then 
-			if not spellnameStr then spellnameStr = "nil"; end;
-			print(string.format("**DEBUG**: corpse=%s, unitid=%s, spell=%s", UnitName(unitid), unitid, spellnameStr));
+		if not Thaliz.API.InCombatLockdown() then
+			RezButton:SetAttribute("unit", unitid);
+			RezButton:SetAttribute("type", "spell");
+			RezButton:SetAttribute("spell", spellnameStr);
 		end;
-
-		RezButton:SetAttribute("unit", unitid);
-		RezButton:SetAttribute("type", "spell");
-		RezButton:SetAttribute("spell", spellnameStr);
 	end;
 
-	Thaliz_SetRezTargetText(A:getPlayerAndRealm(unitid));
-	Thaliz_SetButtonTexture(THALIZ_RezBtn_Active, true);
+	Thaliz.SetRezTargetText(Thaliz.lib:getPlayerAndRealm(unitid));
+	Thaliz.SetRezButtonTexture(Icon_RezBtn_Active, true);
 end;
 
 
 function Thaliz_OnRezClick(self)
-	local buttonName = GetMouseButtonClicked();
+	local buttonName = Thaliz.API.GetMouseButtonClicked();
 	if buttonName == "RightButton" then
-		Thaliz_OpenConfigurationDialogue();
+		Thaliz.OpenConfigurationDialogue();
 	else
-		Thaliz_BroadcastResurrection(self);
+		Thaliz.BroadcastResurrection(self);
 	end;
 end;
 
 
-function Thaliz_BroadcastResurrection(self)
+function Thaliz.BroadcastResurrection(self)
 	local unitid = self:GetAttribute("unit");
 	if not unitid then 
 		return; 
 	end;
 
-	A:sendAddonMessage(string.format("TX_RESBEGIN#%s#", A:getPlayerAndRealm(unitid)));
+	Thaliz.lib:sendAddonMessage(string.format("TX_RESBEGIN#%s#", Thaliz.lib:getPlayerAndRealm(unitid)));
 end;
 
 
-function Thaliz_SetRezTargetText(playername)
+function Thaliz.SetRezTargetText(playername)
 	if not playername then
 		playername = "";
 	end;
@@ -1601,68 +1576,70 @@ function Thaliz_SetRezTargetText(playername)
 end;
 
 
-function Thaliz_HideResurrectionButton()
-	Thaliz_SetButtonTexture(THALIZ_RezBtn_Passive);
-	RezButton:SetAttribute("type", nil);
-	RezButton:SetAttribute("unit", nil);
-	Thaliz_SetRezTargetText();
+function Thaliz.HideResurrectionButton()
+	if not Thaliz.API.InCombatLockdown() then	
+		Thaliz.SetRezButtonTexture(Thaliz.Icon_RezBtn_Passive);
+		RezButton:SetAttribute("type", nil);
+		RezButton:SetAttribute("unit", nil);
+	end;
+	Thaliz.SetRezTargetText();
 end;
 
 
-function Thaliz_InitClassSpecificStuff()
-	local classname = A.localPlayerClass;
+function Thaliz.InitializeClassSpecificStuff()
+	local classname = Thaliz.lib.localPlayerClass;
 
-	THALIZ_RezBtn_Passive = THALIZ_ICON_OTHER_PASSIVE;
-	THALIZ_RezBtn_Active = THALIZ_ICON_OTHER_PASSIVE;
+	Thaliz.Icon_RezBtn_Passive = THALIZ_ICON_OTHER_PASSIVE;
+	Thaliz.Icon_RezBtn_Active = THALIZ_ICON_OTHER_PASSIVE;
 	if classname == "DRUID" then
 		IsDruid = true;
 		IsResser = true;
-		THALIZ_RezBtn_Passive = THALIZ_ICON_DRUID_PASSIVE;
-		THALIZ_RezBtn_Active = THALIZ_ICON_DRUID_ACTIVE;
+		Thaliz.Icon_RezBtn_Passive = THALIZ_ICON_DRUID_PASSIVE;
+		Thaliz.Icon_RezBtn_Active = THALIZ_ICON_DRUID_ACTIVE;
 	elseif classname == "MONK" then
 		IsMonk = true;
 		IsResser = true;
-		THALIZ_RezBtn_Passive = THALIZ_ICON_MONK_PASSIVE;
-		THALIZ_RezBtn_Active = THALIZ_ICON_MONK_ACTIVE;
+		Thaliz.Icon_RezBtn_Passive = THALIZ_ICON_MONK_PASSIVE;
+		Thaliz.Icon_RezBtn_Active = THALIZ_ICON_MONK_ACTIVE;
 	elseif classname == "PALADIN" then
 		IsPaladin = true;
 		IsResser = true;
-		THALIZ_RezBtn_Passive = THALIZ_ICON_PALADIN_PASSIVE;
-		THALIZ_RezBtn_Active = THALIZ_ICON_PALADIN_ACTIVE;
+		Thaliz.Icon_RezBtn_Passive = THALIZ_ICON_PALADIN_PASSIVE;
+		Thaliz.Icon_RezBtn_Active = THALIZ_ICON_PALADIN_ACTIVE;
 	elseif classname == "PRIEST" then
 		IsPriest = true;
 		IsResser = true;
-		THALIZ_RezBtn_Passive = THALIZ_ICON_PRIEST_PASSIVE;
-		THALIZ_RezBtn_Active = THALIZ_ICON_PRIEST_ACTIVE;
+		Thaliz.Icon_RezBtn_Passive = THALIZ_ICON_PRIEST_PASSIVE;
+		Thaliz.Icon_RezBtn_Active = THALIZ_ICON_PRIEST_ACTIVE;
 	elseif classname == "SHAMAN" then
 		IsShaman = true;
 		IsResser = true;
-		THALIZ_RezBtn_Passive = THALIZ_ICON_SHAMAN_PASSIVE;
-		THALIZ_RezBtn_Active = THALIZ_ICON_SHAMAN_ACTIVE;
+		Thaliz.Icon_RezBtn_Passive = THALIZ_ICON_SHAMAN_PASSIVE;
+		Thaliz.Icon_RezBtn_Active = THALIZ_ICON_SHAMAN_ACTIVE;
 	end;
 
 	if not IsResser then
-		Thaliz_OPTION_RezButtonVisible_Default = "0";
+		Thaliz.OPTION_RezButtonVisible_Default = "0";
 	end;
 end;
 
-local RezButtonLastTexture = "";
-function Thaliz_SetButtonTexture(textureName, isEnabled)
+Thaliz.RezButtonLastTexture = "";
+function Thaliz.SetRezButtonTexture(textureName, isEnabled)
 	local alphaValue = 0.5;
 	if isEnabled then
 		alphaValue = 1.0;
 	end;
 
-	if RezButtonLastTexture ~= textureName then	
-		RezButtonLastTexture = textureName;
+	if Thaliz.RezButtonLastTexture ~= textureName and not Thaliz.API.InCombatLockdown() then	
+		Thaliz.RezButtonLastTexture = textureName;
 		RezButton:SetAlpha(alphaValue);
 		RezButton:SetNormalTexture(textureName);		
 	end;
 end;
 
 
-function Thaliz_GetClassinfo(classname)
-	return Thaliz_ClassMatrix[string.upper(classname)];
+function Thaliz.GetClassInfo(classname)
+	return Thaliz.ClassMatrix[string.upper(classname)];
 end
 
 
@@ -1676,18 +1653,18 @@ end
 --[[
 	Blacklist specific player.
 ]]
-function Thaliz_BlacklistPlayer(playername, blacklistTime)
+function Thaliz.BlacklistPlayer(playername, blacklistTime)
 	if not blacklistTime then
-		blacklistTime = Thaliz_Blacklist_Timeout;
+		blacklistTime = Thaliz.BlacklistTimeout;
 	end;
 
-	local timerTick = Thaliz_GetTimerTick();
+	local timerTick = GetTimerTick();
 
-	if Thaliz_IsPlayerBlacklisted(playername) then
+	if Thaliz.IsPlayerBlacklisted(playername) then
 		-- Player is already blacklisted; if the current blacklist time is higher than 
 		-- the remaining blacklist value, we need to replace the current time with the
 		-- requested time.
-		for b=1, table.getn(blacklistedTable), 1 do
+		for b=1, #blacklistedTable, 1 do
 			local blacklistInfo = blacklistedTable[b];
 			if blacklistInfo[1] == playername then
 				local remainingTime = blacklistInfo[2] - timerTick;
@@ -1698,30 +1675,30 @@ function Thaliz_BlacklistPlayer(playername, blacklistTime)
 			end
 		end
 	else
-		blacklistedTable[ table.getn(blacklistedTable) + 1 ] = { playername, timerTick + blacklistTime };
+		blacklistedTable[ #blacklistedTable + 1 ] = { playername, timerTick + blacklistTime };
 	end
 end
 
 --[[
 	Remove player from Blacklist (if any)
 ]]
-function Thaliz_WhitelistPlayer(playername)
+function Thaliz.WhitelistPlayer(playername)
 	local WhitelistTable = { }
 
-	for n=1, table.getn(blacklistedTable), 1 do
+	for n=1, #blacklistedTable, 1 do
 		blacklistInfo = blacklistedTable[n];
 		if not (playername == blacklistInfo[1]) then
-			WhitelistTable[ table.getn(WhitelistTable) + 1 ] = blacklistInfo;
+			WhitelistTable[ #WhitelistTable + 1 ] = blacklistInfo;
 		end
 	end
 	blacklistedTable = WhitelistTable;
 end
 
 
-function Thaliz_IsPlayerBlacklisted(playername)
-	Thaliz_CleanupBlacklistedPlayers();
+function Thaliz.IsPlayerBlacklisted(playername)
+	Thaliz.CleanupBlacklistedPlayers();
 
-	for n=1, table.getn(blacklistedTable), 1 do		 
+	for n=1, #blacklistedTable, 1 do		 
 		if blacklistedTable[n][1] == playername then
 			return true;
 		end
@@ -1730,15 +1707,15 @@ function Thaliz_IsPlayerBlacklisted(playername)
 end
 
 
-function Thaliz_CleanupBlacklistedPlayers()
+function Thaliz.CleanupBlacklistedPlayers()
 	local BlacklistedTableNew = {}
 	local blacklistInfo;	
-	local timerTick = Thaliz_GetTimerTick();
+	local timerTick = Thaliz.GetTimerTick();
 	
-	for n=1, table.getn(blacklistedTable), 1 do
+	for n=1, #blacklistedTable, 1 do
 		blacklistInfo = blacklistedTable[n];
 		if timerTick < blacklistInfo[2] then
-			BlacklistedTableNew[ table.getn(BlacklistedTableNew) + 1 ] = blacklistInfo;
+			BlacklistedTableNew[ #BlacklistedTableNew + 1 ] = blacklistInfo;
 		end
 	end
 	blacklistedTable = BlacklistedTableNew;
@@ -1751,15 +1728,15 @@ end
 --	Helper functions
 --
 --  *******************************************************
-function Thaliz_StripRealmName(playername)
+function Thaliz.StripRealmName(playername)
 	return string.gsub(playername, "(.*)-.*", "%1");
 end;
 
-function Thaliz_SortTableDescending(sourcetable, index)
+function Thaliz.SortTableDescending(sourcetable, index)
 	local doSort = true
 	while doSort do
 		doSort = false
-		for n=1,table.getn(sourcetable) - 1,1 do
+		for n=1, #sourcetable - 1, 1 do
 			local a = sourcetable[n]
 			local b = sourcetable[n + 1]
 			if tonumber(a[index]) and tonumber(b[index]) and tonumber(a[index]) < tonumber(b[index]) then
@@ -1783,23 +1760,23 @@ end
 	Broadcast my version if this is not a beta (CurrentVersion > 0) and
 	my version has not been identified as being too low (MessageShown = false)
 ]]
-function Thaliz_OnGroupRosterUpdate(event, ...)
+function Thaliz.OnGroupRosterUpdate(event, ...)
 	if THALIZ_CURRENT_VERSION > 0 and not THALIZ_UPDATE_MESSAGE_SHOWN then
-		if IsInRaid() or A:isInParty() then
-			A:sendAddonMessage(string.format("TX_VERCHECK#%s#", A.addonVersion));
+		if Thaliz.API.IsInRaid() or Thaliz.lib:isInParty() then
+			Thaliz.lib:sendAddonMessage(string.format("TX_VERCHECK#%s#", lib.addonVersion));
 		end
 	end
 end
 
-function Thalix_CheckIsNewVersion(versionstring)
-	local incomingVersion = A:calculateVersion( versionstring );
+function Thaliz.CheckIsNewVersion(versionstring)
+	local incomingVersion = Thaliz.lib:calculateVersion( versionstring );
 
 	if (THALIZ_CURRENT_VERSION > 0 and incomingVersion > 0) then
 		if incomingVersion > THALIZ_CURRENT_VERSION then
 			if not THALIZ_UPDATE_MESSAGE_SHOWN then
 				THALIZ_UPDATE_MESSAGE_SHOWN = true;
-				A:echo(string.format("NOTE: A newer version of ".. A.chatColorHot .."THALIZ".. A.chatColorNormal .."! is available (version %s)!", versionstring));
-				A:echo("You can download latest version from https://www.curseforge.com/ or https://github.com/Sentilix/thaliz-classic.");
+				Thaliz.lib:echo(string.format("NOTE: A newer version of ".. Thaliz.lib.chatColorHot .."THALIZ".. Thaliz.lib.chatColorNormal .."! is available (version %s)!", versionstring));
+				Thaliz.lib:echo("You can download latest version from https://www.curseforge.com/ or https://github.com/Sentilix/thaliz-classic.");
 			end
 		end	
 	end
@@ -1811,21 +1788,21 @@ end
 --	Timer functions
 --
 --  *******************************************************
-local Timers = {}
-local TimerTick = 0
-local NextScanTime = 0;
+Thaliz.Timers = {}
+Thaliz.TimerTick = 0
+Thaliz.NextScanTime = 0;
 
 function Thaliz_OnTimer(elapsed)
-	TimerTick = TimerTick + elapsed
+	Thaliz.TimerTick = Thaliz.TimerTick + elapsed
 
-	if TimerTick > (NextScanTime + ThalizScanFrequency) then
-		Thaliz_ScanRaid();
-		NextScanTime = TimerTick;
+	if Thaliz.TimerTick > (Thaliz.NextScanTime + Thaliz.ScanFrequency) then
+		Thaliz.ScanRaid();
+		Thaliz.NextScanTime = Thaliz.TimerTick;
 	end;
 end
 
-function Thaliz_GetTimerTick()
-	return TimerTick;
+function Thaliz.GetTimerTick()
+	return Thaliz.TimerTick;
 end
 
 
@@ -1847,39 +1824,39 @@ end
 	We therefore generate a response back (RX) in raid with the syntax:
 	Thaliz:<sender (which is actually the receiver!)>:<version number>
 ]]
-function Thaliz_HandleTXVersion(message, sender)
-	A:sendAddonMessage("RX_VERSION#".. A.addonVersion .."#"..sender)
+function Thaliz.HandleTXVersion(message, sender)
+	Thaliz.lib:sendAddonMessage("RX_VERSION#".. lib.addonVersion .."#"..sender)
 end
 
-function Thaliz_HandleTXResBegin(message, sender)
+function Thaliz.HandleTXResBegin(message, sender)
 	-- Blacklist target unless ress was initated by me
-	if not (sender == UnitName("player")) then
+	if not (sender == Thaliz.API.UnitName("player")) then
 		--echo(string.format("*** Remote blacklisting %s (%s is ressing)", message, sender));
-		Thaliz_BlacklistPlayer(message);
+		Thaliz.BlacklistPlayer(message);
 	end
 end
 
 --[[
 	A version response (RX) was received. The version information is displayed locally.
 ]]
-function Thaliz_HandleRXVersion(message, sender)
-	A:echo(string.format("[%s] is using Thaliz version %s", sender, message))
+function Thaliz.HandleRXVersion(message, sender)
+	Thaliz.lib:echo(string.format("[%s] is using Thaliz version %s", sender, message))
 end
 
-function Thaliz_HandleTXVerCheck(message, sender)
-	Thalix_CheckIsNewVersion(message);
+function Thaliz.HandleTXVerCheck(message, sender)
+	Thaliz.CheckIsNewVersion(message);
 end
 
-function Thaliz_OnChatMsgAddon(event, ...)
+function Thaliz.OnChatMsgAddon(event, ...)
 	local prefix, msg, channel, sender = ...;
 
-	if prefix == A.addonPrefix then
-		Thaliz_HandleThalizMessage(msg, sender);
+	if prefix == Thaliz.lib.addonPrefix then
+		Thaliz.HandleThalizMessage(msg, sender);
 	end
 end
 
-function Thaliz_GetMyRealm()
-	local realmname = GetRealmName();
+function Thaliz.GetMyRealm()
+	local realmname = Thaliz.API.GetRealmName();
 	
 	if string.find(realmname, " ") then
 		local _, _, name1, name2 = string.find(realmname, "([a-zA-Z]*) ([a-zA-Z]*)");
@@ -1889,7 +1866,7 @@ function Thaliz_GetMyRealm()
 	return realmname;
 end;
 
-function Thaliz_HandleThalizMessage(msg, sender)
+function Thaliz.HandleThalizMessage(msg, sender)
 	local _, _, cmd, message, recipient = string.find(msg, "([^#]*)#([^#]*)#([^#]*)");	
 
 	--	Ignore message if it is not for me. 
@@ -1897,41 +1874,41 @@ function Thaliz_HandleThalizMessage(msg, sender)
 	if recipient ~= "" then
 		-- Note: recipient comes with realmname. We need to compare
 		-- with realmname too, even GetUnitName() does not return one:
-		recipient = A:getFullPlayerName(recipient);
+		recipient = Thaliz.lib:getFullPlayerName(recipient);
 
-		if recipient ~= A.localPlayerName then
+		if recipient ~= lib.localPlayerName then
 			return
 		end
 	end
 
 
 	if cmd == "TX_VERSION" then
-		Thaliz_HandleTXVersion(message, sender)
+		Thaliz.HandleTXVersion(message, sender)
 	elseif cmd == "RX_VERSION" then
-		Thaliz_HandleRXVersion(message, sender)
+		Thaliz.HandleRXVersion(message, sender)
 	elseif cmd == "TX_RESBEGIN" then
-		Thaliz_HandleTXResBegin(message, sender)
+		Thaliz.HandleTXResBegin(message, sender)
 	elseif cmd == "TX_VERCHECK" then
-		Thaliz_HandleTXVerCheck(message, sender)
+		Thaliz.HandleTXVerCheck(message, sender)
 	end
 end
 
-function Thaliz_BeginsWith(String, Start)
+function Thaliz.BeginsWith(String, Start)
    return string.sub(String, 1, string.len(Start)) == Start;
 end
 
 
-function Thaliz_SpellIsResurrect(spellId)
+function Thaliz.IsResurrectionSpell(spellId)
 	local resSpell = false;
 
 	if spellId then
-		local incRessName = GetSpellInfo(spellId);
+		local incRessName = Thaliz.API.GetSpellName(spellId);
 
-		local classinfo = Thaliz_ClassMatrix[A.localPlayerClass];
+		local classinfo = Thaliz.ClassMatrix[lib.localPlayerClass];
 
 		local classRessName = "";
 		if classinfo["spellid"] then
-			classRessName = GetSpellInfo(classinfo["spellid"]);
+			classRessName = Thaliz.API.GetSpellName(classinfo["spellid"]);
 		end;
 
 		resSpell = (incRessName == classRessName);
@@ -1944,9 +1921,9 @@ end;
 --[[
 	Return # of seconds left of blacklist timer, nil if not blacklisted
 --]]
-function Thaliz_IsPlayerBlacklisted(playername)
+function Thaliz.IsPlayerBlacklisted(playername)
 
-	for b=1, table.getn(blacklistedTable), 1 do
+	for b=1, #blacklistedTable, 1 do
 		local blacklistInfo = blacklistedTable[b];
 		if blacklistInfo[1] == playername then
 			return (blacklistInfo[2] - TimerTick);
@@ -1956,17 +1933,17 @@ function Thaliz_IsPlayerBlacklisted(playername)
 end;
 
 
-local Thaliz_CurrentRessedTarget = nil;
-function Thaliz_ClearCurrentResurrectedTarget()
-	Thaliz_SetCurrentResurrectedTarget(nil);
+Thaliz.CurrentRessedTarget = nil;
+function Thaliz.ClearCurrentResurrectedTarget()
+	Thaliz.SetCurrentResurrectedTarget(nil);
 end;
 
-function Thaliz_GetCurrentResurrectedTarget()
-	return Thaliz_CurrentRessedTarget;
+function Thaliz.GetCurrentResurrectedTarget()
+	return CurrentRessedTarget;
 end;
 
-function Thaliz_SetCurrentResurrectedTarget(target)
-	Thaliz_CurrentRessedTarget = target;
+function Thaliz.SetCurrentResurrectedTarget(target)
+	CurrentRessedTarget = target;
 end;
 
 
@@ -1975,15 +1952,23 @@ end;
 --]]
 
 function Thaliz_OKButton_OnClick()
-	Thaliz_CloseConfigurationDialogue();
+	if Thaliz.API.InCombatLockdown() then
+		return;
+	end;
+
+	Thaliz.CloseConfigurationDialogue();
 	
 	local whisperMsg = _G["ThalizFrameWhisper"]:GetText(whisperMsg);
-	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, whisperMsg);
+	Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionWhisperMessage, whisperMsg);
 	
-	Thaliz_ConfigurationLevel = Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level);
+	Thaliz.ConfigurationLevel = Thaliz.GetRootConfigOption(Thaliz.ROOT_OPTION_CharacterBasedSettings, Thaliz.Configuration_Default_Level);
 end
 
 function Thaliz_ProfileButton_OnClick()
+	if Thaliz.API.InCombatLockdown() then
+		return;
+	end;
+
 	if msgEditorIsOpen then
 		Thaliz_CloseMsgEditorButton_OnClick();
 	end;
@@ -1992,6 +1977,10 @@ function Thaliz_ProfileButton_OnClick()
 end;
 
 function Thaliz_PresetButton_OnClick()
+	if Thaliz.API.InCombatLockdown() then
+		return;
+	end;
+
 	if msgEditorIsOpen then
 		Thaliz_CloseMsgEditorButton_OnClick();
 	end;
@@ -2000,29 +1989,33 @@ function Thaliz_PresetButton_OnClick()
 end;
 
 function Thaliz_PriorityButton_OnClick()
+	if Thaliz.API.InCombatLockdown() then
+		return;
+	end;
+
 	if msgEditorIsOpen then
 		Thaliz_CloseMsgEditorButton_OnClick();
 	end;
 
-	ThalizPriorityFrame_UpdateValues();
+	Thaliz.UpdatePriorityFrameValues();
 
 	ThalizPriorityFrame:Show();
 end;
 
-function ThalizPriorityFrame_UpdateValues()
-	ThalizPriorityFrameDruid:SetValue(Thaliz_ClassMatrix.DRUID.priority);
-	ThalizPriorityFrameHunter:SetValue(Thaliz_ClassMatrix.HUNTER.priority);
-	ThalizPriorityFrameMage:SetValue(Thaliz_ClassMatrix.MAGE.priority);
-	ThalizPriorityFramePaladin:SetValue(Thaliz_ClassMatrix.PALADIN.priority);
-	ThalizPriorityFramePriest:SetValue(Thaliz_ClassMatrix.PRIEST.priority);
-	ThalizPriorityFrameRogue:SetValue(Thaliz_ClassMatrix.ROGUE.priority);
-	ThalizPriorityFrameShaman:SetValue(Thaliz_ClassMatrix.SHAMAN.priority);
-	ThalizPriorityFrameWarlock:SetValue(Thaliz_ClassMatrix.WARLOCK.priority);
-	ThalizPriorityFrameWarrior:SetValue(Thaliz_ClassMatrix.WARRIOR.priority);
+function Thaliz.UpdatePriorityFrameValues()
+	ThalizPriorityFrameDruid:SetValue(Thaliz.ClassMatrix.DRUID.priority);
+	ThalizPriorityFrameHunter:SetValue(Thaliz.ClassMatrix.HUNTER.priority);
+	ThalizPriorityFrameMage:SetValue(Thaliz.ClassMatrix.MAGE.priority);
+	ThalizPriorityFramePaladin:SetValue(Thaliz.ClassMatrix.PALADIN.priority);
+	ThalizPriorityFramePriest:SetValue(Thaliz.ClassMatrix.PRIEST.priority);
+	ThalizPriorityFrameRogue:SetValue(Thaliz.ClassMatrix.ROGUE.priority);
+	ThalizPriorityFrameShaman:SetValue(Thaliz.ClassMatrix.SHAMAN.priority);
+	ThalizPriorityFrameWarlock:SetValue(Thaliz.ClassMatrix.WARLOCK.priority);
+	ThalizPriorityFrameWarrior:SetValue(Thaliz.ClassMatrix.WARRIOR.priority);
 
-	ThalizPriorityFrameTarget:SetValue(Thaliz_ClassMatrix.TARGET.priority);
-	ThalizPriorityFrameMaster:SetValue(Thaliz_ClassMatrix.MASTER.priority);
-	ThalizPriorityFrameFirstLock:SetValue(Thaliz_ClassMatrix.FIRSTLOCK.priority);
+	ThalizPriorityFrameTarget:SetValue(Thaliz.ClassMatrix.TARGET.priority);
+	ThalizPriorityFrameMaster:SetValue(Thaliz.ClassMatrix.MASTER.priority);
+	ThalizPriorityFrameFirstLock:SetValue(Thaliz.ClassMatrix.FIRSTLOCK.priority);
 end;
 
 
@@ -2035,29 +2028,33 @@ function ThalizPriorityFrame_OnPriorityChanged(object, className)
 	object:SetValue(value);
 
 	local uClassName = string.upper(className);
-	if value ~= Thaliz_ClassMatrix[uClassName].priority then
-		Thaliz_ClassMatrix[uClassName].priority = value;
+	if value ~= Thaliz.ClassMatrix[uClassName].priority then
+		Thaliz.ClassMatrix[uClassName].priority = value;
 
-		local priorities = Thaliz_Configuration_Default_Priority;
-		priorities.Druid.Priority			= Thaliz_ClassMatrix.DRUID.priority;
-		priorities.Hunter.Priority			= Thaliz_ClassMatrix.HUNTER.priority;
-		priorities.Mage.Priority			= Thaliz_ClassMatrix.MAGE.priority;
-		priorities.Paladin.Priority			= Thaliz_ClassMatrix.PALADIN.priority;
-		priorities.Priest.Priority			= Thaliz_ClassMatrix.PRIEST.priority;
-		priorities.Rogue.Priority			= Thaliz_ClassMatrix.ROGUE.priority;
-		priorities.Shaman.Priority			= Thaliz_ClassMatrix.SHAMAN.priority;
-		priorities.Warlock.Priority			= Thaliz_ClassMatrix.WARLOCK.priority;
-		priorities.Warrior.Priority			= Thaliz_ClassMatrix.WARRIOR.priority;
-		priorities.CurrentTarget.Priority	= Thaliz_ClassMatrix.TARGET.priority;
-		priorities.MasterLooter.Priority	= Thaliz_ClassMatrix.MASTER.priority;
-		priorities.FirstWarlock.Priority	= Thaliz_ClassMatrix.FIRSTLOCK.priority;
-		Thaliz_SetOption(Thaliz_OPTION_ResurrectionPriority, priorities);
+		local priorities = Thaliz.Configuration_Default_Priority;
+		priorities.Druid.Priority			= Thaliz.ClassMatrix.DRUID.priority;
+		priorities.Hunter.Priority			= Thaliz.ClassMatrix.HUNTER.priority;
+		priorities.Mage.Priority			= Thaliz.ClassMatrix.MAGE.priority;
+		priorities.Paladin.Priority			= Thaliz.ClassMatrix.PALADIN.priority;
+		priorities.Priest.Priority			= Thaliz.ClassMatrix.PRIEST.priority;
+		priorities.Rogue.Priority			= Thaliz.ClassMatrix.ROGUE.priority;
+		priorities.Shaman.Priority			= Thaliz.ClassMatrix.SHAMAN.priority;
+		priorities.Warlock.Priority			= Thaliz.ClassMatrix.WARLOCK.priority;
+		priorities.Warrior.Priority			= Thaliz.ClassMatrix.WARRIOR.priority;
+		priorities.CurrentTarget.Priority	= Thaliz.ClassMatrix.TARGET.priority;
+		priorities.MasterLooter.Priority	= Thaliz.ClassMatrix.MASTER.priority;
+		priorities.FirstWarlock.Priority	= Thaliz.ClassMatrix.FIRSTLOCK.priority;
+		Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionPriority, priorities);
 	end;
 	
 	_G['ThalizPriorityFrame'..className..'Percent']:SetText(string.format('%s %%', value));
 end;
 
 function Thaliz_CloseButton_OnClick()
+	if Thaliz.API.InCombatLockdown() then
+		return;
+	end;
+
 	if msgEditorIsOpen then
 		Thaliz_CloseMsgEditorButton_OnClick();
 	elseif profileFrameIsOpen then
@@ -2067,49 +2064,65 @@ function Thaliz_CloseButton_OnClick()
 	elseif priorityFrameIsOpen then
 		Thaliz_ClosePriorityButton_OnClick();
 	else
-		Thaliz_CloseConfigurationDialogue();
+		Thaliz.CloseConfigurationDialogue();
 	end;
 end
 
 function Thaliz_CloseProfileButton_OnClick()
+	if Thaliz.API.InCombatLockdown() then
+		return;
+	end;
+
 	ThalizProfileFrame:Hide();
 	profileFrameIsOpen = false;
 end;
 
 function Thaliz_ClosePresetButton_OnClick()
+	if Thaliz.API.InCombatLockdown() then
+		return;
+	end;
+
 	ThalizPresetFrame:Hide();
 	presetFrameIsOpen = false;
 end;
 
 function Thaliz_ClosePriorityButton_OnClick()
+	if Thaliz.API.InCombatLockdown() then
+		return;
+	end;
+
 	ThalizPriorityFrame:Hide();
 	priorityFrameIsOpen = false;
 end;
 
 function Thaliz_CloseMsgEditorButton_OnClick()
+	if Thaliz.API.InCombatLockdown() then
+		return;
+	end;
+
 	ThalizMsgEditorFrame:Hide();
 	msgEditorIsOpen = false;
 end
 
 function Thaliz_DropDownNameEnclosureButton_OnClick(self, arg1, arg2, checked)
 	if arg1 then
-		Thaliz_SetOption(Thaliz_OPTION_ResurrectionNameEnclosure, arg1);
+		Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionNameEnclosure, arg1);
 	end;
 
-	Thaliz_UpdateNameEnclosureText();
+	Thaliz.UpdateNameEnclosureText();
 end;
 
-function Thaliz_UpdateNameEnclosureText()
-	local enclosure = Thaliz_GetNameEnclosure(Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE"));
-	if enclosure then
+function Thaliz.UpdateNameEnclosureText()
+	local enclosure = Thaliz.GetNameEnclosure(Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionNameEnclosure, "NONE"));
+	if enclosure then		
 		UIDropDownMenu_SetText(DropDownNameEnclosureButton, enclosure[2]);
 	end;
 end;
 
-function Thaliz_GetNameEnclosure(optionname)
+function Thaliz.GetNameEnclosure(optionname)
 	local enclosure = nil;
 
-	for n=1, table.getn(THALIZ_NAME_ENCLOSURES), 1 do
+	for n=1, #THALIZ_NAME_ENCLOSURES, 1 do
 		if THALIZ_NAME_ENCLOSURES[n][1] == optionname then
 			enclosure = THALIZ_NAME_ENCLOSURES[n];
 			break;
@@ -2121,23 +2134,23 @@ end;
 
 function Thaliz_DropDownMessageOrderButton_OnClick(self, arg1, arg2, checked)
 	if arg1 then
-		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageOrder, arg1);
+		Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionMessageOrder, arg1);
 	end;
 
-	Thaliz_UpdateMessageOrderText();
+	Thaliz.UpdateMessageOrderText();
 end;
 
-function Thaliz_UpdateMessageOrderText()
-	local msgOrder = Thaliz_GetMessageOrder(Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageOrder, "RANDOM"));
+function Thaliz.UpdateMessageOrderText()
+	local msgOrder = Thaliz.GetMessageOrder(Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageOrder, "RANDOM"));
 	if msgOrder then
 		UIDropDownMenu_SetText(DropDownMessageOrderButton, msgOrder[2]);
 	end;
 end;
 
-function Thaliz_GetMessageOrder(optionname)
+function Thaliz.GetMessageOrder(optionname)
 	local msgOrder = nil;
 
-	for n=1, table.getn(THALIZ_MESSAGE_ORDERS), 1 do
+	for n=1, #THALIZ_MESSAGE_ORDERS, 1 do
 		if THALIZ_MESSAGE_ORDERS[n][1] == optionname then
 			msgOrder = THALIZ_MESSAGE_ORDERS[n];
 			break;
@@ -2148,17 +2161,19 @@ function Thaliz_GetMessageOrder(optionname)
 end;
 
 function Thaliz_RepositionateButton(self)
-	local x, y = self:GetLeft(), self:GetTop() - UIParent:GetHeight();
+	if Thaliz.API.InCombatLockdown() then
+		return;
+	end;
 
-	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosX, x);
-	Thaliz_SetOption(Thaliz_OPTION_RezButtonPosY, y);
+	local x, y = self:GetLeft(), self:GetTop() - UIParent:GetHeight();
+		
+	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonPosX, x);
+	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonPosY, y);
 
 	RezButton:SetSize(THALIZ_REZBUTTON_SIZE, THALIZ_REZBUTTON_SIZE);
 
-	local classinfo = Thaliz_GetClassinfo(A.localPlayerClass);
-
-	local spellId = classinfo["spellid"];
-	if spellId then
+	local classinfo = Thaliz.GetClassInfo(Thaliz.lib.localPlayerClass);
+	if classinfo["spellid"] then
 		RezButton:Show();
 	else
 		RezButton:Hide();
@@ -2172,8 +2187,8 @@ local Thaliz_delayed_owner = nil;
 function Thaliz_DropDownProfiles_Initialize(frame, level, menuList)
 	UIDropDownMenu_SetWidth(DropDownProfileButton, 300);
 
-	for index=1, table.getn(Thaliz_ProfileTable), 1 do
-		local profile = Thaliz_ProfileTable[index];
+	for index=1, #Thaliz.ProfileTable, 1 do
+		local profile = Thaliz.ProfileTable[index];
 
 		local info = UIDropDownMenu_CreateInfo();
 		info.text			= string.format("%s - %s (%d)", profile["realm"], profile["name"], profile["count"]);
@@ -2185,7 +2200,7 @@ end;
 function Thaliz_DropDownPresets_Initialize(frame, level, menuList)
 	UIDropDownMenu_SetWidth(DropDownPresetButton, 300);
 
-	for index=1, table.getn(Thaliz_PresetMessages) do
+	for index=1, #Thaliz_PresetMessages, 1 do
 		local preset = Thaliz_PresetMessages[index];
 
 		local info = UIDropDownMenu_CreateInfo();
@@ -2196,30 +2211,30 @@ function Thaliz_DropDownPresets_Initialize(frame, level, menuList)
 end;
 
 function Thaliz_DropDownProfiles_OnClick(sender, profile)
-	Thaliz_SelectedProfile = profile;
+	Thaliz.SelectedImportProfile = profile;
 	UIDropDownMenu_SetText(DropDownProfileButton, string.format("%s - %s (%d)", profile["realm"], profile["name"], profile["count"]));
-	Thaliz_RefreshProfileButtons();
+	Thaliz.RefreshProfileButtons();
 end;
 
 function Thaliz_DropDownPreset_OnClick(sender, preset)
-	Thaliz_SelectedPreset = preset;
+	Thaliz.SelectedImportPreset = preset;
 	UIDropDownMenu_SetText(DropDownPresetButton, string.format("%s - %s", preset["name"], preset["description"]));
-	Thaliz_RefreshPresetButtons();
+	Thaliz.RefreshPresetButtons();
 end;
 
-function Thaliz_InitializeNameEnclosures()
-	local playername = UnitName('Player');
-	for n=1, table.getn(THALIZ_NAME_ENCLOSURES), 1 do
+function Thaliz.InitializeNameEnclosures()
+	local playername = Thaliz.API.UnitName('Player');
+	for n=1, #THALIZ_NAME_ENCLOSURES, 1 do
 		THALIZ_NAME_ENCLOSURES[n][2] = string.format(THALIZ_NAME_ENCLOSURES[n][2], playername);
 	end;
 
-	Thaliz_UpdateNameEnclosureText();
+	Thaliz.UpdateNameEnclosureText();
 end;
 
-function Thaliz_DropDownNameEnclosure_Initialize(frame, level, menuList)
-	local CurOption = Thaliz_GetOption(Thaliz_OPTION_ResurrectionNameEnclosure, "NONE");
+function Thaliz.DropDownNameEnclosure_Initialize(frame, level, menuList)
+	local CurOption = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionNameEnclosure, "NONE");
 
-	for n=1, table.getn(THALIZ_NAME_ENCLOSURES), 1 do
+	for n=1, #THALIZ_NAME_ENCLOSURES, 1 do
 		local checked = false;
 		if CurOption == THALIZ_NAME_ENCLOSURES[n][1] then 
 			checked = true;
@@ -2233,10 +2248,10 @@ function Thaliz_DropDownNameEnclosure_Initialize(frame, level, menuList)
 	end
 end
 
-function Thaliz_DropDownMessageOrder_Initialize(frame, level, menuList)
-	local CurOption = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageOrder, "RANDOM");
+function Thaliz.DropDownMessageOrder_Initialize(frame, level, menuList)
+	local CurOption = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageOrder, "RANDOM");
 
-	for n=1, table.getn(THALIZ_MESSAGE_ORDERS), 1 do
+	for n=1, #THALIZ_MESSAGE_ORDERS, 1 do
 		local checked = false;
 		if CurOption == THALIZ_MESSAGE_ORDERS[n][1] then 
 			checked = true;
@@ -2256,7 +2271,11 @@ end
 	Profile functions
 --]]
 
-function Thaliz_RefreshProfileButtons()
+function Thaliz.RefreshProfileButtons()
+	if Thaliz.API.InCombatLockdown() then
+		return;
+	end;
+
 	local profileText = UIDropDownMenu_GetText(DropDownProfileButton) or "";
 
 	if profileText == "" then
@@ -2268,7 +2287,11 @@ function Thaliz_RefreshProfileButtons()
 	end;
 end;
 
-function Thaliz_RefreshPresetButtons()
+function Thaliz.RefreshPresetButtons()
+	if Thaliz.API.InCombatLockdown() then
+		return;
+	end;
+
 	local presetText = UIDropDownMenu_GetText(DropDownPresetButton) or "";
 
 	if presetText == "" then
@@ -2281,33 +2304,33 @@ function Thaliz_RefreshPresetButtons()
 end;
 
 function Thaliz_ReplaceWithProfile_OnClick()
-	Thaliz_ImportProfile();
+	Thaliz.ImportProfile();
 end;
 
 function Thaliz_ReplaceWithPreset_OnClick()
-	Thaliz_ImportPreset();
+	Thaliz.ImportPreset();
 end;
 
 function Thaliz_MergeWithProfile_OnClick()
-	Thaliz_ImportProfile(true);
+	Thaliz.ImportProfile(true);
 end;
 
 function Thaliz_MergeWithPreset_OnClick()
-	Thaliz_ImportPreset(true);
+	Thaliz.ImportPreset(true);
 end;
 
-function Thaliz_ImportProfile(keepExistingMessages)
-	if not Thaliz_SelectedProfile then return; end;
-	local profile = Thaliz_SelectedProfile;
+function Thaliz.ImportProfile(keepExistingMessages)
+	if not Thaliz.SelectedImportProfile then return; end;
+	local profile = Thaliz.SelectedImportProfile;
 
-	if not Thaliz_Options[profile["realm"]] then return; end;
-	if not Thaliz_Options[profile["realm"]][profile["name"]] then return; end;
-	local importedMessages = Thaliz_Options[profile["realm"]][profile["name"]]["ResurrectionMessages"];
+	if not Thaliz.Options[profile["realm"]] then return; end;
+	if not Thaliz.Options[profile["realm"]][profile["name"]] then return; end;
+	local importedMessages = Thaliz.Options[profile["realm"]][profile["name"]]["ResurrectionMessages"];
 	if not importedMessages or type(importedMessages) ~= "table" then return; end;
 
 	local resurrectionMessages = { };
 	if keepExistingMessages then
-		resurrectionMessages = Thaliz_GetResurrectionMessages();
+		resurrectionMessages = Thaliz.GetResurrectionMessages();
 	end;
 
 	--	Check if we already have this macro in our list:
@@ -2316,8 +2339,8 @@ function Thaliz_ImportProfile(keepExistingMessages)
 
 		--	Sanity check: in case original table is borken:
 		if	type(importMessage) == "table" and 
-			table.getn(importMessage) >= 3 and 
-			table.getn(importMessage) <= 4 and 
+			#importMessage >= 3 and 
+			#importMessage <= 4 and 
 			type(importMessage[1]) == "string" and
 			type(importMessage[2]) == "string" and
 			type(importMessage[3]) == "string" then
@@ -2338,29 +2361,29 @@ function Thaliz_ImportProfile(keepExistingMessages)
 	end;
 
 	if messageAddedCounter > 0 then
-		Thaliz_SetResurrectionMessages(resurrectionMessages);
+		Thaliz.SetResurrectionMessages(resurrectionMessages);
 		if keepExistingMessages then
-			A:echo(string.format("%d message(s) was merged from %s's profile.", messageAddedCounter, profile["fullname"]));
+			Thaliz.lib:echo(string.format("%d message(s) was merged from %s's profile.", messageAddedCounter, profile["fullname"]));
 		else
-			A:echo(string.format("%d message(s) was imported from %s's profile.", messageAddedCounter, profile["fullname"]));
+			Thaliz.lib:echo(string.format("%d message(s) was imported from %s's profile.", messageAddedCounter, profile["fullname"]));
 		end;
 
 		Thaliz_UpdateMessageList();
 	else
-		A:echo(string.format("No messages was imported from %s's profile.", profile["fullname"]));
+		Thaliz.lib:echo(string.format("No messages was imported from %s's profile.", profile["fullname"]));
 	end;
 end;
 
-function Thaliz_ImportPreset(keepExistingMessages)
-	if not Thaliz_SelectedPreset then return; end;
-	local preset = Thaliz_SelectedPreset;
+function Thaliz.ImportPreset(keepExistingMessages)
+	if not Thaliz.SelectedImportPreset then return; end;
+	local preset = Thaliz.SelectedImportPreset;
 
 	local presetMessages = preset["messages"];
 	if not presetMessages or type(presetMessages) ~= "table" then return; end;
 
 	local resurrectionMessages = { };
 	if keepExistingMessages then
-		resurrectionMessages = Thaliz_GetResurrectionMessages();
+		resurrectionMessages = Thaliz.GetResurrectionMessages();
 	end;
 
 	--	Check if we already have this macro in our list:
@@ -2381,16 +2404,16 @@ function Thaliz_ImportPreset(keepExistingMessages)
 	end;
 
 	if messageAddedCounter > 0 then
-		Thaliz_SetResurrectionMessages(resurrectionMessages);
+		Thaliz.SetResurrectionMessages(resurrectionMessages);
 		if keepExistingMessages then
-			A:echo(string.format("%d message(s) was merged from presets.", messageAddedCounter));
+			Thaliz.lib:echo(string.format("%d message(s) was merged from presets.", messageAddedCounter));
 		else
-			A:echo(string.format("%d message(s) was imported from presets.", messageAddedCounter));
+			Thaliz.lib:echo(string.format("%d message(s) was imported from presets.", messageAddedCounter));
 		end;
 
 		Thaliz_UpdateMessageList();
 	else
-		A:echo("No messages was imported from preset.");
+		Thaliz.lib:echo("No messages was imported from preset.");
 	end;
 end;
 
@@ -2404,27 +2427,23 @@ end;
 
 local SpellcastIsStarted = 0;
 function Thaliz_OnEvent(self, event, ...)
-	local debug = (Thaliz_DebugFunction and Thaliz_DebugFunction == "Thaliz_OnEvent");
-	local timerTick = Thaliz_GetTimerTick();
+	local timerTick = Thaliz.GetTimerTick();
 
 	if (event == "ADDON_LOADED") then
 		local addonname = ...;
-		if addonname == A.addonName then
-		    Thaliz_InitializeConfigSettings();
+		if addonname == Thaliz.lib.addonName then
+		    Thaliz.InitializeConfigSettings();
 		end
 
 	elseif (event == "UNIT_SPELLCAST_SENT") then
 		local resser, target, _, spellId = ...;
 		if(resser == "player") then
 			if (target ~= "Unknown") then
-				if(debug) then 
-					print(string.format("**DEBUG**: UNIT_SPELLCAST_SENT, SpellId=%s", spellId));
-				end;
-				if not Thaliz_IsPlayerBlacklisted(target) then
-					if Thaliz_SpellIsResurrect(spellId) then
-						Thaliz_SetCurrentResurrectedTarget(target);
-						Thaliz_BlacklistPlayer(target, Thaliz_Blacklist_Resurrect);
-						Thaliz_AnnounceResurrection(target);
+				if not Thaliz.IsPlayerBlacklisted(target) then
+					if Thaliz.IsResurrectionSpell(spellId) then
+						Thaliz.SetCurrentResurrectedTarget(target);
+						Thaliz.BlacklistPlayer(target, Thaliz.BlacklistResurrectionTimeout);
+						Thaliz.AnnounceResurrection(target);
 					end;
 				end;
 			end;
@@ -2439,124 +2458,90 @@ function Thaliz_OnEvent(self, event, ...)
 	elseif(event == "UNIT_SPELLCAST_SUCCEEDED") then
 		local resser, _, _, _ = ...;
 		if(resser == "player") then
-			Thaliz_ClearCurrentResurrectedTarget();
+			Thaliz.ClearCurrentResurrectedTarget();
 		end;
 
 	elseif(event == "UNIT_SPELLCAST_STOP") then
 		local resser, _, _, _ = ...;
 		if(resser ~= "player") then
-			if(debug) then 
-				echo(string.format("**DEBUG**: UNIT_SPELLCAST_STOP, by other resser=%s", resser));
-			end;
 			return;
 		end;
 
-		local target = Thaliz_GetCurrentResurrectedTarget();
+		local target = Thaliz.GetCurrentResurrectedTarget();
 		if target then
-			if(debug) then 
-				echo(string.format("**DEBUG**: UNIT_SPELLCAST_STOP, whitelisting player=%s", target));
-			end;
-			Thaliz_WhitelistPlayer(target);
-			Thaliz_ClearCurrentResurrectedTarget();
+			Thaliz.WhitelistPlayer(target);
+			Thaliz.ClearCurrentResurrectedTarget();
 		end;
 
 	elseif(event == "UNIT_SPELLCAST_FAILED") then
-		Thaliz_ClearCurrentResurrectedTarget();
+		Thaliz.ClearCurrentResurrectedTarget();
 
 	elseif (event == "INCOMING_RESURRECT_CHANGED") then
 		local arg1 = ...;
 
 		local timeDiff = timerTick - SpellcastIsStarted;
-		if(debug) then 
-			echo(string.format("**DEBUG**: INCOMING_RESURRECT_CHANGED, cast=%f, diff=%f", SpellcastIsStarted, timeDiff));
-		end;
 
-		if (timeDiff < 0.001) and UnitIsGhost(arg1) then
-			if(debug) then 
-				echo("**DEBUG**: INCOMING_RESURRECT_CHANGED, starting");
-			end;
-
+		if (timeDiff < 0.001) and Thaliz.API.UnitIsGhost(arg1) then
 			SpellcastIsStarted = timerTick;
-			if IsInRaid() then
-				if Thaliz_BeginsWith(arg1, 'raid') then
-					Thaliz_SetCurrentResurrectedTarget(A:getPlayerAndRealm(arg1));
+			if Thaliz.API.IsInRaid() then
+				if Thaliz.BeginsWith(arg1, 'raid') then
+					Thaliz.SetCurrentResurrectedTarget(Thaliz.lib:getPlayerAndRealm(arg1));
 				end;
 			else
-				if Thaliz_BeginsWith(arg1, 'party') then
-					Thaliz_SetCurrentResurrectedTarget(A:getPlayerAndRealm(arg1));
+				if Thaliz.BeginsWith(arg1, 'party') then
+					Thaliz.SetCurrentResurrectedTarget(Thaliz.lib:getPlayerAndRealm(arg1));
 				end;
 			end;
 
-			local target = Thaliz_GetCurrentResurrectedTarget();
+			local target = Thaliz.GetCurrentResurrectedTarget();
 			if target then
-				if(debug) then 
-					echo(string.format("**DEBUG**: INCOMING_RESURRECT_CHANGED, target=%s", target));
-				end;
-
-				if Thaliz_IsPlayerBlacklisted(target) then
-					A:echo(string.format("Note: [%s] is already being resurrected.", target));
+				if Thaliz.IsPlayerBlacklisted(target) then
+					Thaliz.lib:echo(string.format("Note: [%s] is already being resurrected.", target));
 				else
-					Thaliz_BlacklistPlayer(target, Thaliz_Blacklist_Spellcast);
-					Thaliz_AnnounceResurrection(target, arg1);
+					Thaliz.BlacklistPlayer(target, Thaliz.BlacklistSpellcastTime);
+					Thaliz.AnnounceResurrection(target, arg1);
 				end;
 			end;
 		end;
 
 	elseif (event == "CHAT_MSG_ADDON") then
-		Thaliz_OnChatMsgAddon(event, ...)
+		Thaliz.OnChatMsgAddon(event, ...)
 
 	elseif (event == "GROUP_ROSTER_UPDATE") then
-		Thaliz_OnGroupRosterUpdate(event, ...)
+		Thaliz.OnGroupRosterUpdate(event, ...)
 
 	elseif (event == "COMBAT_LOG_EVENT_UNFILTERED") then
+		--	SHOOSH!!! This one will haunt me in Forever!!
+		if Thaliz.lib.addonExpansionLevel == 60 then
+			--	Forever will not return anything usefull :-/
+			return;
+		end;
+
 		local _, subevent, _, _, sourceName, _, _, _, destName, _, _, spellId = CombatLogGetCurrentEventInfo();
 
 		if (subevent == "SPELL_CAST_START") then
-			if(debug) then 
-				echo(string.format("**DEBUG**: COMBAT_LOG_EVENT_UNFILTERED, subevent=%s, sourceName=%s, spellId=%s", subevent, sourceName, spellId));
-			end;
-
-			if (sourceName == A.localPlayerName) then
-				if Thaliz_SpellIsResurrect(spellId) then
+			if (sourceName == Thaliz.lib.localPlayerName) then
+				if Thaliz.IsResurrectionSpell(spellId) then
 					SpellcastIsStarted = timerTick;
 				end;
 			end
 
 		elseif subevent == "SPELL_RESURRECT" then
-			if sourceName ~= A.localPlayerName then
-				Thaliz_BlacklistPlayer(destName, Thaliz_Blacklist_Resurrect);
+			if sourceName ~= Thaliz.lib.localPlayerName then
+				Thaliz.BlacklistPlayer(destName, Thaliz.BlacklistResurrectionTimeout);
 			end;
 		end
-
-	else
-		if(debug) then 
-			echo("**DEBUG**: Other event: "..event);
-
-			local arg1, arg2, arg3, arg4 = ...;
-			if arg1 then
-				echo(string.format("**DEBUG**: arg1=%s", arg1));
-			end;
-			if arg2 then				
-				echo(string.format("**DEBUG**: arg2=%s", arg2));
-			end;
-			if arg3 then				
-				echo(string.format("**DEBUG**: arg3=%s", arg3));
-			end;
-			if arg4 then				
-				echo(string.format("**DEBUG**: arg4=%s", arg4));
-			end;
-		end;
 	end
 end
 
 function Thaliz_OnLoad()
 	msgEditorIsOpen = false;
 
-	THALIZ_CURRENT_VERSION = A:calculateVersion(A.addonVersion);
+	THALIZ_CURRENT_VERSION = Thaliz.lib:calculateVersion(Thaliz.lib.addonVersion);
 
-	_G["ThalizVersionString"]:SetText(string.format("Thaliz version %s by %s", A.addonVersion, A.addonAuthor));
+	_G["ThalizVersionString"]:SetText(string.format("Thaliz version %s by %s", Thaliz.lib.addonVersion, Thaliz.lib.addonAuthor));
 
-	A:echo(string.format("Type %s/thaliz%s to configure the addon, or right-click the Thaliz button.", A.chatColorHot, A.chatColorNormal));
+	Thaliz.lib:echo(string.format("Type %s/thaliz%s to configure the addon, or right-click the Thaliz button.", Thaliz.lib.chatColorHot, Thaliz.lib.chatColorNormal));
 
     ThalizEventFrame:RegisterEvent("ADDON_LOADED");
     ThalizEventFrame:RegisterEvent("CHAT_MSG_ADDON");
@@ -2569,11 +2554,11 @@ function Thaliz_OnLoad()
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_FAILED");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 
-	C_ChatInfo.RegisterAddonMessagePrefix(A.addonPrefix);
+	Thaliz.API.RegisterAddonMessagePrefix(Thaliz.lib.addonPrefix);
 
-	Thaliz_InitClassSpecificStuff();
-    Thaliz_InitializeListElements();
-	Thaliz_RefreshProfileButtons();
+	Thaliz.InitializeClassSpecificStuff();
+    Thaliz.InitializeListElements();
+	Thaliz.RefreshProfileButtons();
 
 	Thaliz_RepositionateButton(RezButton);
 end

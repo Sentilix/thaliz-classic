@@ -206,7 +206,7 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s, how many ears does Captain Kirk have? Three - the right, the left and the final front ear.",
 			"(Ressing) %s enjoy sport, but would never date a tennis player. Love means nothing to them.",
 			"(Ressing) %s doesn't trust stairs. They are always up to something.",
-			"(Ressing) Kassadama: -\"Vil du ha melken i en pose?\" %s: -\"Nei, bare la den være i kartongen!\"",
+			"(Ressing) Kassadama: -\"Vil du ha melken i en pose?\" %s: -\"Nei, bare la den vï¿½re i kartongen!\"",
 			"(Ressing) 6:30 is %s's favourite time of the day, hands down.",
 			"(Ressing) %s, I used to hate facial hair, but then it grew on me.",
 
@@ -358,7 +358,7 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s told me a joke about a chiropractor. It was about a weak back.",
 			"(Ressing) %s, why did the laptop show up late to school? It had a hard drive.",
 			"(Ressing) %s, what did the two pieces of bread say on their wedding day? It was loaf at first sight.",
-			"(Ressing) %s went to the Zoo the other day, but there was only one dog there. It was a Shïtzu.",
+			"(Ressing) %s went to the Zoo the other day, but there was only one dog there. It was a Shï¿½tzu.",
 			"(Ressing) %s, what is the fastest growing city in the world? Capital of Ireland. It's Dublin everyday.",
 			"(Ressing) %s went to a psychic and knocked on the door. She yelled \"Who is it?\" so he left.",
 			"(Ressing) %s, why can't you give Elsa a balloon? Because she'd just let it go.",

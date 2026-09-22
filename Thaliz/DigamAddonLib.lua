@@ -11,7 +11,7 @@
 
 
 local DIGAM_IsDebugBuild					= false;
-local DIGAM_BuildVersion					= 7;
+local DIGAM_BuildVersion					= 10.002;
 
 local DIGAM_COLOR_BEGIN						= "|c80";
 local DIGAM_CHAT_END						= "|r";
@@ -34,6 +34,8 @@ DIGAM_CHANNEL_CUSTOM						= { ["id"] = "?", ["mask"] = 0x0008, ["name"] = "(Cust
 
 DigamAddonLib = CreateFrame("Frame"); 
 DigamAddonLib.Locales = { };
+DigamAddonLib.API = { };
+
 
 function DigamAddonLib:createLocale(languageCode)
 	DigamAddonLib.Locales[languageCode] = { };
@@ -56,15 +58,15 @@ function DigamAddonLib:new(addonSettings)
 	local _addonName = addonSettings["ADDONNAME"] or "Unnamed";
 	local _addonShortName = addonSettings["SHORTNAME"] or _addonName;
 	local _addonPrefix = addonSettings["PREFIX"] or _addonShortName;
-	local _addonVersion = C_AddOns.GetAddOnMetadata(_addonName, "Version") or 0;
+	local _addonVersion = self.API.GetAddOnMetadata(_addonName, "Version") or 0;
 
 	local parent = {
 		addonName = _addonName,
 		addonShortName = _addonShortName,
 		addonPrefix = _addonPrefix,
 		addonVersion = _addonVersion,
-		addonAuthor = C_AddOns.GetAddOnMetadata(_addonName, "Author") or "",
-		addonExpansionLevel = tonumber(C_AddOns.GetAddOnMetadata(_addonName, "X-Expansion-Level")),
+		addonAuthor = self.API.GetAddOnMetadata(_addonName, "Author") or "",
+		addonExpansionLevel = tonumber(self.API.GetAddOnMetadata(_addonName, "X-Expansion-Level")),
 
 		localPlayerName = self:getPlayerAndRealm("player"),
 		localPlayerClass = self:getUnitClass("player"),
@@ -93,7 +95,7 @@ function DigamAddonLib:initialize()
 		self:echo(string.format("Using DigamAddonLib build %s.", self.buildVersion));
 	end;
 
-	C_ChatInfo.RegisterAddonMessagePrefix(self.addonPrefix);
+	self.API.RegisterAddonMessagePrefix(self.addonPrefix);
 end;
 
 
@@ -118,15 +120,15 @@ end;
 function DigamAddonLib:validateChannel(channelName)
 	local channel = self:getChannelInfo(channelName);
 	if channel then
-		if IsInRaid() then
+		if self.API.IsInRaid() then
 			--	Raid accepts everything, we even let people post in Party.
-			if not UnitIsGroupAssistant("player") then
+			if not self.API.UnitIsGroupAssistant("player") then
 				if bit.band(channel["mask"], DIGAM_CHANNEL_RAIDWARNING["mask"]) > 0 then
 					channel = DIGAM_CHANNEL_RAID;
 				end;
 			end;
 
-		elseif GetNumGroupMembers() > 0 then
+		elseif self.API.GetNumGroupMembers() > 0 then
 			--	Party: /r and /rw is forced into /p
 			if bit.band(channel["mask"], 0x0003) > 0 then
 				channel = DIGAM_CHANNEL_PARTY;
@@ -152,10 +154,10 @@ function DigamAddonLib:channelEcho(channelName, message)
 	if message and channel then
 		if bit.band(channel["mask"], 0x07) > 0 then
 			--	r, rw, p:
-			SendChatMessage(message, channel["channel"]);
+			self.API.SendChatMessage(message, channel["channel"]);
 		else
 			--	Custom channel, like a Healer channel etc:
-			SendChatMessage(message, "CHANNEL", nil, tonumber(channel["channel"]));
+			self.API.SendChatMessage(message, "CHANNEL", nil, tonumber(channel["channel"]));
 		end;
 	end;
 end;
@@ -207,7 +209,7 @@ function DigamAddonLib:sendWhisper(receiver, message)
 	if receiver == self.localPlayerName then
 		self:echo(message);
 	else
-		SendChatMessage(message, WHISPER_CHANNEL, nil, receiver);
+		self.API.SendChatMessage(message, WHISPER_CHANNEL, nil, receiver);
 	end
 end
 
@@ -307,10 +309,11 @@ end;
 
 function DigamAddonLib:getPlayerAndRealm(unitid, keepRealmnameSpaces)
 	local playername, realmname = UnitName(unitid);
+
 	if not playername then return nil; end;
 
 	if not realmname or realmname == "" then
-		realmname = GetRealmName();
+		realmname = self.API.GetRealmName();
 	end;
 
 	if not keepRealmnameSpaces and string.find(realmname, " ") then
@@ -329,7 +332,7 @@ end;
 function DigamAddonLib:getPlayerRealm(unitid)
 	local playername, realmname = UnitName(unitid);
 	if not realmname or realmname == "" then
-		realmname = GetRealmName();
+		realmname = self.API.GetRealmName();
 	end;
 	
 	if string.find(realmname, " ") then
@@ -341,7 +344,7 @@ end;
 
 --	Deprecated, use self.localPlayerRealm
 function DigamAddonLib:getMyRealm()
-	local realmname = GetRealmName();
+	local realmname = self.API.GetRealmName();
 	
 	if string.find(realmname, " ") then
 		local _, _, name1, name2 = string.find(realmname, "([a-zA-Z]*) ([a-zA-Z]*)");
@@ -352,21 +355,21 @@ function DigamAddonLib:getMyRealm()
 end;
 
 function DigamAddonLib:isInParty()
-	if not IsInRaid() then
-		return ( GetNumGroupMembers() > 0 );
+	if not self.API.IsInRaid() then
+		return ( self.API.GetNumGroupMembers() > 0 );
 	end
 	return false
 end
 
 --	Return the (english) name of the unit's class
 function DigamAddonLib:unitClass(unitid)
-	local _, classname = UnitClass(unitid);
+	local _, classname = API.UnitClass(unitid);
 	return classname;
 end;
 
 function DigamAddonLib:getUnitidFromName(playerName, keepRealmnameSpaces)
 	local unitid, unitname;
-	if IsInRaid() then
+	if self.API.IsInRaid() then
 		for n = 1, 40, 1 do
 			unitid = "raid"..n;
 			unitname = UnitName(unitid);
@@ -377,8 +380,8 @@ function DigamAddonLib:getUnitidFromName(playerName, keepRealmnameSpaces)
 				return unitid;
 			end;
 		end;
-	elseif GetNumGroupMembers() > 0 then
-		for n = 1, GetNumGroupMembers(), 1 do
+	elseif self.API.GetNumGroupMembers() > 0 then
+		for n = 1, self.API.GetNumGroupMembers(), 1 do
 			unitid = "party"..n;
 			unitname = UnitName(unitid);
 			if not unitname then 
@@ -437,12 +440,12 @@ end;
 function DigamAddonLib:refreshChannelList(skipGroupTypeCheck)
 	local channels = { };
 
-	if skipGroupTypeCheck or IsInRaid() then
+	if skipGroupTypeCheck or self.API.IsInRaid() then
 		tinsert(channels, DIGAM_CHANNEL_RAID);
 		tinsert(channels, DIGAM_CHANNEL_RAIDWARNING); 
 	end;
 	
-	if skipGroupTypeCheck or (not IsInRaid() and GetNumGroupMembers() > 0) then
+	if skipGroupTypeCheck or (not self.API.IsInRaid() and self.API.GetNumGroupMembers() > 0) then
 		tinsert(channels, DIGAM_CHANNEL_PARTY);
 	end;
 
@@ -478,10 +481,10 @@ end;
 
 --	Send a message using the Addon channel.
 function DigamAddonLib:sendAddonMessage(message)
-	local memberCount = GetNumGroupMembers();
+	local memberCount = self.API.GetNumGroupMembers();
 	if memberCount > 0 then
 		local channel;
-		if IsInRaid() then
+		if self.API.IsInRaid() then
 			channel = "RAID";
 		elseif self:isInParty() then
 			channel = "PARTY";
@@ -489,6 +492,6 @@ function DigamAddonLib:sendAddonMessage(message)
 			return;
 		end;
 
-		C_ChatInfo.SendAddonMessage(self.addonPrefix, message, channel);
+		self.API.SendAddonMessage(self.addonPrefix, message, channel);
 	end;
 end
