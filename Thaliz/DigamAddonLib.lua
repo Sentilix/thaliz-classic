@@ -363,7 +363,7 @@ end
 
 --	Return the (english) name of the unit's class
 function DigamAddonLib:unitClass(unitid)
-	local _, classname = API.UnitClass(unitid);
+	local _, classname = self.API.UnitClass(unitid);
 	return classname;
 end;
 
