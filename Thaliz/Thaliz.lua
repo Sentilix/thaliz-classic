@@ -1904,7 +1904,7 @@ function Thaliz.IsResurrectionSpell(spellId)
 	if spellId then
 		local incRessName = Thaliz.API.GetSpellName(spellId);
 
-		local classinfo = Thaliz.ClassMatrix[lib.localPlayerClass];
+		local classinfo = Thaliz.ClassMatrix[Thaliz.lib.localPlayerClass];
 
 		local classRessName = "";
 		if classinfo["spellid"] then
@@ -2548,11 +2548,15 @@ function Thaliz_OnLoad()
     ThalizEventFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
 	ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");
-	ThalizEventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_START");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_FAILED");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+
+	if Thaliz.lib.addonExpansionLevel < 60 then
+		ThalizEventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+	end;
+
 
 	Thaliz.API.RegisterAddonMessagePrefix(Thaliz.lib.addonPrefix);
 
@@ -2560,5 +2564,33 @@ function Thaliz_OnLoad()
     Thaliz.InitializeListElements();
 	Thaliz.RefreshProfileButtons();
 
+
 	Thaliz_RepositionateButton(RezButton);
 end
+
+
+local frame = CreateFrame("Frame", "ThalizEventFrame")
+
+frame:RegisterEvent("ADDON_LOADED")
+frame:SetScript("OnEvent", function(self, event, ...)
+    if event == "ADDON_LOADED" then
+        local addonName = ...
+        
+        if addonName == "Thaliz" then
+            self:UnregisterEvent("ADDON_LOADED")
+            
+            -- HERE IS WHO CALLS IT NOW!
+            if Thaliz_OnLoad then 
+                Thaliz_OnLoad(self) 
+            end
+        end
+    elseif Thaliz_OnEvent then
+        Thaliz_OnEvent(self, event, ...)
+    end
+end)
+
+frame:SetScript("OnUpdate", function(self, elapsed)
+    if Thaliz_OnTimer then Thaliz_OnTimer(elapsed) end
+end)
+
+

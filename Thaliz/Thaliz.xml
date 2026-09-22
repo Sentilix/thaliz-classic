@@ -882,7 +882,7 @@
 		</Anchors>
 		<Frames>
 			<!-- (1/12) Paladin -->
-			<Slider name="$parentPaladin" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+			<Slider name="$parentPaladin" minValue="0" maxValue="100" valueStep="5" inherits="UISliderTemplate" enableMouse="true">
 				<Size x="250" y="20" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="130" y="-40" relativeTo="$parent"/>
@@ -896,7 +896,7 @@
 				</Scripts>
 			</Slider>
 			<!-- (2/12) Priest -->
-			<Slider name="$parentPriest" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+			<Slider name="$parentPriest" minValue="0" maxValue="100" valueStep="5" inherits="UISliderTemplate" enableMouse="true">
 				<Size x="250" y="20" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="130" y="-75" relativeTo="$parent"/>
@@ -910,7 +910,7 @@
 				</Scripts>
 			</Slider>
 			<!-- (3/12) Shaman -->
-			<Slider name="$parentShaman" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+			<Slider name="$parentShaman" minValue="0" maxValue="100" valueStep="5" inherits="UISliderTemplate" enableMouse="true">
 				<Size x="250" y="20" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="130" y="-110" relativeTo="$parent"/>
@@ -924,7 +924,7 @@
 				</Scripts>
 			</Slider>
 			<!-- (4/12) Druid -->
-			<Slider name="$parentDruid" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+			<Slider name="$parentDruid" minValue="0" maxValue="100" valueStep="5" inherits="UISliderTemplate" enableMouse="true">
 				<Size x="250" y="20" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="130" y="-145" relativeTo="$parent"/>
@@ -938,7 +938,7 @@
 				</Scripts>
 			</Slider>
 			<!-- (5/12) Hunter -->
-			<Slider name="$parentHunter" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+			<Slider name="$parentHunter" minValue="0" maxValue="100" valueStep="5" inherits="UISliderTemplate" enableMouse="true">
 				<Size x="250" y="20" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="130" y="-180" relativeTo="$parent"/>
@@ -952,7 +952,7 @@
 				</Scripts>
 			</Slider>
 			<!-- (6/12) Mage -->
-			<Slider name="$parentMage" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+			<Slider name="$parentMage" minValue="0" maxValue="100" valueStep="5" inherits="UISliderTemplate" enableMouse="true">
 				<Size x="250" y="20" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="130" y="-215" relativeTo="$parent"/>
@@ -966,7 +966,7 @@
 				</Scripts>
 			</Slider>
 			<!-- (7/12) Warlock -->
-			<Slider name="$parentWarlock" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+			<Slider name="$parentWarlock" minValue="0" maxValue="100" valueStep="5" inherits="UISliderTemplate" enableMouse="true">
 				<Size x="250" y="20" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="130" y="-250" relativeTo="$parent"/>
@@ -980,7 +980,7 @@
 				</Scripts>
 			</Slider>
 			<!-- (8/12) Rogue -->
-			<Slider name="$parentRogue" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+			<Slider name="$parentRogue" minValue="0" maxValue="100" valueStep="5" inherits="UISliderTemplate" enableMouse="true">
 				<Size x="250" y="20" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="130" y="-285" relativeTo="$parent"/>
@@ -994,7 +994,7 @@
 				</Scripts>
 			</Slider>
 			<!-- (9/12) Warrior -->
-			<Slider name="$parentWarrior" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+			<Slider name="$parentWarrior" minValue="0" maxValue="100" valueStep="5" inherits="UISliderTemplate" enableMouse="true">
 				<Size x="250" y="20" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="130" y="-320" relativeTo="$parent"/>
@@ -1008,7 +1008,7 @@
 				</Scripts>
 			</Slider>
 			<!-- (10/12) Target -->
-			<Slider name="$parentTarget" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+			<Slider name="$parentTarget" minValue="0" maxValue="100" valueStep="5" inherits="UISliderTemplate" enableMouse="true">
 				<Size x="250" y="20" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="130" y="-390" relativeTo="$parent"/>
@@ -1022,7 +1022,7 @@
 				</Scripts>
 			</Slider>
 			<!-- (11/12) Master(looter) -->
-			<Slider name="$parentMaster" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+			<Slider name="$parentMaster" minValue="0" maxValue="100" valueStep="5" inherits="UISliderTemplate" enableMouse="true">
 				<Size x="250" y="20" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="130" y="-425" relativeTo="$parent"/>
@@ -1036,7 +1036,7 @@
 				</Scripts>
 			</Slider>
 			<!-- (12/12) First Warlock -->
-			<Slider name="$parentFirstLock" minValue="0" maxValue="100" valueStep="5" inherits="HorizontalSliderTemplate" enableMouse="true">
+			<Slider name="$parentFirstLock" minValue="0" maxValue="100" valueStep="5" inherits="UISliderTemplate" enableMouse="true">
 				<Size x="250" y="20" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="130" y="-460" relativeTo="$parent"/>
@@ -1323,24 +1323,4 @@
 		</Scripts>
 	</Button>
 
-	<!-- Dummy event frame -->
-	<Frame name="ThalizEventFrame">
-		<Scripts>
-			<OnLoad>
-				if (Thaliz_OnLoad) then
-				Thaliz_OnLoad();
-				end
-			</OnLoad>
-			<OnEvent>
-				if (Thaliz_OnEvent) then
-				Thaliz_OnEvent(self, event, ...);
-				end
-			</OnEvent>
-			<OnUpdate>
-				if (Thaliz_OnTimer) then
-				Thaliz_OnTimer(elapsed);
-				end
-			</OnUpdate>
-		</Scripts>
-	</Frame>
 </Ui>
