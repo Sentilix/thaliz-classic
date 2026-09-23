@@ -219,9 +219,12 @@ function API.UnitIsGroupAssistant(unitId)
     return UnitIsGroupAssistant(unitId);
 end;
 
--- 6. UnitIsGroupLeader also catch partyleader
 function API.UnitIsGroupLeader(unitId)
     return UnitIsGroupLeader(unitId);
+end;
+
+function API.UnitIsVisible(unitId)
+    return UnitIsVisible(unitId);
 end;
 
 function API.UnitName(unitId)
