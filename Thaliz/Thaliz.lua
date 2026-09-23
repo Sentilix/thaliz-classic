@@ -917,8 +917,6 @@ function Thaliz.InitializeConfigSettings()
 	--	Validate this is actually a valid structure:
 	local priorities = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionPriority, Thaliz.Configuration_Default_Priority);
 
-	Thaliz.lib:printAll(Thaliz_Options)
-
 	if	not priorities or 
 		not priorities.Druid or not priorities.Druid.Priority or
 		not priorities.Hunter or not priorities.Hunter.Priority or
