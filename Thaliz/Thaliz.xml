@@ -106,8 +106,7 @@
 					</OnShow>
 				</Scripts>
 			</ScrollFrame>
-			<!-- 1st line options: Radio buttons for chat destination -->
-			<CheckButton name="$parentCheckbuttonRaid" inherits="ChatConfigCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonIncludeDefault" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-354"/>
@@ -115,52 +114,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						_G[self:GetName().."Text"]:SetText("Raid/Party Chat")
-					</OnLoad>
-					<OnClick>
-						Thaliz_HandleCheckbox(self);
-					</OnClick>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentCheckbuttonSay" inherits="ChatConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="144" y="-354"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetText("Say")
-					</OnLoad>
-					<OnClick>
-						Thaliz_HandleCheckbox(self);
-					</OnClick>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentCheckbuttonYell" inherits="ChatConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="272" y="-354"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetText("Yell")
-					</OnLoad>
-					<OnClick>
-						Thaliz_HandleCheckbox(self);
-					</OnClick>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentCheckbuttonIncludeDefault" inherits="ChatConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="428" y="-354"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Text"]:SetText("Include Defaults in Filtered macros")
+						_G[self:GetName().."Text"]:SetText("Combine default &amp; filtered macros")
 					</OnLoad>
 					<OnClick>
 						Thaliz_HandleCheckbox(self);
@@ -880,6 +834,17 @@
 				<Offset x="0" y="0" />
 			</Anchor>
 		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentSolidBackground">
+					<Anchors>
+						<Anchor point="TOPLEFT"><Offset x="8" y="-8"/></Anchor>
+						<Anchor point="BOTTOMRIGHT"><Offset x="-8" y="8"/></Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>		
 		<Frames>
 			<!-- (1/12) Paladin -->
 			<Slider name="$parentPaladin" minValue="0" maxValue="100" valueStep="5" inherits="UISliderTemplate" enableMouse="true">
@@ -1061,7 +1026,7 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>Thaliz_CloseButton_OnClick();</OnClick>
+					<OnClick>Thaliz_ClosePriorityButton_OnClick();</OnClick>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -1297,8 +1262,6 @@
 				self:RegisterForDrag("LeftButton");
 				self:RegisterForClicks("AnyUp", "AnyDown");
 
-				self:SetScript("PreClick", Thaliz_OnRezClick);
-
 				self.title = self:CreateFontString(nil, "OVERLAY");
 				self.title:SetFont("Fonts\\ARIALN.ttf",8)
 				self.title:SetTextColor(1, 1, 0)
@@ -1306,6 +1269,7 @@
 				self.title:SetText("");
 
 				self:SetAttribute("type", "spell");
+				self:SetAttribute("type2", "nil");
 				self:SetAttribute("unit", nil);
 				self:SetAttribute("spell", nil);
 				self:SetAttribute("item", nil);
@@ -1320,6 +1284,9 @@
 				self:StopMovingOrSizing();
 				Thaliz_RepositionateButton(self);
 			</OnDragStop>
+			<PreClick>
+				Thaliz_OnRezClick(self, button);
+			</PreClick>		
 		</Scripts>
 	</Button>
 
