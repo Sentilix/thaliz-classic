@@ -97,6 +97,13 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+
+Version 3.6.0
+* Added support for World of Warcraft Forever
+* Removed SAY and YELL: they are no longer supported by the Blizzard API.
+* Re-grouped and added new macro categories + more bad jokes
+
+
 Version 3.5.2
 * Bumped for Classic client version 1.15.9 (Era/Hardcore) and 3.5.6 (TBC)
 
