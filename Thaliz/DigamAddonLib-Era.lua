@@ -29,6 +29,11 @@ function API.GetNumTrackingTypes()
     return C_Minimap.GetNumTrackingTypes();
 end
 
+--  Era returned values: localizedClass, englishClass, localizedRace, englishRace, sex, name, realmName
+function API.GetPlayerInfoByGUID(guid)
+    return GetPlayerInfoByGUID(guid);
+end;
+
 function API.GetRaidRosterInfo(raidIndex)
     return GetRaidRosterInfo(raidIndex);
 end;
@@ -202,5 +207,39 @@ function API.ShortUnitName(unitId)
     return playername;
 end;
 
+
+--
+--  UNIT_SPELLCAST_* functions:
+--
+
+-- Era return values: unitCaster, unitTarget, castGUID, spellID
+function API.On_UNIT_SPELLCAST_SENT(...)
+    return ...;
+end
+
+--  Era return values: unitCaster, castGUID, spellID, castBarID
+function API.Extract_UNIT_SPELLCAST_START(...)
+    return ...;
+end
+
+--  Era return values: unitCaster, castGUID, spellID, castBarID
+function API.Extract_UNIT_SPELLCAST_STOP(...)
+    return ...;
+end;
+
+--  Era return values: unitCaster, castGUID, spellID, castBarID
+function API.Extract_UNIT_SPELLCAST_SUCCEEDED(...)
+    return ...;
+end;
+
+--  Era return values: unitCaster, castGUID, spellID, castBarID
+function API.Extract_UNIT_SPELLCAST_FAILED(...)
+    return ...;
+end;
+
+--  Era return values: unitTarget
+function API.Extract_INCOMING_RESURRECT_CHANGED(...)
+    return ...;
+end;
 
 

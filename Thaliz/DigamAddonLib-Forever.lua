@@ -34,6 +34,11 @@ function API.GetNumTrackingTypes()
     return C_Minimap.GetNumTrackingTypes();
 end
 
+--  Forever returned values: localizedClass, englishClass, localizedRace, englishRace, sex, name, realmName
+function API.GetPlayerInfoByGUID(guid)
+    return GetPlayerInfoByGUID(guid);
+end;
+
 function API.GetRaidRosterInfo(raidIndex)
     return GetRaidRosterInfo(raidIndex);
 end;
@@ -246,3 +251,43 @@ function API.UnitSex(unitid)
     return sex or 1
 end
 
+
+--[[
+Convert output from UNIT_SPELLCAST_START event in Forever to
+the format it ws in Era.
+--]]
+
+--  Forever return values: unitCaster, unitTarget, castGUID, spellID, castBarID
+function API.On_UNIT_SPELLCAST_SENT(...)
+    local unitCaster, _,spellID, lineID = ...
+    return unitCaster, nil,spellID, lineID;
+end;
+
+--  Forever return values: unitCaster, castGUID, spellID, castBarID
+function API.Extract_UNIT_SPELLCAST_START(...)
+    return ...;
+end
+
+--  Forever return values: unitCaster, castGUID, spellID, castBarID
+function API.Extract_UNIT_SPELLCAST_STOP(...)
+    return ...;
+end
+
+--  Forever return values: unitCaster, castGUID, spellID, castBarID
+function API.Extract_UNIT_SPELLCAST_SUCCEEDED(...)
+    return ...;
+end
+
+--  Forever return values: unitCaster, castGUID, spellID, reason
+--  Note the extra Reason field.
+function API.Extract_UNIT_SPELLCAST_FAILED(...)
+    return ...;
+end
+
+--  Forever payload: unitTarget, isIncoming
+--  Era return values: unitTarget
+function API.Extract_INCOMING_RESURRECT_CHANGED(...)
+    local unitTarget = ...
+    
+    return unitTarget
+end

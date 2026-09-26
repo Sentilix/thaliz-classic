@@ -1888,18 +1888,18 @@ end;
 --end;
 
 
-Thaliz.CurrentRessedTarget = nil;
-function Thaliz.ClearCurrentResurrectedTarget()
-	Thaliz.SetCurrentResurrectedTarget(nil);
-end;
-
-function Thaliz.GetCurrentResurrectedTarget()
-	return CurrentRessedTarget;
-end;
-
-function Thaliz.SetCurrentResurrectedTarget(target)
-	CurrentRessedTarget = target;
-end;
+--Thaliz.CurrentRessedTarget = nil;
+--function Thaliz.ClearCurrentResurrectedTarget()
+--	Thaliz.SetCurrentResurrectedTarget(nil);
+--end;
+--
+--function Thaliz.GetCurrentResurrectedTarget()
+--	return CurrentRessedTarget;
+--end;
+--
+--function Thaliz.SetCurrentResurrectedTarget(target)
+--	CurrentRessedTarget = target;
+--end;
 
 
 --[[
@@ -2382,83 +2382,67 @@ end;
 --
 --  *******************************************************
 
-local SpellcastIsStarted = 0;
+local SpellcastTargets = { };
 function Thaliz_OnEvent(self, event, ...)
 	local timerTick = Thaliz.GetTimerTick();
 
---	if (event == "ADDON_LOADED") then
---		local addonname = ...;
---		if addonname == Thaliz.lib.addonName then
---		    Thaliz.InitializeConfigSettings();
---		end
+	if(event == "UNIT_SPELLCAST_SENT") then		
+		local unitCaster, unitTarget, castGUID, spellID = Thaliz.API.On_UNIT_SPELLCAST_SENT(...)
 
---	else
-	if (event == "UNIT_SPELLCAST_SENT") then
-		local resser, target, _, spellId = ...;
-		if(resser == "player") then
-			if (target ~= "Unknown") then
-				if not Thaliz.IsPlayerBlacklisted(target) then
-					if Thaliz.IsResurrectionSpell(spellId) then
-						Thaliz.SetCurrentResurrectedTarget(target);
---						Thaliz.BlacklistPlayer(target, Thaliz.BlacklistResurrectionTimeout);
-						Thaliz.AnnounceResurrection(target);
-					end;
-				end;
+		if unitCaster == "player" and unitTarget and Thaliz.IsResurrectionSpell(spellID) then
+			--	Era: Name is set to the person receiving the heal. Forever: nil ...
+			--	Note: unitTarget is "Unknown" when player has released.
+			if unitTarget ~= "Unknown" then
+				unitTarget = Thaliz.lib:getFullPlayerName(unitTarget);
+
+				SpellcastTargets[castGUID] = { target = unitTarget, timer = timerTick }
+
+				C_Timer.After(11, function()
+					if SpellcastTargets[castGUID] then
+						SpellcastTargets[castGUID] = nil;
+					end
+				end);			
 			end;
-		end;
-		
-	elseif(event == "UNIT_SPELLCAST_START") then
-		local resser, _, _, _ = ...;
-		if(resser == "player") then
-			SpellcastIsStarted = timerTick;
-		end;
-
-	elseif(event == "UNIT_SPELLCAST_SUCCEEDED") then
-		local resser, _, _, _ = ...;
-		if(resser == "player") then
-			Thaliz.ClearCurrentResurrectedTarget();
 		end;
 
 	elseif(event == "UNIT_SPELLCAST_STOP") then
-		local resser, _, _, _ = ...;
-		if(resser ~= "player") then
+		local unitCaster, castGUID, spellID, castBarID = Thaliz.API.Extract_UNIT_SPELLCAST_STOP(...);
+		if(unitCaster == "player") then
+			local targetInfo = SpellcastTargets[castGUID];
+			if targetInfo and targetInfo.target then
+				local unitName = Thaliz.lib:getPlayerAndRealm(targetInfo.target);				
+				Thaliz.WhitelistPlayer(unitName);
+			end;
+		end;
+
+	elseif (event == "INCOMING_RESURRECT_CHANGED") then
+		local unitTarget = Thaliz.API.Extract_INCOMING_RESURRECT_CHANGED(...);
+		local unitName = Thaliz.lib:getPlayerAndRealm(unitTarget);
+
+		if not unitTarget or not unitName then
 			return;
 		end;
 
-		local target = Thaliz.GetCurrentResurrectedTarget();
-		if target then
-			Thaliz.WhitelistPlayer(target);
-			Thaliz.ClearCurrentResurrectedTarget();
+		--	Note: Unknown (released) players are not in the SpellcastTargets cache
+		--	so for them the timeDiff is exactly -999:
+		local timeDiff = -999;
+		for k, v in next, SpellcastTargets do
+			if v.target == unitName then
+				timeDiff = timerTick - v.timer;
+				break;
+			end
 		end;
 
-	elseif(event == "UNIT_SPELLCAST_FAILED") then
-		Thaliz.ClearCurrentResurrectedTarget();
-
-	elseif (event == "INCOMING_RESURRECT_CHANGED") then
-		local arg1 = ...;
-
-		local timeDiff = timerTick - SpellcastIsStarted;
-
-		if (timeDiff < 0.001) and Thaliz.API.UnitIsDeadOrGhost(arg1) then
-			SpellcastIsStarted = timerTick;
-			if Thaliz.API.IsInRaid() then
-				if Thaliz.BeginsWith(arg1, 'raid') then
-					Thaliz.SetCurrentResurrectedTarget(Thaliz.lib:getPlayerAndRealm(arg1));
+		if (timeDiff < 0.1) and Thaliz.API.UnitIsDeadOrGhost(unitTarget) then
+			if Thaliz.IsPlayerBlacklisted(unitName) then
+				--	If timer is stil -999 then the player did not exist in the cache. It is most likely a released player.
+				--	And because this event is called twice we will automatically call this message if we cancel the spell.
+				if timeDiff ~= -999 then
+					Thaliz.lib:echo(string.format("Note: [%s] is already being resurrected.", unitName));
 				end;
 			else
-				if Thaliz.BeginsWith(arg1, 'party') then
-					Thaliz.SetCurrentResurrectedTarget(Thaliz.lib:getPlayerAndRealm(arg1));
-				end;
-			end;
-
-			local target = Thaliz.GetCurrentResurrectedTarget();
-			if target then
-				if Thaliz.IsPlayerBlacklisted(target) then
-					Thaliz.lib:echo(string.format("Note: [%s] is already being resurrected.", target));
-				else
-					Thaliz.BlacklistPlayer(target, Thaliz.BlacklistSpellcastTime);
-					Thaliz.AnnounceResurrection(target, arg1);
-				end;
+				Thaliz.BlacklistPlayer(unitName, Thaliz.BlacklistSpellcastTime);
+				Thaliz.AnnounceResurrection(unitName, unitTarget);
 			end;
 		end;
 
@@ -2468,27 +2452,6 @@ function Thaliz_OnEvent(self, event, ...)
 	elseif (event == "GROUP_ROSTER_UPDATE") then
 		Thaliz.OnGroupRosterUpdate(event, ...)
 
-	elseif (event == "COMBAT_LOG_EVENT_UNFILTERED") then
-		--	SHOOSH!!! This one will haunt me in Forever!!
-		if Thaliz.lib.addonExpansionLevel == 60 then
-			--	Forever will not return anything usefull :-/
-			return;
-		end;
-
-		local _, subevent, _, _, sourceName, _, _, _, destName, _, _, spellId = CombatLogGetCurrentEventInfo();
-
-		if (subevent == "SPELL_CAST_START") then
-			if (sourceName == Thaliz.lib.localPlayerName) then
-				if Thaliz.IsResurrectionSpell(spellId) then
-					SpellcastIsStarted = timerTick;
-				end;
-			end
-
-		elseif subevent == "SPELL_RESURRECT" then
-			if sourceName ~= Thaliz.lib.localPlayerName then
-				Thaliz.BlacklistPlayer(destName, Thaliz.BlacklistResurrectionTimeout);
-			end;
-		end
 	end
 end
 
@@ -2503,27 +2466,17 @@ function Thaliz_OnLoad()
 
 	Thaliz.InitializeConfigSettings();
 		
---    ThalizEventFrame:RegisterEvent("ADDON_LOADED");
     ThalizEventFrame:RegisterEvent("CHAT_MSG_ADDON");
     ThalizEventFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
-	ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");
-    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_START");
     ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
-    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_FAILED");
-    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
-
---	if Thaliz.lib.addonExpansionLevel < 60 then
---		ThalizEventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
---	end;
-
+	ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");
 
 	Thaliz.API.RegisterAddonMessagePrefix(Thaliz.lib.addonPrefix);
 
 	Thaliz.InitializeClassSpecificStuff();
     Thaliz.InitializeListElements();
 	Thaliz.RefreshProfileButtons();
-
 
 	Thaliz_RepositionateButton(RezButton);
 end
