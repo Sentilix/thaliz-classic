@@ -2405,6 +2405,33 @@ function Thaliz_OnEvent(self, event, ...)
 			end;
 		end;
 
+	elseif(event == "UNIT_SPELLCAST_START") then
+		 -- This block only runs on Forever/Modern engines.
+		 -- Era is handled by the INCOMING_RESURRECT_CHANGED event.
+		if Thaliz.lib.addonExpansionLevel ~= 60 then
+			return;
+		end
+
+		local unitCaster, castGUID, spellID, castBarID = Thaliz.API.Extract_UNIT_SPELLCAST_START(...);
+		if (unitCaster == "player") and (Thaliz.IsResurrectionSpell(spellID)) then
+			local target = Thaliz.API.Extract_Unit_Target(castGUID);
+			if (target and type(target) == "string") then
+				local unitName = Thaliz.lib:getPlayerAndRealm(target);
+				if not unitName then
+					return;
+				end;
+				
+				-- 2. FOREVER SHORTCUT: Since _CHANGED won't fire for class spells in Forever,
+				-- we run your exact announcement logic right here under START!
+				if Thaliz.IsPlayerBlacklisted(unitName) then
+					Thaliz.lib:echo(string.format("Note: [%s] is already being resurrected.", unitName));
+				else
+					Thaliz.BlacklistPlayer(unitName, Thaliz.BlacklistSpellcastTime);
+					Thaliz.AnnounceResurrection(unitName, "mouseover"); -- Uses active mouseover or unit
+				end;
+			end;
+		end
+
 	elseif(event == "UNIT_SPELLCAST_STOP") then
 		local unitCaster, castGUID, spellID, castBarID = Thaliz.API.Extract_UNIT_SPELLCAST_STOP(...);
 		if(unitCaster == "player") then
@@ -2416,6 +2443,7 @@ function Thaliz_OnEvent(self, event, ...)
 		end;
 
 	elseif (event == "INCOMING_RESURRECT_CHANGED") then
+		--	This is only triggered in Era. Forever and Midnight does not support this event.
 		local unitTarget = Thaliz.API.Extract_INCOMING_RESURRECT_CHANGED(...);
 		local unitName = Thaliz.lib:getPlayerAndRealm(unitTarget);
 
@@ -2455,7 +2483,8 @@ function Thaliz_OnEvent(self, event, ...)
 	end
 end
 
-function Thaliz_OnLoad()
+
+function Thaliz_OnLoad(addonFrame)
 	msgEditorIsOpen = false;
 
 	THALIZ_CURRENT_VERSION = Thaliz.lib:calculateVersion(Thaliz.lib.addonVersion);
@@ -2466,24 +2495,22 @@ function Thaliz_OnLoad()
 
 	Thaliz.InitializeConfigSettings();
 		
-    ThalizEventFrame:RegisterEvent("CHAT_MSG_ADDON");
-    ThalizEventFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
-    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
-    ThalizEventFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
-	ThalizEventFrame:RegisterEvent("INCOMING_RESURRECT_CHANGED");
+	addonFrame:RegisterEvent("CHAT_MSG_ADDON");
+	addonFrame:RegisterEvent("GROUP_ROSTER_UPDATE");		
+	addonFrame:RegisterEvent("UNIT_SPELLCAST_START");
+	addonFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
+	addonFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
 
 	Thaliz.API.RegisterAddonMessagePrefix(Thaliz.lib.addonPrefix);
 
 	Thaliz.InitializeClassSpecificStuff();
-    Thaliz.InitializeListElements();
+	Thaliz.InitializeListElements();
 	Thaliz.RefreshProfileButtons();
 
 	Thaliz_RepositionateButton(RezButton);
 end
 
-
 local frame = CreateFrame("Frame", "ThalizEventFrame")
-
 frame:RegisterEvent("ADDON_LOADED")
 frame:SetScript("OnEvent", function(self, event, ...)
     if event == "ADDON_LOADED" then
@@ -2492,6 +2519,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
             self:UnregisterEvent("ADDON_LOADED")
             
             if Thaliz_OnLoad then 
+                -- Sender 'self' (hvilket er den ægte oprettede frame) sikkert med ind
                 Thaliz_OnLoad(self) 
             end
         end

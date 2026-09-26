@@ -287,7 +287,30 @@ end
 --  Forever payload: unitTarget, isIncoming
 --  Era return values: unitTarget
 function API.Extract_INCOMING_RESURRECT_CHANGED(...)
-    local unitTarget = ...
-    
-    return unitTarget
+    return ...;
 end
+
+
+--
+--  Forever Only:
+--
+
+function API.Extract_Unit_Target(castGUID)
+    local name = nil
+    
+    if UnitExists("mouseover") then
+        name = GetUnitName("mouseover")
+    elseif UnitExists("target") then
+        name = GetUnitName("target")
+    end
+    
+    -- Returns the string name or nil if empty/not found
+    if name == "" then
+        name = nil;
+    end
+
+    return name;
+end
+
+
+
