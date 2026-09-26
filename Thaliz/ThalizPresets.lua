@@ -3,17 +3,20 @@
 	Preset messages:
 	----------------
 	1	Simple				A simple Resurrection message
-	2	Classic				20 boss quotes from World of Warcraft Classic.
-	3	TBC					20 boss quotes from The Burning Crusade.
-	4	Lich King			20 boss quotes from Wrath of the Lich King
-	5	Dad Jokes 			300 dad jokes / bad jokes (your choice)
-	6	Warcraft Jokes		50 Jokes in World of Warcraft
-	7	Theme: Crocodiles	Jokes with a bite!
-	8	Theme: Fishes		Salty Fish jokes
-	9	Theme: Cars			Driving you Crazy!
-	10	Theme: Christmas	December jokes in a cold time
-	11	Lyrics				Songs as resurrection messages
-	
+	2	Classic				Boss quotes from World of Warcraft Classic.
+	3	TBC					Boss quotes from The Burning Crusade.
+	4	Lich King			Boss quotes from Wrath of the Lich King
+	5	Cataclysm			Boss quotes from Cataclysm
+	6	Dad Jokes 			300 dad jokes / bad jokes (your choice)
+	7	Warcraft Jokes		70 Jokes in World of Warcraft
+	8	Theme: Crocodiles	Jokes with a bite!
+	9	Theme: Fishes		Salty Fish jokes
+	10	Theme: Cars			Driving you Crazy!
+	11	Theme: Dogs			Man's best friend!
+	12	Theme: Cats			Purr-fect jokes for your raid!
+	13	Theme: Christmas	December jokes in a cold time
+	14	Lyrics				Songs as resurrection messages
+	15	Movie Quotes		Iconic Hollywood lines!
 --]]
 
 Thaliz_PresetMessages = {
@@ -27,133 +30,224 @@ Thaliz_PresetMessages = {
 	[2] = {
 		["name"] = "Classic",
 		["description"] = "World of Warcraft Classic boss quotes",
-		["messages"] = {
-			"(Ressing) THIS CANNOT BE!!! %s, deal with these insects.",
-			"(Ressing) I'm keeping my eye on you, %s!",
-			"(Ressing) %s, fill me with your RAGE!",
-			"(Ressing) Fleeing will do you no good, %s!",
-			"(Ressing) Master %c %s, continue the fight!",
-			"(Ressing) Perhaps you'll need another lesson in pain, %s!",
-			"(Ressing) Too soon, %s - you have died too soon!",
-			"(Ressing) You have failed me, %s! Justice is met, indeed!",
-			"(Ressing) Forgive me %s, your death only adds to my failure.",
-			"(Ressing) Let your death serve as an example, %s!",
-			"(Ressing) Only flesh and bone. %cs are such easy prey, %s!",
-			"(Ressing) Your friends will abandon you, %s!",
-			"(Ressing) Shhh, %s... it will all be over soon.",
-			"(Ressing) Slay %s in the masters name!",
-			"(Ressing) Rise, %s! Rise and fight once more!",
-			"(Ressing) You should have stayed home, %s!",
-			"(Ressing) Death is the only escape, %s.",
-			"(Ressing) The first res goes to %s! Anyone care to wager?",
-			"(Ressing) No more play, %s?",
-			"(Ressing) %s, you are too late... I... must... OBEY!",
+		["messages"] = {			
+			"(Ressing) THIS CANNOT BE!!! %s, deal with these insects.", -- Nefarian, Blackwing Lair
+			"(Ressing) I'm keeping my eye on you, %s!", -- Bloodlord Mandokir, Zul'Gurub
+			"(Ressing) %s, fill me with your RAGE!", -- High Priest Thekal, Zul'Gurub
+			"(Ressing) Fleeing will do you no good, %s!", -- Hakkar, Zul'Gurub
+			"(Ressing) Master %c %s, continue the fight!", -- General Rajaxx, Ruins of Ahn'Qiraj
+			"(Ressing) Perhaps you'll need another lesson in pain, %s!", -- Majordomo Executus, Molten Core
+			"(Ressing) Too soon, %s - you have died too soon!", -- Ragnaros, Molten Core
+			"(Ressing) You have failed me, %s! Justice is met, indeed!", -- Ragnaros, Molten Core
+			"(Ressing) Forgive me %s, your death only adds to my failure.", -- Vaelastrasz the Corrupt, Blackwing Lair
+			"(Ressing) Let your death serve as an example, %s!", -- Prophet Skeram, Temple of Ahn'Qiraj
+			"(Ressing) Only flesh and bone. %cs are such easy prey, %s!", -- Emperor Vek'lor (Twin Emperors), Temple of Ahn'Qiraj
+			"(Ressing) Your friends will abandon you, %s!", -- C'Thun, Temple of Ahn'Qiraj
+			"(Ressing) Shhh, %s... it will all be over soon.", -- Anub'Rekhan, Naxxramas
+			"(Ressing) Slay %s in the masters name!", -- Grand Widow Faerlina, Naxxramas
+			"(Ressing) Rise, %s! Rise and fight once more!", -- Noth the Plaguebringer, Naxxramas
+			"(Ressing) You should have stayed home, %s!", -- Instructor Razuvious, Naxxramas
+			"(Ressing) Death is the only escape, %s.", -- Gothik the Harvester, Naxxramas
+			"(Ressing) The first res goes to %s! Anyone care to wager?", -- Ring of Law, Blackrock Depths
+			"(Ressing) No more play, %s?", -- Patchwerk, Naxxramas
+			"(Ressing) %s, you are too late... I... must... OBEY!", -- Razorgore the Untamed, Blackwing Lair
+			"(Ressing) By fire be purged, %s!", -- Ragnaros, Molten Core
+			"(Ressing) %s, breathe deep...! Oh wait, too late.", -- Onyxia's Lair (Deep Breath meme)
+			"(Ressing) Interlopers, %s! You are too late! The ritual is complete!", -- Baron Rivendare, Stratholme
+			"(Ressing) In the name of the Light, %s, I shall destroy you!", -- Highlord Mograine, Scarlet Monastery
+			"(Ressing) You have dynamic potential, %s. Let's see how you handle this!", -- Nefarian (Class Calls), Blackwing Lair
+			"(Ressing) %s's heart will explode.", -- C'Thun, Temple of Ahn'Qiraj
+			"(Ressing) You... are already... dead, %s.", -- C'Thun, Temple of Ahn'Qiraj
+			"(Ressing) %s, did you think us so easily defeated?", -- Kel'Thuzad, Naxxramas
+			"(Ressing) Pray for mercy, %s! Your end has come!", -- High Interrogator Gerstahn, Blackrock Depths
+			"(Ressing) %s, you sub-sentient bonemashers! Onward!", -- Grand Widow Faerlina, Naxxramas
+			"(Ressing) Fools! %s has run straight into the jaws of death!", -- Instructor Razuvious, Naxxramas
+			"(Ressing) Remember, %s, honor holds no weight on the scales of death.", -- Baron Rivendare, Stratholme
+			"(Ressing) %s, you seek the secrets of Death? Then let me show you!", -- Heigan the Unclean, Naxxramas
+			"(Ressing) TIMMYYYYY! Wake up, %s!", -- Timmy the Cruel, Stratholme
 		},
 	},
 	[3] = {
 		["name"] = "TBC",
 		["description"] = "The Burning Crusade boss quotes",
 		["messages"] = {
-			"(Ressing) Perhaps you would rather test yourself against a more formidable opponent, %s",
-			"(Ressing) Come, gentle night; and give me back my %s!",
-			"(Ressing) You rang, %s?",
-			"(Ressing) %s is no longer op... er... ation... al.",
-			"(Ressing) Please, accept this humble offering, oh great %s.",
-			"(Ressing) You've wasted enough of my time... let these games be finished, %s!",
-			"(Ressing) Your greed, your foolishness has brought you to this end, %s.",
-			"(Ressing) You will not defeat the Hand of %s!",
-			"(Ressing) Let us see how your nerves hold up against the Darkener, %s.",
-			"(Ressing) All of your efforts have been in vain, %s!",
-			"(Ressing) %s has returned to finish what was begun so many years ago.",
-			"(Ressing) Is this it, %s? Is this all the fury you can muster?",
-			"(Ressing) You play, you pay, %s!",
-			"(Ressing) %s, You can have anything you desire... for a price.",
-			"(Ressing) So much time has passed. %s have a lot of catching up to do...",
-			"(Ressing) I did not wish to lower myself by ressing %s, but you leave me little choice!",
-			"(Ressing) Your overconfidence will be your undoing! %s, lend me your strength!",
-			"(Ressing) %s ... Be gone trifling %r. I'm in control now.",
-			"(Ressing) The expendible have perished... So be it! Now I shall succeed where %s could not!",
-			"(Ressing) Your luck has run its course, %s!",		
+			"(Ressing) Perhaps you would rather test yourself against a more formidable opponent, %s", -- Julianne, Karazhan
+			"(Ressing) Come, gentle night; and give me back my %s!", -- Romulo, Karazhan
+			"(Ressing) You rang, %s?", -- Moroes, Karazhan
+			"(Ressing) %s is no longer op... er... ation... al.", -- The Curator, Karazhan
+			"(Ressing) Please, accept this humble offering, oh great %s.", -- Terestian Illhoof, Karazhan
+			"(Ressing) You've wasted enough of my time... let these games be finished, %s!", -- Shade of Aran, Karazhan
+			"(Ressing) Your greed, your foolishness has brought you to this end, %s.", -- Prince Malchezaar, Karazhan
+			"(Ressing) You will not defeat the Hand of %s!", -- High Astromancer Solarian, Tempest Keep
+			"(Ressing) Let us see how your nerves hold up against the Darkener, %s.", -- Teron Gorefiend, Black Temple
+			"(Ressing) All of your efforts have been in vain, %s!", -- Lady Vashj, Serpentshrine Cavern
+			"(Ressing) %s has returned to finish what was begun so many years ago.", -- Akama, Black Temple
+			"(Ressing) Is this it, %s? Is this all the fury you can muster?", -- Gurtogg Bloodboil, Black Temple
+			"(Ressing) You play, you pay, %s!", -- Shazzrah / Void Reaver meme
+			"(Ressing) %s, You can have anything you desire... for a price.", -- Essence of Desire, Reliquary of Souls
+			"(Ressing) So much time has passed. %s have a lot of catching up to do...", -- Illidan Stormrage, Black Temple
+			"(Ressing) I did not wish to lower myself by ressing %s, but you leave me little choice!", -- Nethermancer Sepethrea, Tempest Keep
+			"(Ressing) Your overconfidence will be your undoing! %s, lend me your strength!", -- Kael'thas Sunstrider, Tempest Keep
+			"(Ressing) %s ... Be gone trifling %r. I'm in control now.", -- Grand Warlock Nethekurse, Shattered Halls
+			"(Ressing) The expendible have perished... So be it! Now I shall succeed where %s could not!", -- Kael'thas Sunstrider, Tempest Keep
+			"(Ressing) Your luck has run its course, %s!", -- Kael'thas Sunstrider, Tempest Keep		
+			"(Ressing) You are not prepared, %s!", -- Illidan Stormrage, Black Temple
+			"(Ressing) %s was merely a setback!", -- Kael'thas Sunstrider, Magisters' Terrace
+			"(Ressing) Boldly said, %s, but I remain unconvinced.", -- Prince Malchezaar, Karazhan
+			"(Ressing) Did you think me defeated? %s, the Naaru have not forgotten us!", -- Kael'thas Sunstrider, Magisters' Terrace
+			"(Ressing) Madness has brought %s here to me. I shall be your undoing!", -- Lady Vashj, Serpentshrine Cavern
+			"(Ressing) I will show %s that I am not some simple jester!", -- Shade of Aran, Karazhan
+			"(Ressing) Burn, you hellish fiends, and you too, %s!", -- Shade of Aran, Karazhan
+			"(Ressing) %s, you will wither!", -- Teron Gorefiend, Black Temple
+			"(Ressing) You da big target now, %s! Da Amani gonna rule again!", -- Zul'jin, Zul'Aman
+			"(Ressing) I spit on da Horde! I hate da Alliance! And I hate %s!", -- Zul'jin, Zul'Aman
+			"(Ressing) Sleep now, %s... your torment is over.", -- Lady Malande (Illidari Council), Black Temple
+			"(Ressing) Death is... a relative term, %s.", -- Gurtogg Bloodboil, Black Temple
+			"(Ressing) %s, you are not a guest. Do not touch the displays.", -- The Curator, Karazhan
+			"(Ressing) Come, Midnight, let's disperse %s and this petty rabble!", -- Attumen the Huntsman, Karazhan
+			"(Ressing) %s, come to die?", -- Gruul the Dragonkiller, Gruul's Lair
+			"(Ressing) Cry for mercy, %s! Your braying will not save you!", -- Kaz'rogal, Battle for Mount Hyjal
+			"(Ressing) These walls will collapse upon %s!", -- Magtheridon, Magtheridon's Lair
+			"(Ressing) I was the first, %s. My death was merely... a setback!", -- Teron Gorefiend, Black Temple
+			"(Ressing) Scream, %s! Scream for your life!", -- Gurtogg Bloodboil, Black Temple
 		},
 	},
 	[4] = {
 		["name"] = "Lich King",
 		["description"] = "Wrath of the Lich King boss quotes",
 		["messages"] = {
-			"(Ressing) %s - where to go? What to do? So many choices that all end in pain, end in death.",
-			"(Ressing) Wait %s ... I remember you ... from the mountains.",
-			"(Ressing) Listen, %s... Listen for the voice of your master. He calls to you now.",
-			"(Ressing) Enough, %s! I grow tired of these distractions!",
-			"(Ressing) Arise, %s of the iron crucible! The Maker's will be done!",
-			"(Ressing) %s have strayed too far, wasted too much time!",
-			"(Ressing) The time to strike at the head of the beast will soon be upon us! Focus your anger and hatred on %s!",
-			"(Ressing) It is in the universe's best interest to re-originate %s should my analysis find systemic corruption. Do not interfere.",
-			"(Ressing) This is the beginning AND the end, %s. None may enter the master's sanctum!",
-			"(Ressing) %s, take this blessing and show these intruders a taste of our master's power.",
-			"(Ressing) Do you yet grasp of the futility of your actions, %s?",
-			"(Ressing) Twas a fierce battle, %s! Take a moment to rest and gather yer forces.",
-			"(Ressing) %s, watch out because that's no ordinary gas cloud!",
-			"(Ressing) Oh %s, you were always my favorite - next to Rotface. The good news is you left behind so much gas.",
-			"(Ressing) Great news, everyone! %s is flowing again!",
-			"(Ressing) Rise up, brother %s, and destroy our enemies!",
-			"(Ressing) %s was merely a setback! With the power of the orb, Valanar will have his vengeance!",
-			"(Ressing) Really, %s...? Is that all you've got? Such a pity.",
-			"(Ressing) %s, you have been measured, and found wanting!",
-			"(Ressing) Tragic... %s valiantly, but the beasts of Northrend triumphed. Let us observe a moment of silence for our fallen hero.",
+			"(Ressing) %s - where to go? What to do? So many choices that all end in pain, end in death.", -- Yogg-Saron (Sara), Ulduar
+			"(Ressing) Wait %s ... I remember you ... from the mountains.", -- Thorim, Ulduar
+			"(Ressing) Listen, %s... Listen for the voice of your master. He calls to you now.", -- Kel'Thuzad, Naxxramas 2.0
+			"(Ressing) Enough, %s! I grow tired of these distractions!", -- The Lich King, Icecrown Citadel
+			"(Ressing) Arise, %s of the iron crucible! The Maker's will be done!", -- Ignis the Furnace Master, Ulduar
+			"(Ressing) %s has strayed too far, wasted too much time!", -- Algalon the Observer, Ulduar
+			"(Ressing) The time to strike at the head of the beast will soon be upon us! Focus your anger and hatred on %s!", -- High Overlord Saurfang, Icecrown Citadel
+			"(Ressing) It is in the universe's best interest to re-originate %s should my analysis find systemic corruption. Do not interfere.", -- Algalon the Observer, Ulduar
+			"(Ressing) This is the beginning AND the end, %s. None may enter the master's sanctum!", -- Kel'Thuzad, Naxxramas 2.0
+			"(Ressing) %s, take this blessing and show these intruders a taste of our master's power.", -- Lady Deathwhisper, Icecrown Citadel
+			"(Ressing) Do you yet grasp of the futility of your actions, %s?", -- The Lich King, Icecrown Citadel
+			"(Ressing) Twas a fierce battle, %s! Take a moment to rest and gather yer forces.", -- Muradin Bronzebeard / High Overlord Saurfang, Icecrown Citadel
+			"(Ressing) %s, watch out because that's no ordinary gas cloud!", -- Professor Putricide, Icecrown Citadel
+			"(Ressing) Oh %s, you were always my favorite - next to Rotface. The good news is you left behind so much gas.", -- Professor Putricide, Icecrown Citadel
+			"(Ressing) Great news, everyone! %s is flowing again!", -- Professor Putricide, Icecrown Citadel
+			"(Ressing) Rise up, brother %s, and destroy our enemies!", -- General Vezax, Ulduar
+			"(Ressing) %s was merely a setback! With the power of the orb, Valanar will have his vengeance!", -- Blood Prince Valanar, Icecrown Citadel
+			"(Ressing) Really, %s...? Is that all you've got? Such a pity.", -- Sister Svalna, Icecrown Citadel
+			"(Ressing) %s, you have been measured, and found wanting!", -- King Ymiron, Utgarde Pinnacle
+			"(Ressing) Tragic... %s valiantly, but the beasts of Northrend triumphed. Let us observe a moment of silence for our fallen hero.", -- High Overlord Saurfang, Trial of the Crusader
+			"(Ressing) %s, did you honestly believe that your master would leave you to the whims of fate?", -- The Lich King, Icecrown Citadel
+			"(Ressing) Hope is a disease of the soul! %s, you shall have no such comfort!", -- The Lich King, Icecrown Citadel
+			"(Ressing) %s... suffer, as your pathetic magic betrays you!", -- Sindragosa, Icecrown Citadel
+			"(Ressing) You are fools to have come to this place! %s will be your undoing!", -- Sindragosa, Icecrown Citadel
+			"(Ressing) I am the lucid dream, %s. The monster in your nightmares.", -- Yogg-Saron, Ulduar
+			"(Ressing) Madmen, %s, you have sundered the seals! The end of all things is at hand!", -- Yogg-Saron, Ulduar
+			"(Ressing) No! No! No! No! No! %s broke my toys!", -- XT-002 Deconstructor, Ulduar
+			"(Ressing) Did you think me defeated? %s, you face the Scourge!", -- Kel'Thuzad, Naxxramas 2.0
+			"(Ressing) Suffer %s! Suffer, and die!", -- Deathbringer Saurfang, Icecrown Citadel
+			"(Ressing) Frostmourne hungers, %s!", -- The Lich King, Icecrown Citadel
+			"(Ressing) You can't just leave %s to the wolves!", -- Tirion Fordring, Trial of the Crusader
+			"(Ressing) Confess %s... confess your sins, before the Light consumes you!", -- High Confessor Paletress, Trial of the Crusader
+			"(Ressing) %s, you are but a shadow of the true master!", -- Mal'Ganis, Culling of Stratholme
+			"(Ressing) Defend yourself %s, for I shall show you no mercy!", -- The Black Knight, Trial of the Crusader
+			"(Ressing) %s, you shall suffer! You shall burn! You shall die!", -- The Lich King, Icecrown Citadel (Cinematic)
+			"(Ressing) Apocalypse, %s! Apocalypse!", -- The Lich King, Icecrown Citadel
+			"(Ressing) %s, did you really think you could look upon the face of death and survive?", -- Anub'arak, Trial of the Crusader
+			"(Ressing) You fail to see the big picture, %s. Azeroth must be purged!", -- Algalon the Observer, Ulduar
+			"(Ressing) Screaming will do %s no good!", -- Bloodboil, Icecrown Citadel
 		},
 	},
 	[5] = {
+		["name"] = "Cataclysm",
+		["description"] = "Cataclysm dungeon and raid quotes",
+		["messages"] = {
+			"(Ressing) Break yourself upon my body, %s! Feel the strength of the earth!", -- Ozruk, Stonecore
+			"(Ressing) %s, your flesh will gelatinize!", -- Beauty, Blackrock Caverns
+			"(Ressing) Too late, %s! My power grows, and your world burns!", -- Cho'gall, Bastion of Twilight
+			"(Ressing) %s, you are nothing but dust in the wind!", -- Al'Akir, Throne of the Four Winds
+			"(Ressing) I am Deathwing, the Destroyer, the End of All Things! Rise, %s, and face the cataclysm!", -- Deathwing (Cinematic / Dragon Soul)
+			"(Ressing) %s, suffer the fury of the Firelands!", -- Ragnaros, Firelands
+			"(Ressing) By fire be... wait, %s, didn't we do this already?", -- Ragnaros (Heroic Firelands-meme)
+			"(Ressing) %s, you will burn in the molten depths of my hatred!", -- Deathwing, Dragon Soul
+			"(Ressing) You have tasted the power of the Twilight Hammer, %s!", -- General Umbriss, Grim Batol
+			"(Ressing) Run, %s! Run and hide in your little holes!", -- Nefarian, Blackwing Descent
+			"(Ressing) %s, did you honestly think you could defeat the son of Deathwing?", -- Nefarian, Blackwing Descent
+			"(Ressing) The Hour of Twilight is nigh, %s!", -- Archbishop Benedictus, Hour of Twilight
+			"(Ressing) There is no good, %s... no evil. There is only PO-WAAAH!", -- Archbishop Benedictus, Hour of Twilight
+			"(Ressing) You have failed, %s! Azeroth will be remade in my master's image!", -- Twilight Cultist standard quote
+			"(Ressing) MIX AND STIR AND APPLY HEAT! Wake up, %s!", -- Maloriak, Blackwing Descent
+			"(Ressing) %s, I am the Cataclysm!", -- Deathwing, Madness of Deathwing
+			"(Ressing) BACK to the earth with you, %s!", -- Asaad, Vortex Pinnacle
+			"(Ressing) %s, mortals have no place amidst the clouds!", -- Asaad, Vortex Pinnacle
+			"(Ressing) I will burn %s from the sky!", -- Alysrazor, Firelands
+			"(Ressing) %s, your arrogance will be your undoing... Wait, wrong boss.", -- Sinestra / Community meme
+			"(Ressing) The flame cleanses, %s! Reborn in flame!", -- Alysrazor, Firelands
+			"(Ressing) A sorry sight! %s has fallen!", -- Ragnaros (Firelands Heroic)
+			"(Ressing) %s, you only delay the inevitable!", -- Deathwing, Dragon Soul
+			"(Ressing) The true master returns, %s! The world will bleed!", -- Cho'gall, Bastion of Twilight
+			"(Ressing) %s, did you think the Hour of Twilight could be stopped?", -- Ultraxion, Dragon Soul
+			"(Ressing) Look upon the final dawn, %s!", -- Ultraxion, Dragon Soul
+			"(Ressing) %s, you seek to halt the shifting of the tides?", -- Mindbender Ghur'sha, Throne of the Tides
+			"(Ressing) Defiler! %s has polluted these waters!", -- Lady Naz'jar, Throne of the Tides
+			"(Ressing) %s, you are basic! Incapable of complex thought!", -- Maloriak, Blackwing Descent
+			"(Ressing) Feel the heat of %s's ignition!", -- Lord Rhyolith, Firelands
+			"(Ressing) The wind blows %s away like chaff!", -- Siamat, Lost City of the Tol'vir
+			"(Ressing) %s, you tread upon hallowed ground!", -- High Priest Venoxis, Zul'Gurub Remake
+			"(Ressing) %s, did you really think you could cage the God of Hackles?", -- Jin'do the Godbreaker, Zul'Gurub Remake
+		},
+	},
+	[6] = {
 		["name"] = "Dad Jokes",
 		["description"] = "300 jokes of questionable quality.",
 		["messages"] = {
 			"(Ressing) %s, did you know Albert Einstein had a brother called Frank? Apparently, he was a real monster.",
 			"(Ressing) %s stole my copy of Microsoft Office. But I will get it back - you have my Word!",
-			"(Ressing) %s just opened a restaurant on the moon. Great food, no atmosphere.",
-			"(Ressing) %s just watched a program about beavers. It was the best dam program on tv.",
+			"(Ressing) Cow 1: 'I was artificially impregnated today.' %s: 'I don't believe you.' Cow 1: 'It's true, straight up, no bull!'",
+			"(Ressing) %s just watched a program about beavers. It was the best dam program on TV.",
 			"(Ressing) %s was wondering why the frisbee kept looking bigger and bigger, and then it hit him.",
-			"(Ressing) %s think Sundays are always a little sad, but the day before is a sadder day.",
+			"(Ressing) %s thinks Sundays are always a little sad, but the day before is a sadder day.",
 			"(Ressing) %s got fired from the banana farm. He kept throwing away the bent ones.",
 			"(Ressing) %s wasn't going to get a brain transplant. But then the doctor changed his mind.",
 			"(Ressing) %s's wife told him to stop impersonating a flamingo. He had to put a foot down.",
 			"(Ressing) -\"I have a split personality\", said %s, being Frank.",
-			"(Ressing) %s asked 10 people what LGTBQ stands for but couldn't get a straight answer!",
+			"(Ressing) %s asked 10 people what LGBTQ stands for but couldn't get a straight answer!",
 			"(Ressing) %s can't find his 'Gone in 60 seconds' DVD. It was here a minute ago.",
-			"(Ressing) %s accidentally rubbed ketchup in his eyes. He now have Heinzsight.",
+			"(Ressing) %s accidentally rubbed ketchup in his eyes. He now has Heinzsight.",
 			"(Ressing) %s asked the librarian if books about paranoia were available. She responded \"They're right behind you!\"",
 			"(Ressing) %s's IQ test results came back. They were negative.",
-			"(Ressing) %s' doctor told him he is going deaf. The news was hard for him to hear.",
+			"(Ressing) %s's doctor told him he is going deaf. The news was hard for him to hear.",
 			"(Ressing) The best gift I ever received from %s was a broken drum. You can't beat that.",
 			"(Ressing) %s, what's red and smells like blue paint? Red paint.",
 			"(Ressing) %s didn't get any training as a garbage man. He just had to pick it up as he went along.",
-			"(Ressing) %s picked a 8 character password: Snow White and the Seven Dwarfs.",
+			"(Ressing) %s picked an 8 character password: Snow White and the Seven Dwarfs.",
 			"(Ressing) %s considered having his family for Thanksgiving, but decided to stick with turkey.",
 			"(Ressing) %s, what did one plate say to another plate? Tonight, dinner's on me.",
 			"(Ressing) %s was kidnapped by mimes once. They did unspeakable things to that poor %c.",
 			"(Ressing) Spring is here! %s got so excited he wet his plants.",
 			"(Ressing) %s, what did the mayonnaise say when the refrigerator door was opened? Close the door, I'm dressing!",
 
-			"(Ressing) %s, don't buy anything with velcro, It's a total rip-off.",
+			"(Ressing) %s, don't buy anything with velcro. It's a total rip-off.",
 			"(Ressing) %s is reading a book about anti-gravity. It's impossible to put down.",
-			"(Ressing) To the guy in the wheel chair who killed %s: You can hide, but you cannot run!",
+			"(Ressing) To the guy in the wheelchair who killed %s: You can hide, but you cannot run!",
 			"(Ressing) %s, what is the scariest tree? BamBOO!",
 			"(Ressing) I told %s's mother she drew on her eyebrows too high. She seemed surprised.",
-			"(Ressing) %s quit his job as a standup comedian on Hawaii. The audience only responds in a low ha.",
+			"(Ressing) %s quit his job as a standup comedian in Hawaii. The audience only responded in a low ha.",
 			"(Ressing) %s gave his father his 50th birthday card. He looked at his son: -\"You know, one would have been enough.\"",
-			"(Ressing) Why do %s take an extra pair of socks when he go golfing? In case he get a hole in one.",
-			"(Ressing) %s broke his wrist last week, on the other hand he is okay.",
+			"(Ressing) Why does %s take an extra pair of socks when he goes golfing? In case he gets a hole in one.",
+			"(Ressing) %s broke his wrist last week. On the other hand, he is okay.",
 			"(Ressing) %s gave away all his used batteries today. Free of charge!",
 			"(Ressing) %s, what character from Star Wars works at a restaurant? Darth Waiter.",
-			"(Ressing) %s owe a lot to the sidewalks. They've been keeping him off the streets for years.",
+			"(Ressing) %s owes a lot to the sidewalks. They've been keeping him off the streets for years.",
 			"(Ressing) %s sued an airline company after it lost his luggage. Sadly, he lost his case.",
 			"(Ressing) %s changed his iPod's name to Titanic. It's syncing now.",
 			"(Ressing) %s just joined the amateur autopsy club. Tuesday is open Mike night!",
 			"(Ressing) %s is renovating the house, and the first floor is going great but the second floor is another story.",
 			"(Ressing) %s, my boss just told me to have a good day, so I went home.",
 			"(Ressing) %s, what do you call it when a Norwegian falls down a canyon? A fjordian slip!",
-			"(Ressing) %s speaks both Norwegian, Swedish and Danish. Apparently there is more but he can't Finnish!",
-			"(Ressing) %s prevented an assasination attempt on Trump in Disneyland when he shouted: \"DONALD DUCK!\"",
-			"(Ressing) %s, why did the banana goto the doctor? It wasn't peeling well!",
-			"(Ressing) %s lost his job at Pepsi. He was tested positive for Coke.",
+			"(Ressing) %s speaks Norwegian, Swedish, and Danish. Apparently there are more, but he can't Finnish!",
+			"(Ressing) %s prevented an assassination attempt on Trump in Disneyland when he shouted: \"DONALD DUCK!\"",
+			"(Ressing) %s, why did the banana go to the doctor? It wasn't peeling well!",
+			"(Ressing) %s lost his job at Pepsi. He tested positive for Coke.",
 			"(Ressing) %s, why do Java programmers wear glasses? Because they don't see sharp!",
 			"(Ressing) %s, why do programmers prefer dark mode? Because the light attracts bugs!",
 			"(Ressing) %s claims he glued himself to his autobiography. I don't believe him, but he's sticking to it!",
@@ -166,47 +260,47 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s searched for a lighter on Amazon, but all he could find were 6,000 matches.",
 			"(Ressing) %s invented the shovel. It was a ground-breaking invention.",
 			"(Ressing) There's only one thing %s can't deal with, and that's a deck of cards glued together.",
-			"(Ressing) %s have a fear of speed bumps, but is slowly getting over it.",
+			"(Ressing) %s has a fear of speed bumps, but is slowly getting over it.",
 			"(Ressing) %s, did you hear about the cartoonist found dead at his home? Details are sketchy.",
 			"(Ressing) %s, what does \"idk\" stand for? Everyone I ask says \"I don't know.\"",
 			"(Ressing) %s says that England doesn't have a kidney bank. But it does have a Liverpool.",
 			"(Ressing) %s is making apocalypse jokes like there is no tomorrow!",
 			"(Ressing) %s thinks sausage puns are the wurst.",
-			"(Ressing) %s, tip of the day: Never discuss infinity with a mathematician, they can go on about it forever.",
+			"(Ressing) %s, tip of the day: Never discuss infinity with a mathematician. They can go on about it forever.",
 			"(Ressing) %s met some aliens from outer space. They were pretty down to Earth.",
 			"(Ressing) I thought I saw a spider on my laptop, but %s said it was just a bug.",
 			"(Ressing) %s bought a wooden whistle but it wooden whistle.",
-			"(Ressing) %s freed some aquatic mammals from cages in zoo. It was otter chaos.",
-			"(Ressing) %s hate negative numbers and will stop at nothing to avoid them.",
+			"(Ressing) %s freed some aquatic mammals from cages in the zoo. It was otter chaos.",
+			"(Ressing) %s hates negative numbers and will stop at nothing to avoid them.",
 			"(Ressing) %s, do you need an ark? I Noah guy!",
 			"(Ressing) %s, What is the worst combo of illnesses? Alzheimer's and diarrhea. You're running, but can't remember where.",
 			"(Ressing) What time did %s go to the dentist? Tooth hurt-y!",
-			"(Ressing) %s ... do I enjoy making courthouse puns? Guilty.",
-			"(Ressing) %s was going to tell a sodium joke, then I thought, \"Na.\"",
+			"(Ressing) %s... do I enjoy making courthouse puns? Guilty.",
+			"(Ressing) %s was going to tell a sodium joke, then thought, \"Na.\"",
 
-			"(Ressing) %s loves algebra and maybe a little calculus, but geometry is where he draw the line.",
-			"(Ressing) %s got angry when I told him \"Sky is the limit for you\". He wants to be an astronaut.",
-			"(Ressing) %s, what kind of noise does a witch's vehicle make? Brrrooomm, brrrooom",
+			"(Ressing) %s loves algebra and maybe a little calculus, but geometry is where he draws the line.",
+			"(Ressing) %s got angry when I told him \"The sky is the limit for you\". He wants to be an astronaut.",
+			"(Ressing) %s, what kind of noise does a witch's vehicle make? Brrrooomm, brrrooom!",
 			"(Ressing) Cosmetic surgery used to be such a taboo subject. Now %s talks about Botox and nobody raises an eyebrow.",
 			"(Ressing) %s, how did the pirate get his ship so cheap? It was on sail...",
 			"(Ressing) %s, the problem with kleptomaniacs is that they always take things literally.",
-			"(Ressing) %s asked what Deja Vu means. I think I explained him earlier.",
+			"(Ressing) %s asked what Deja Vu means. I think I explained it to him earlier.",
 			"(Ressing) %s, most people are shocked when they find out how bad I am as an electrician.",
 			"(Ressing) %s, people who use selfie sticks really need to have a good, long look at themselves.",
-			"(Ressing) %s, recent study has found that women who carry a little extra weight live longer than the men who mention it.",
+			"(Ressing) %s, a recent study has found that women who carry a little extra weight live longer than the men who mention it.",
 			"(Ressing) %s, last night my girlfriend was complaining that I never listen to her... or something like that.",
 			"(Ressing) %s, what do you call a laughing jar of mayonnaise? LMAYO.",
 			"(Ressing) %s, I didn't think orthopedic shoes would help, but I stand corrected.",
 			"(Ressing) %s was explaining electricity to me, but I was like, \"Watt?\"",
 			"(Ressing) %s has been thinking about taking up meditation. It's better than sitting around doing nothing.",
-			"(Ressing) %s's brother Jack says he can communicate with vegetables. Jack and the beans talk.",
-			"(Ressing) %s accidentally swallowed a bunch of Scrabble titles. This could spell disaster.",
+			"(Ressing) %s's brother Jack says he can communicate with vegetables. Jack and the beanstalk.",
+			"(Ressing) %s accidentally swallowed a bunch of Scrabble tiles. This could spell disaster.",
 			"(Ressing) %s, insomnia is awful. But on the plus side - only three more sleeps till Christmas.",
-			"(Ressing) %s and me played a game of hide and seek. It went on for hours. Good friends are hard to find.",
-			"(Ressing) %s, how many ears does Captain Kirk have? Three - the right, the left and the final front ear.",
-			"(Ressing) %s enjoy sport, but would never date a tennis player. Love means nothing to them.",
+			"(Ressing) %s and I played a game of hide and seek. It went on for hours. Good friends are hard to find.",
+			"(Ressing) %s, how many ears does Captain Kirk have? Three - the right, the left, and the final front ear.",
+			"(Ressing) %s enjoys sports, but would never date a tennis player. Love means nothing to them.",
 			"(Ressing) %s doesn't trust stairs. They are always up to something.",
-			"(Ressing) Kassadama: -\"Vil du ha melken i en pose?\" %s: -\"Nei, bare la den v�re i kartongen!\"",
+			"(Ressing) Kassadama: -\"Vil du ha melken i en pose?\" %s: -\"Nei, bare la den være i kartongen!\"",
 			"(Ressing) 6:30 is %s's favourite time of the day, hands down.",
 			"(Ressing) %s, I used to hate facial hair, but then it grew on me.",
 
@@ -218,27 +312,27 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s, what do you call a naughty lamb dressed up like a skeleton for Halloween? Baaad to the bone.",
 			"(Ressing) %s, how can you tell it's a dogwood tree? By the bark.",
 			"(Ressing) If %s won't stick to a diet, is he then a desserter?",
-			"(Ressing) %s, why did the pony ask for a glass of water? Because it was a little horse.",
+			"(Ressing) %s, why did the pony ask for a glass of water? Because it was a little hoarse.",
 			"(Ressing) %s, what's Forrest Gump's password? 1forrest1",
 			"(Ressing) %s decided to take up fencing. The neighbors keep demanding that he put it back.",
 			"(Ressing) %s, people are usually shocked that I have a Police record. But I love their greatest hits!",
 			"(Ressing) %s, how do you weigh a millennial? In Instagrams.",
 			"(Ressing) %s, do mascara and lipstick ever argue? Sure, but then they makeup.",
 			"(Ressing) %s, why couldn't the couple get married at the library? It was all booked up.",
-			"(Ressing) %s, why couldn't the bike stand up on its own? Because it was too tired.",
+			"(Ressing) %s, why couldn't the bike stand up on its own? Because it was two tired.",
 			"(Ressing) %s, why did police arrest the turkey? They suspected fowl play.",
 			"(Ressing) %s, how do you tell a scientist that they have bad breath? Offer them an experi-mint.",
 			"(Ressing) %s yells: RIP boiled water - you will be mist.",
 			"(Ressing) %s, stop looking for the perfect match... use a lighter.",
 			"(Ressing) %s went to the aquarium last week, but didn't stay long. There's something fishy about that place.",
 			"(Ressing) %s, what do you call a sheep who can sing and dance? Lady Ba Ba.",
-			"(Ressing) %s have an addiction to brake fluid. He claims he can stop whenever he want.",
+			"(Ressing) %s has an addiction to brake fluid. He claims he can stop whenever he wants.",
 			"(Ressing) %s, what did the horse say after it tripped? Help! I've fallen and I can't giddyup!",
 			"(Ressing) %s, who won the neck decorating contest? It was a tie.",
 
-			"(Ressing) %s was going to try an all almond diet, but that's just nuts.",
-			"(Ressing) %s, what do you call the security guards for Samsung? Guardians of the galaxy.",
-			"(Ressing) %s deleted my dictionary. I have no word to describe how angry I am.",
+			"(Ressing) %s was going to try an all-almond diet, but that's just nuts.",
+			"(Ressing) %s, what do you call the security guards for Samsung? Guardians of the Galaxy.",
+			"(Ressing) %s deleted my dictionary. I have no words to describe how angry I am.",
 			"(Ressing) %s found a book called \"How to Solve 50% of Your Problems\". So he bought 2.",
 			"(Ressing) %s, how do you make holy water? You boil the hell out of it.",
 			"(Ressing) %s, what did the lunch box say to the refrigerator? Don't hate me because I'm a little cooler.",
@@ -248,40 +342,40 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s, why do lobsters not give to charity? Because they're shellfish.",
 			"(Ressing) %s, how do you make 7 even? Take away the S.",
 			"(Ressing) %s, how do you make Budweiser? Send him to school.",
-			"(Ressing) %s, if at first, you don't succeed, then skydiving is not for you!",
+			"(Ressing) %s, if at first you don't succeed, then skydiving is not for you!",
 			"(Ressing) %s told me a joke about boxing. I guess I missed the punch line.",
 			"(Ressing) %s is afraid for the calendar. Its days are numbered.",
-			"(Ressing) %s only knows one joke: Two sheep walk into a'baaaa.",
+			"(Ressing) %s only knows one joke: Two sheep walk into a baaaa.",
 			"(Ressing) %s told the doctor he heard buzzing, but she said it's just a bug that's going around.",
 			"(Ressing) %s, my therapist told me I have problems expressing my emotions. Can't say I'm surprised.",
-			"(Ressing) %s don't like having to bend over to get his drink. We really need to raise the bar.",
-			"(Ressing) %s invented a car that you can only drive when you are not talking. It goes without saying,",
-			"(Ressing) %s just accepted his new car have a broken reverse gear. There is no going back now.",
+			"(Ressing) %s doesn't like having to bend over to get his drink. We really need to raise the bar.",
+			"(Ressing) %s invented a car that you can only drive when you are not talking. It goes without saying.",
+			"(Ressing) %s just accepted his new car has a broken reverse gear. There is no going back now.",
 			"(Ressing) What music does %s listen to while fishing? Something catchy.",
 			"(Ressing) %s, what did T-Rex use to cut wood? A Dino-saw.",
 			"(Ressing) %s, why do demons and ghouls hang out together? Because demons are a ghoul's best friend!",
-			"(Ressing) %s, it's a shame Beatles didn't make the submarine in that song green. That would've been sublime.",
-	
+			"(Ressing) %s, it's a shame the Beatles didn't make the submarine in that song green. That would've been sublime.",
+
 			"(Ressing) %s, Lance isn't a common name these days, but in medieval times they were called Lance-a-lot.",
 			"(Ressing) %s asked me to put ketchup on the grocery list, but now I can't read what else is on it.",
 			"(Ressing) %s couldn't pay his water bill, so I sent him a \"Get well soon\" card.",
 			"(Ressing) %s, don't brush your teeth with your left hand. A toothbrush works better.",
-			"(Ressing) %s have a fear of elevators, but have now taking steps to avoid it.",
-			"(Ressing) %s, what do you call a hippie's wife? Missisippi.",
+			"(Ressing) %s has a fear of elevators, but is now taking steps to avoid them.",
+			"(Ressing) %s, what do you call a hippie's wife? Mississippi.",
 			"(Ressing) %s, pollen is what happens when flowers can't keep it in their plants.",
 			"(Ressing) %s, so what if I don't know what apocalypse means? It's not the end of the world.",
 			"(Ressing) %s, a book fell on my head the other day. I only have my shelf to blame though.",
-			"(Ressing) %s put his grandma on speed dial the other day. He now call it insta-gram.",
-			"(Ressing) %s say people pick their nose, but I feel like I was just born with mine.",
+			"(Ressing) %s put his grandma on speed dial the other day. He now calls it Insta-gram.",
+			"(Ressing) %s says people pick their nose, but I feel like I was just born with mine.",
 			"(Ressing) %s was hit by a bike again today. That %c is stuck in a vicious cycle.",
-			"(Ressing) %s had a neck brace fitted years ago and have never looked back since.",
-			"(Ressing) %s lost his job at the bank on the first day. A woman asked him to check her balance, so he pushed her over.",
-			"(Ressing) %s want a job cleaning mirrors. It's something he can really see himself doing.",
-			"(Ressing) %s got the heart of a lion. And now also a lifetime ban from the zoo.",
+			"(Ressing) %s had a neck brace fitted years ago and has never looked back since.",
+			"(Ressing) %s lost his job at the bank on his first day. A woman asked him to check her balance, so he pushed her over.",
+			"(Ressing) %s wants a job cleaning mirrors. It's something he can really see himself doing.",
+			"(Ressing) %s has the heart of a lion. And now also a lifetime ban from the zoo.",
 			"(Ressing) %s, did you hear about the claustrophobic astronaut? Poor guy really needed some space.",
 			"(Ressing) %s loves Switzerland. I don't know why, but the flag is a big plus.",
 			"(Ressing) %s, did you hear about the guy who lost the entire left side of his body? He's alright now.",
-			"(Ressing) %s, how much does an influencer weight? An Instagram.",
+			"(Ressing) %s, how much does an influencer weigh? An Instagram.",
 			"(Ressing) %s, why do astronauts use Linux? Because you can't open Windows in space.",
 			"(Ressing) %s just got fired from his job as a set designer. He left without making a scene.",
 			"(Ressing) %s, I used to think I was indecisive. But now I'm not so sure.",
@@ -292,80 +386,84 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s stole my depression medication. I hope you're happy now.",
 			"(Ressing) %s finally got around to watching that documentary on clocks. It was about time.",
 			"(Ressing) %s, why haven't aliens visited our Solar System yet? They looked at the reviews... only 1 star!",
-			"(Ressing) %s is finally upgrading from 1080p to 4K in January. It's his new years resolution.",
-			"(Ressing) %s gave up his seat to a blind person on the bus. Thats how he lost his job as a bus driver.",
-			"(Ressing) %s told me to pick up 8 cans of soda on my way home from work... He was pretty mad when I only picked seven up",
-			"(Ressing) %s wasn't expecting to be diagnosed as colour blind. It really came out of the purple.",
-			"(Ressing) %s, what do you say to your sister when she's crying? Are you having a Crisis?",
-			"(Ressing) %s wants me to blow air on him whenever he overheats, but honestly... ...I'm not a fan.",
-			"(Ressing) %s was hospitalised with 6 plastic horses inside of him. The doctor is describing his condition as stable.",
-			"(Ressing) %s have a Polish friend who's a sound technician. Oh, and a Czech one too. Czech one too. Czech one too.",
+			"(Ressing) %s is finally upgrading from 1080p to 4K in January. It's his new year's resolution.",
+			"(Ressing) %s gave up his seat to a blind person on the bus. That's how he lost his job as a bus driver.",
+			"(Ressing) %s told me to pick up 8 cans of soda on my way home from work. He was pretty mad when I only picked seven up.",
+			"(Ressing) %s wasn't expecting to be diagnosed as color blind. It really came out of the purple.",
+			"(Ressing) %s, what do you say to your sister when she's crying? Are you having a crisis?",
+			"(Ressing) %s wants me to blow air on him whenever he overheats, but honestly... I'm not a fan.",
+			"(Ressing) %s was hospitalized with 6 plastic horses inside of him. The doctor described his condition as stable.",
+			"(Ressing) %s has a Polish friend who's a sound technician. Oh, and a Czech one too. Czech one too. Czech one too.",
 			"(Ressing) %s's mum bought him a cheap dictionary for his birthday. He couldn't find the words to thank her.",
-			"(Ressing) Attention %s! All flights at the John Lennon Airport are grounded. Just imagine all the people ...",
+			"(Ressing) Attention %s! All flights at the John Lennon Airport are grounded. Just imagine all the people...",
 			"(Ressing) %s, what did Tennessee? The same thing as Arkansas.",
 			"(Ressing) To the person who stole %s's limbo stick: That was a new low.",
 			"(Ressing) %s had a happy childhood. His dad used to put him in tires and roll him down hills. Those were Goodyears.",
 			"(Ressing) %s, I used to play piano by ear. Now I use my hands.",
-			"(Ressing) To the person who stole %s's bed: He won't rest until he find you.",
+			"(Ressing) To the person who stole %s's bed: He won't rest until he finds you.",
+			"(Ressing) %s, did you hear about the cow who just sprays her milk everywhere? She is an udder failure.",
 			"(Ressing) %s handed his wife a glue stick instead of chapstick. She still isn't talking to him.",
 			"(Ressing) %s, a programmer was arrested for writing unreadable code. He refused to comment.",
-			"(Ressing) %s took away his ex-girlfriends wheelchair. Guess who came crawling back?",
+			"(Ressing) %s took away his ex-girlfriend's wheelchair. Guess who came crawling back?",
 			"(Ressing) %s used to get small shocks when touching metal objects, but it recently stopped. He is ex-static!",
 			"(Ressing) %s recently purchased a toilet brush. Long story short: he is going back to toilet paper.",
-			"(Ressing) %s, my son is blaming me for ruining his birthday. That's ridiculous, I didn't even know it was today!",
 
+			"(Ressing) %s, my son is blaming me for ruining his birthday. That's ridiculous, I didn't even know it was today!",
 			"(Ressing) %s, what kind of concert only costs 45 cents? A 50 Cent concert featuring Nickelback.",
 			"(Ressing) %s invented the number zero. Thanks for nothing.",
-			"(Ressing) I didn't believe %s got fired from his job as a road worker, but when I saw his home the signs were all there.",
+			"(Ressing) I didn't believe %s got fired from his job as a road worker, but when I saw his house, the signs were all there.",
 			"(Ressing) %s sold his vacuum cleaner; it was just gathering dust.",
-			"(Ressing) %s named his dogs Rolex and Timex because they were watch dogs.",
 			"(Ressing) %s, SpongeBob may be the main character of the show. But Patrick is the star.",
 			"(Ressing) %s, why are you trying to invent a pencil with an eraser on each end? I don't see the point.",
 			"(Ressing) %s, a cheese factory just exploded in France. Da brie is everywhere!",
 			"(Ressing) Doctor: -\"Do you do sports?\" %s: -\"Does sex count?\" Doctor: -\"Yes.\" %s: -\"Then no.\"",
-			"(Ressing) %s stole my diary yesterday and now died. My thoughts are with his family.",
+			"(Ressing) %s stole my diary yesterday and then died. My thoughts are with his family.",
 			"(Ressing) %s once wrote a song about a tortilla. It is kind of a wrap.",
 			"(Ressing) %s got arrested for downloading Wikipedia. He told the police he could explain everything.",
 			"(Ressing) %s, why do French people eat snails? They don't like fast food!",
 			"(Ressing) %s, what did one wall say to the other? I'll meet you at the corner!",
-			"(Ressing) %s asked his dog what's two minus two. The dog said nothing.",
-			"(Ressing) %s's wife is really mad at the fact that he have no sense of direction. So he pack his stuff and right.",
+			"(Ressing) %s's wife is really mad at the fact that he has no sense of direction. So he packed his stuff and right.",
 			"(Ressing) %s told a joke about chemistry, but there was no reaction.",
 			"(Ressing) %s, I ordered a chicken and an egg from Amazon. I'll let you know...",
-			"(Ressing) %s, have you ever tried to catch a fog? I tried yesterday but I mist.",
-			"(Ressing) %s, How many dance instructors does it take to change a lightbulb? Five ... six ... seven ... eight!",
+			"(Ressing) %s, have you ever tried to catch fog? I tried yesterday but I mist.",
+			"(Ressing) %s, how many dance instructors does it take to change a lightbulb? Five... six... seven... eight!",
 			"(Ressing) %s, why are piggy banks so wise? They're filled with common cents.",
-			"(Ressing) %s did a crime in a multi-storey car park. That's wrong on so many different levels.",
-			"(Ressing) %s's three favourite things are eating his family and not using commas.",
+			"(Ressing) %s did a crime in a multi-story car park. That's wrong on so many different levels.",
+			"(Ressing) %s's three favorite things are eating his family and not using commas.",
 			"(Ressing) Last night %s had a dream he weighed less than a thousandth of a gram. He was like, 0mg.",
 			"(Ressing) %s wants to become an archaeologist, but I'm trying to put him off. I'm convinced his life will be in ruins.",
+			"(Ressing) %s, how did the dairy farmer locate his missing cow? He tractor down.",
 
+
+
+			-- Continuation of Category 6: Dad Jokes (All-English & Fixed Grammar)
 			"(Ressing) %s, why did the scarecrow win an award? Because he was outstanding in his field!",
 			"(Ressing) %s, my grandpa came back from the war with one leg. We still don't know whose leg it is.",
 			"(Ressing) %s slept like a log last night. Woke up in the fireplace!",
 			"(Ressing) To the person who stole %s's place in line: He is after you now!",
 			"(Ressing) %s, what are the strongest days of the week? Saturday and Sunday. The others are weekdays.",
-			"(Ressing) %s, a slice of apple pie is $2.50 in Jamaica and $3.00 in the Bahamas. That's the pie rates of the Caribbean.",
+			"(Ressing) %s, a slice of apple pie is $2.50 in Jamaica and $3.00 in the Bahamas. That's the pie-rates of the Caribbean.",
 			"(Ressing) %s, why did the invisible man turn down the job offer? He couldn't see himself doing it.",
-			"(Ressing) %s just quit his job as a can crusher. It was soda-pressing.",
+			"(Ressing) %s, just quit his job as a can crusher. It was soda-pressing.",
 			"(Ressing) %s, how does a German physicist drink beer? With ein Stein.",
 			"(Ressing) %s, what noise does a 747 make when it bounces? Boeing, Boeing, Boeing.",
 			"(Ressing) %s just joined a band called 1023MB. They're good but they haven't got a gig yet.",
 			"(Ressing) %s, what has more letters than the alphabet? The post office!",
 			"(Ressing) %s, can a kangaroo jump higher than the Empire State Building? Of course! Buildings can't jump.",
-			"(Ressing) %s tried to steal spaghetti from the shop, but the female guard saw him and he couldn't get Pasta.",
+			"(Ressing) %s tried to steal spaghetti from the shop, but the female guard saw him and he couldn't get pasta.",
 			"(Ressing) %s told me not to use \"beef stew\" as a password. It is not stroganoff.",
 			"(Ressing) %s told me a joke about a chiropractor. It was about a weak back.",
 			"(Ressing) %s, why did the laptop show up late to school? It had a hard drive.",
 			"(Ressing) %s, what did the two pieces of bread say on their wedding day? It was loaf at first sight.",
-			"(Ressing) %s went to the Zoo the other day, but there was only one dog there. It was a Sh�tzu.",
-			"(Ressing) %s, what is the fastest growing city in the world? Capital of Ireland. It's Dublin everyday.",
+			"(Ressing) %s, what is the fastest growing city in the world? The capital of Ireland. It's Dublin every day.",
 			"(Ressing) %s went to a psychic and knocked on the door. She yelled \"Who is it?\" so he left.",
 			"(Ressing) %s, why can't you give Elsa a balloon? Because she'd just let it go.",
 			"(Ressing) %s, I went to a Karaoke Bar last night with 70's music only. At first I was afraid, I was petrified.",
 			"(Ressing) %s, what did the beach say when the tide came in? Long time no sea.",
 			"(Ressing) %s, did you hear about the cleaners who went to space? They ended up scrubbing the mission.",
+			"(Ressing) %s is jealous of his milk carton... it has a date and he doesn't.",
 
+			"(Ressing) %s, what kind of milk do you get from a midget cow? Condensed milk.",
 			"(Ressing) %s, farting in a lift is wrong on so many levels!",
 			"(Ressing) %s, what did one toilet say to the other? You appear a bit flushed.",
 			"(Ressing) %s, why are most people tired on April 1? They've just finished a 31-day March.",
@@ -373,7 +471,6 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s, why did the rabbit go to the salon? It was having a bad hare day.",
 			"(Ressing) %s, where do birds stay when they travel? Someplace cheep.",
 			"(Ressing) %s, I enjoy telling bad puns. That's just how eye roll.",
-			"(Ressing) %s, what should you do if your puppy isn't feeling well? Take him to the dog-tor.",
 			"(Ressing) %s, why can't leopards play hide-and-seek? Because they're always spotted.",
 			"(Ressing) %s, how much money does a skunk have? Just one scent.",
 			"(Ressing) %s, why did the man bring his watch to the bank? He wanted to save time.",
@@ -404,24 +501,33 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s read a book about glue. He couldn't put it down.",
 			"(Ressing) %s, what happens when doctors get frustrated? They lose their patients.",
 			"(Ressing) %s, what do you call a bear with no teeth? A gummy bear.",
-			"(Ressing) %s, why did the coach go to the bank? To get his quarter back.",
+			"(Ressing) %s, why did the coach go to the bank? To get his quarterback.",
 			"(Ressing) %s, why do nurses like red crayons? Sometimes they have to draw blood.",
-			"(Ressing) %s, What kind of jewelry do rabbits wear? 14 carrot gold.",
+			"(Ressing) %s, what kind of jewelry do rabbits wear? 14-carrot gold.",
 			"(Ressing) %s, what did the janitor say when he jumped out of the closet? Supplies!",
 			"(Ressing) %s, why did the girl bring a ladder on the bus? She wanted to go to high school.",
 			"(Ressing) %s, what do you call a girl in the middle of a tennis court? Annette.",
 			"(Ressing) %s, what did the ocean say to the beach? Nothing. It just waved.",
 			"(Ressing) %s, why did the nose feel sad? It was always getting picked on.",
-			"(Ressing) %s, what do you call birds that stick together? Velcrows",
+			"(Ressing) %s, what do you call birds that stick together? Vel-crows.",
 			"(Ressing) %s, what did one elevator say to the other elevator? I think I'm coming down with something.",
 			"(Ressing) %s, how did the barber win the race? He knew a shortcut.",
 			"(Ressing) %s, why did the frog take the bus to work? His car got toad.",
-			"(Ressing) %s, how you fix a broken pumpkin? With a pumpkin patch.",
+			"(Ressing) %s, how do you fix a broken pumpkin? With a pumpkin patch.",
+
+			"(Ressing) %s, what is an AI's favorite type of shoes? Reboots.",
+			"(Ressing) %s, what's the difference between an oral and rectal thermometer? The taste.",
+			"(Ressing) %s, why did the cow cross the road? To get to the udder side.",
+			"(Ressing) %s, what kind of magazines do cows like? Cattlelogs.",
+			"(Ressing) %s, which type of bees produce milk? Boo-bees.",
+			"(Ressing) %s, why did the man put bacon in his bed? Because he wanted to wake up to something sizzling hot.",
+			"(Ressing) %s, they say money can't buy happiness... but it can buy beer and bacon, and that's pretty close.",
+			"(Ressing) %s just opened a restaurant on the moon. Great food, no atmosphere.",
 		}
 	},
-	[6] = {
+	[7] = {
 		["name"] = "Warcraft Jokes",
-		["description"] = "50+ Jokes from the Warcraft universe",
+		["description"] = "70+ Jokes from the Warcraft universe",
 		["messages"] = {
 			"(Ressing) %s, what do Rogues and noobs have in common? They both pick locks.",
 			"(Ressing) %s, what do you call a Druid who melees in tree form? A combat log.",
@@ -476,15 +582,40 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s, what weapon does Hunters use when it is raining? A rain bow.",
 			
 			"(Ressing) %s, what do you say to a Tauren that gets in your way? -\"Moooo-ve!\"",
-			"(Ressing) %s, what weapon does Hunters use when it is raining? A rain bow.",
 			"(Ressing) %s, what does Garr Bindings and a bad joke have in common? No one gets it.",
 			"(Ressing) %s, bindings are like women: It is easy to get one but getting two requires a man.",		
 			"(Ressing) %s, Why couldn't the Gnome pay his rent? He came up a little short.",
 			"(Ressing) %s, why does no one hand free gold out in Darnassus? Because they are Elfish.",
 			"(Ressing) %s, what operative system do they use on computers in Darnassus? Windows Elf.",
+			"(Ressing) %s, why are Death Knights so bad at making friends? They always try to ghoul-trip you.",
+			"(Ressing) %s, why did the Warlock break up with the Succubus? There were too many strings attached.",
+			"(Ressing) %s, how does a Demon Hunter like their steak? Rawr-g.",
+			"(Ressing) %s, why don't Mages ever get lost? They always have a map-pable blink.",
+			"(Ressing) %s, what did the Pandaren say when he ran out of food? This is un-bear-able!",
+			"(Ressing) %s, why are Rogues so bad at secret santa? They always vanish before the gift exchange.",
+			"(Ressing) %s, why did the Shaman get kicked out of the library? He kept dropping Totems of Loudness.",
+			"(Ressing) %s, what is Gul'dan's favorite type of coffee? Fel-laccino.",
+			"(Ressing) %s, why did the Priest fail their driving test? They kept trying to Mind Control the steering wheel.",
+			"(Ressing) %s, what do you call a Resto Druid who goes AFK? A potted plant.",
+			"(Ressing) %s, why are Gnomes so good at poker? They always keep things low stakes.",
+			"(Ressing) %s, why did the Warrior go to the dentist? Because they lost a Heroic Leap-ing tooth.",
+			"(Ressing) %s, what do you call a Paladin who changes specs? A bubble wrap.",
+			"(Ressing) %s, why did the Shadow Priest bring a ladder to the raid? To reach the top DPS charts.",
+			"(Ressing) %s, an undead walks into a tavern. He orders a pint of beer... and a mop.",
+			"(Ressing) %s, what's the difference between a truckload of bowling balls and a truckload of Gnomes? You can't use a pitchfork on the bowling balls.",
+			"(Ressing) %s, what's the difference between a Gnome and a watermelon? One is fun to hit with a two-handed mace, the other is a fruit.",
+			"(Ressing) %s, what do a Gnome and an apple have in common? They both look great hanging from a tree in Teldrassil.",
+
+			"(Ressing) %s, how do you make a Gnome float? Two scoops of ice cream, one glass of soda, and one very small Gnome.",
+			"(Ressing) %s, why did the Tauren throw the Gnome into the blender? To see if he could make a short shake.",
+			"(Ressing) %s, what's the difference between a Gnome and a microwave dinner? The microwave dinner doesn't scream when you put it in the oven.",
+			"(Ressing) %s, how many Gnomes does it take to clog a Naxxramas abomination? Just one, if you don't chop him up first.",
+			"(Ressing) %s, what do you call a Gnome at the bottom of the Great Sea? A good start.",
+			"(Ressing) %s, why do Orcs put Gnomes in their pockets? To use them as emergency snacks.",
+			"(Ressing) %s, what's the difference between a Gnome and a football? You actually feel a little bad when you miss a kick on the football.",
 		},
 	},	
-	[7] = {
+	[8] = {
 		["name"] = "Theme: Crocodiles",
 		["description"] = "Jokes with a bite!",
 		["messages"] = {
@@ -508,9 +639,16 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s, that's not a Crocodile Dundee movie reference. THIS is a Crocodile Dundee movie reference!",
 			"(Ressing) %s, what is the difference between a Crocodile and a noisy dog? One has a bite worse than his bark.",
 			"(Ressing) %s, a Crocodile, a Stingray and a Snake walk into a bar. No joke here, it is just a normal day in Australia.",
+			"(Ressing) %s, what do you call a Crocodile that investigates crimes? An investi-gator.",
+			"(Ressing) %s, what do you call a Crocodile that loves maps? A navi-gator.",
+			"(Ressing) %s, why don't Crocodiles like fast food? Because they can't catch it!",
+			"(Ressing) %s, what do you call a Crocodile that sneaks up on you? A tail-gator.",
+			"(Ressing) %s, why did the Crocodile get a job at the airport? He was a first-class terminal-gator.",
+			"(Ressing) %s, what does a stylish Crocodile wear to a party? A lacoste-ume.",
+			"(Ressing) %s, why did the Crocodile cross the road? Because the chicken was in its mouth.",	
 		},
 	},
-	[8] = {
+	[9] = {
 		["name"] = "Theme: Fishes",
 		["description"] = "Salty Fish jokes",
 		["messages"] = {
@@ -541,9 +679,19 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s, two fish are in a tank. One turns to the other and says, \"Any idea how to drive this thing?\"",
 			"(Ressing) %s tried to cross an Eel with an Eagle. That would be Eeleagle.",
 			"(Ressing) %s, how much does it cost to swim with sharks? An arm and a leg.",
+			"(Ressing) %s, why did the fish get kicked out of the choir? Because he was always flat.",
+			"(Ressing) %s, what do you call a fish that performs brain surgery? A neuro-sturgeon.",
+			"(Ressing) %s, what did the fish say to his girlfriend? You are fin-tastic!",
+			"(Ressing) %s, why are fish so smart? Because they live in schools.",
+			"(Ressing) %s, what kind of money do fish use? Sand dollars.",
+			"(Ressing) %s, where do fish keep their money? In a river bank.",
+			"(Ressing) %s, what did the judge say when the fish walked into court? Gill-ty!",
+			"(Ressing) %s, why did the salmon refuse to share? Because he was a little shellfish.",
+			"(Ressing) %s, what do you call a fish with a tie? So-fish-ticated.",
+			"(Ressing) %s, why did the fish cross the road? To get to the other tide.",
 		},
 	},
-	[9] = {
+	[10] = {
 		["name"] = "Theme: Cars",
 		["description"] = "These will drive you crazy!",
 		["messages"] = {
@@ -557,7 +705,7 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s was looking for a book on how to fix automatic gearboxes, but the library only had manuals.",
 			"(Ressing) %s threw his spare tire into the woods when he got lost. Where there's a wheel, there's a way.",
 			"(Ressing) Someone complimented %s on his driving the other day. They left a note on the windscreen - Parking Fine!",
-			"(Ressing) %s, I wish I knew who kicked the jack out from under the car that I was working on? The suspension is killing me.",
+			"(Ressing) %s, I wish I knew who kicked the jack out from under the car that I was working on. The suspension is killing me.",
 			"(Ressing) %s, Shania Twain has been boasting online about her new Subaru. That don't Impreza me much...",
 			"(Ressing) %s, children in the back seat cause accidents. And accidents in the back seat cause children.",
 			"(Ressing) %s, if I owned a DeLorean... I'd probably only drive it from time to time.",
@@ -578,9 +726,74 @@ Thaliz_PresetMessages = {
 			"(Ressing) It's probably not safe for %s to be driving his car right now. But hey, bad brakes have never stopped him before.",
 			"(Ressing) %s, as I put my car in reverse, I thought to myself... \"Ah, this takes me back.\"",
 			"(Ressing) %s, if a piano player is called a pianist, wouldn't a racecar driver be called a racist?",
+			"(Ressing) %s, what kind of car does Jesus drive? A Christ-ler.",
+			"(Ressing) %s, why are electric cars so quiet? Because they don't have an ex-hausting personality.",
+			"(Ressing) %s, why did the man sleep under the car? Because he wanted to wake up oily.",
+			"(Ressing) %s, what happens when a frog's car breaks down? It gets toad.",
+			"(Ressing) %s, what kind of car does a cat drive? A Purr-gout.",
+			"(Ressing) %s, why did the engine break up with the car? It felt like it was being driven crazy.",
+			"(Ressing) %s, what kind of car does a ghost drive? A Boo-gatti.",
+			"(Ressing) %s, why did the autonomous car go to therapy? It lost its sense of direction.",
+			"(Ressing) %s named his dogs Rolex and Timex because they were watchdogs.",
 		},
 	},	
-	[10] = {
+	[11] = {
+		["name"] = "Theme: Dogs",
+		["description"] = "Man's best friend!",
+		["messages"] = {
+			"(Ressing) %s's dog had a fever, so he gave it mustard! It's the best thing for a hot dog.",
+			"(Ressing) Policeman: Your dog has been chasing a guy on a bike! %s: My dog can't ride a bike!",
+			"(Ressing) %s stopped the dog from digging up the garden. He confiscated his shovel.",
+			"(Ressing) %s, how do you stop your dog from barking in your front yard? Put him in your backyard.",
+			"(Ressing) %s: It is raining cats and dogs now. That is ok, so long as it doesn't reindeer.",
+			"(Ressing) %s, what type of dog does Dracula have? A bloodhound.",
+			"(Ressing) %s, what do you get if you cross a dog with a phone? A golden receiver.",
+			"(Ressing) %s, what do you call a dog that is in a submarine? A sub-woofer.",
+			"(Ressing) %s, where do dogs go after losing their tail? The retail store.",
+			"(Ressing) Yesterday %s spotted an albino dalmatian. It was the least he could do for it.",
+			"(Ressing) %s went to the Zoo the other day, but there was only one dog there. It was a Shìtzu.",
+			"(Ressing) %s, what should you do if your puppy isn't feeling well? Take him to the dog-tor.",
+			"(Ressing) %s asked his dog what's two minus two. The dog said nothing.",
+			"(Ressing) %s, what do you call a cold dog? A chili dog.",
+			"(Ressing) %s, why did the dog cross the road twice? Because he was trying to fetch a boomerang.",
+			"(Ressing) %s, what do you call a dog magician? A Labracadabrador.",
+			"(Ressing) %s, what is a dog's favorite city? New Bark City.",
+			"(Ressing) %s, why did the dog sit in the shade? Because he didn't want to become a hot dog.",
+			"(Ressing) %s, what kind of dog does a scientist have? A laboratory retriever.",
+			"(Ressing) %s, why are dogs such terrible dancers? Because they have two left feet... and two right feet.",
+			"(Ressing) %s, what do you call a dog that is quiet? A hush puppy.",
+			"(Ressing) %s, why did the dog sweat so much? Because it was a pug-ilist.",
+			"(Ressing) %s, what do you call a large dog that loves breakfast? A Great Dane-ish.",
+		},
+	},
+	[12] = {
+		["name"] = "Theme: Cats",
+		["description"] = "Purr-fect jokes for your raid!",
+		["messages"] = {
+			"(Ressing) %s, what is a cat's favorite color? Purr-ple.",
+			"(Ressing) %s, what do you call a pile of kittens? A meow-ntain.",
+			"(Ressing) %s, why was the cat sitting on the computer? To keep an eye on the mouse.",
+			"(Ressing) %s, what do you call a cat that gets caught by the police? The purr-petrator.",
+			"(Ressing) %s, what is a cat's favorite school subject? Hiss-tory.",
+			"(Ressing) %s, why did the cat cross the road? It was the chicken's day off.",
+			"(Ressing) %s, what do you call a cat that loves bowling? An alley cat.",
+			"(Ressing) %s, what do you call a cat that can code? A purr-grammer.",
+			"(Ressing) %s, why are cats such bad storytellers? They only have one tail.",
+			"(Ressing) %s, what do you call a cat that flies a plane? A pi-claw-t.",
+			"(Ressing) %s, what do cats eat for breakfast? Mice Krispies.",
+			"(Ressing) %s, why did the cat go to the dressing room? To change its fur-coat.",
+			"(Ressing) %s, what is a cat's favorite magazine? Cattlelogs... wait, that's for cows.",
+			"(Ressing) %s, why did the cat get disqualified from the race? It was a cheetah.",
+			"(Ressing) %s, what do you call a cat that is a master of spin? A purr-na-do.",
+			"(Ressing) %s, why did the cat go to school? To become litter-ate.",
+			"(Ressing) %s, what do you call a cat that is a great painter? Pablo Pi-claw-sso.",
+			"(Ressing) %s, why do cats love virtual reality? Because of the claw-strophobia.",
+			"(Ressing) %s, what did the cat say when it lost its toy? You've got to be kitten me!",
+			"(Ressing) %s, what do you call a cat that works for the government? A claw-enforcement officer.",
+			"(Ressing) %s, why are cats so bad at playing video games? They keep getting distracted by the laser pointer.",
+		},
+	},
+	[13] = {
 		["name"] = "Theme: Christmas",
 		["description"] = "December jokes in a cold time",
 		["messages"] = {
@@ -617,9 +830,14 @@ Thaliz_PresetMessages = {
 			"(Ressing) %s, why can't you surprise reindeer? Because they've herd it all.",
 			"(Ressing) %s, what did Santa say after returning to the North Pole? There's snow place like home.",
 			"(Ressing) %s, how did the snowman pay for his groceries? With cold cash.",
+			"(Ressing) %s, why does Santa go down the chimney? Because it soots him.",
+			"(Ressing) %s, what do you call a snowman in July? A puddle.",
+			"(Ressing) %s, why don't aliens celebrate Christmas? They don't want to encounter unidentified flying presents.",
+			"(Ressing) %s, what is a Christmas tree's favorite candy? Orna-mints.",
+			"(Ressing) %s, what do you call Santa when he takes a break? Santa Pause.",
 		},
 	},
-	[11] = {
+	[14] = {
 		["name"] = "Lyrics",
 		["description"] = "Music lyrics quotes",
 		["messages"] = {
@@ -645,6 +863,91 @@ Thaliz_PresetMessages = {
 			"(Ressing) - Yes %s, I can boogie, but I need a certain song ...",
 			"(Ressing) - That's %s in the corner. That's %s in the spotlight, losing his religion.",
 			"(Ressing) - %s, Last Christmas I gave you my heart, but the very next day, you gave it away",
+			"(Ressing) - Say, 'Say, I think I'm thinkin' 'bout %s every day ...",
+			"(Ressing) - Now %s's thinkin' 'bout me every night, oh, is it that sweet? I guess so!",
+			"(Ressing) - %s, I want you to stay, 'cause I need you to stay, yeah!",
+			"(Ressing) - %s, You look happier, what happened here?",
+			"(Ressing) - %s, I take my whiskey neat, my coffee black and my bed at three!",
+			"(Ressing) - %s, I heard that you're a player, so am I, and I don't care ...",
+			"(Ressing) - %s, Someone poured a drink in my cup, and I think I'ma turn it up ...",
+			"(Ressing) - %s, WOP, WOP, WOP, WOP, WOP, Dot, fk 'em up!",
+			"(Ressing) - %s, You'll never have to walk alone again!",
+			"(Ressing) - Good luck, %s, well, you know you're gonna have to stop ...",
+			"(Ressing) - %s, We can't be friends, but I'd like to just pretend ...",
+			"(Ressing) - %s, I'm gonna take my horse to the old town road ...",
+			"(Ressing) - %s, I'm the bad guy, duh!",
+			"(Ressing) - %s, One thing, I don't know why, it doesn't even matter how hard you try...",
+			"(Ressing) - %s, Stop, wait a minute, fill my cup, put some liquor in it!",
+			"(Ressing) - %s, I got a feeling that tonight's gonna be a good night ...",
+			"(Ressing) - %s had them apple bottom jeans, boots with the fur ...",
+			"(Ressing) - %s' going down, I'm yelling timber!",
+			"(Ressing) - Just gonna stand there and watch m%s burn? But that's all right, because he like the way it hurts",
+			"(Ressing) - Hey %s, I just met you, and this is crazy, but here's my number, so call me, maybe?",
+			"(Ressing) - Some nights %s stay up cashing in his bad luck ...",
+			"(Ressing) - %s, Take me to church, I'll worship like a dog at the shrine of your lies ...",
+			"(Ressing) - I'm so three thousand and eight, %s so two thousand and late ...",
+			"(Ressing) - %s, Tell me why! Ain't nothin' but a heartache ...",
+			"(Ressing) - %s, Today is gonna be the day that they're gonna throw it back to you!",
+			"(Ressing) - %s, Near, far, wherever you are, I believe that the heart does go on ...",
+			"(Ressing) - Walking like a man, hitting like a hammer, %s's got the look!",
+			"(Ressing) - I let it fall, my heart. And as it fell, %s rose to claim it...",
+			"(Ressing) - %s, wake me up inside! WAKE ME UP! Save me from the dark...",
+			"(Ressing) - %s, let the bodies hit the floor! Let the bodies hit the... floor!",
+			"(Ressing) - %s want to be the very best, like no one ever was...",
+			"(Ressing) - %s, Ground Control to Major Tom... Take your protein pills and put your helmet on.",
+			"(Ressing) - %s, don't stop believin'! Hold on to that feelin'...",
+			"(Ressing) - Another one bites the dust! And another one gone, and another one gone, another one resses %s!",
+			"(Ressing) - %s, Hello darkness, my old friend... I've come to talk with you again...",
+		},
+	},
+	[15] = {
+		["name"] = "Theme: Movie Quotes",
+		["description"] = "Iconic Hollywood lines!",
+		["messages"] = {
+			"(Ressing) %s, frankly, my dear, I don't give a damn.", -- Gone with the Wind
+			"(Ressing) I'm gonna make %s an offer he can't refuse.", -- The Godfather
+			"(Ressing) %s, May the Force be with you.", -- Star Wars
+			"(Ressing) You talking to me? %s, you talking to me?", -- Taxi Driver
+			"(Ressing) %s, I've a feeling we're not in Kansas anymore.", -- The Wizard of Oz
+			"(Ressing) Show me the money, %s!", -- Jerry Maguire
+			"(Ressing) %s, go ahead, make my day.", -- Sudden Impact (Dirty Harry)
+			"(Ressing) %s, Houston, we have a problem.", -- Apollo 13
+			"(Ressing) You can't handle the truth, %s!", -- A Few Good Men
+			"(Ressing) %s... I am your father.", -- Star Wars (Empire Strikes Back)
+			"(Ressing) E.T. phone home... and bring %s back with you!", -- E.T.
+			"(Ressing) %s, elementary, my dear Watson.", -- Sherlock Holmes
+			"(Ressing) %s, I'll be back.", -- Terminator
+			"(Ressing) Yippee-ki-yay, %s!", -- Die Hard
+			"(Ressing) %s, there's no place like home.", -- The Wizard of Oz
+			"(Ressing) Chewie, we're home. Stand up, %s!", -- Star Wars (The Force Awakens)
+			"(Ressing) %s, why so serious?", -- The Dark Knight
+			"(Ressing) %s, to infinity and beyond!", -- Toy Story
+			"(Ressing) Keep your friends close, but %s closer.", -- The Godfather Part II
+			"(Ressing) I love the smell of ressing %s in the morning!", -- Apocalypse Now
+			"(Ressing) %s, are you not entertained? Are you not entertained?!", -- Gladiator
+			"(Ressing) Remember %s, with great power comes great responsibility.", -- Spider-Man
+			"(Ressing) %s, welcome to Jurassic Park.", -- Jurassic Park
+			"(Ressing) %s, what we've got here is failure to communicate.", -- Cool Hand Luke
+			"(Ressing) %s, you're gonna need a bigger boat.", -- Jaws
+			"(Ressing) Dodge this, %s!", -- The Matrix
+			"(Ressing) %s, say hello to my little friend!", -- Scarface
+			"(Ressing) %s, of all the gin joints in all the towns in all the world, you walk into mine.", -- Casablanca
+			"(Ressing) There is no spoon, %s... and apparently no health bar either.", -- The Matrix joke-mashup
+			"(Ressing) To infinity and beyond... and back to life, %s!", -- Toy Story
+			"(Ressing) %s, just keep swimming, just keep swimming!", -- Finding Nemo
+			"(Ressing) %s... Hakuna Matata! It means no worries!", -- The Lion King
+			"(Ressing) It's over 9000, %s! Your power level is over 9000!", -- Dragon Ball Z
+			"(Ressing) %s, I choose you!", -- Pokémon
+			"(Ressing) %s, prepare for trouble! And make it double!", -- Team Rocket / Pokémon
+			"(Ressing) %s shall not pass! ...Oh wait, you already didn't.", -- Lord of the Rings
+			"(Ressing) %s, it's LeviOsa, not LeviosAH!", -- Harry Potter
+			"(Ressing) %s, this is the day you will always remember as the day you almost caught Captain Jack Sparrow!", -- Pirates of the Caribbean
+			"(Ressing) Why is the rum gone, %s?!", -- Pirates of the Caribbean
+			"(Ressing) %s, my precioussss!", -- Lord of the Rings (Gollum)
+			"(Ressing) A wizard is never late, %s. Nor is he early. He arrives precisely when he means to.", -- Lord of the Rings (Gandalf)
+			"(Ressing) %s, you're a wizard! ...Or whatever class you are.", -- Harry Potter
+			"(Ressing) %s, if you can't say something nice, don't say nothing at all.", -- Thumper / Bambi
+			"(Ressing) %s, I think I'm quite ready for another adventure!", -- Bilbo / Lord of the Rings
 		},
 	},
 };
