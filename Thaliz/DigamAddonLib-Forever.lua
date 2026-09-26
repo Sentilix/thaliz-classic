@@ -171,6 +171,10 @@ function API.UnitBuff(unitId, index, filter)
         end
     end
 
+    if UnitAffectingCombat("player") then
+        return nil;
+    end;
+
     -- Directly request data by its sequential index within the filtered range
     local aura = C_UnitAuras.GetAuraDataByIndex(unitId, index, foreverFilter)
     if not aura then

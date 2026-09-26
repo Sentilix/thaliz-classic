@@ -910,8 +910,7 @@ function Thaliz.InitializeConfigSettings()
 	Thaliz.UpdateMessageOrderText();
 
 	Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionNextMessage, Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionNextMessage, "1"));
-	Thaliz.ResurrectionNextMessage = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionNextMessage, "1");
-
+	Thaliz.ResurrectionNextMessage = tonumber( Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionNextMessage, "1")) or 1;
 
 	--	Resurrection priorities:
 	--	Validate this is actually a valid structure:
