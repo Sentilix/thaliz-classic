@@ -1667,8 +1667,8 @@ end;
 
 
 function Thaliz.HideResurrectionButton()
+	Thaliz.SetRezButtonTexture(Thaliz.Icon_RezBtn_Passive);
 	if not Thaliz.API.InCombatLockdown() then	
-		Thaliz.SetRezButtonTexture(Thaliz.Icon_RezBtn_Passive);
 		RezButton:SetAttribute("type", nil);
 		RezButton:SetAttribute("unit", nil);
 	end;
@@ -1722,7 +1722,7 @@ function Thaliz.SetRezButtonTexture(textureName, isEnabled)
 
 	textureName = textureName or Thaliz.Icon_RezBtn_Passive;
 
-	if Thaliz.RezButtonLastTexture ~= textureName and not Thaliz.API.InCombatLockdown() then	
+	if Thaliz.RezButtonLastTexture ~= textureName then	
 		Thaliz.RezButtonLastTexture = textureName;
 		RezButton:SetAlpha(alphaValue);
 		RezButton:SetNormalTexture(textureName);		

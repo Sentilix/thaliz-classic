@@ -11,7 +11,7 @@
 
 
 local DIGAM_IsDebugBuild					= false;
-local DIGAM_BuildVersion					= 10.003;
+local DIGAM_BuildVersion					= 10.004;
 
 local DIGAM_COLOR_BEGIN						= "|c80";
 local DIGAM_CHAT_END						= "|r";
@@ -62,7 +62,7 @@ function DigamAddonLib:new(addonSettings)
 
 	--	WoW Forever is 1.60, force expac version to 60:
 	local clientBuildVersion, clientBuildNumber, clientBuildDate, clientInterfaceVersion = GetBuildInfo();
-	local major, minor, build = string.match("1.60.1", "(%d+)%.(%d+)%.(%d+)")
+	local major, minor, build = string.match(clientBuildVersion, "(%d+)%.(%d+)%.(%d+)")
 
 	major = tonumber(major) or 1;
 	minor = tonumber(minor) or 1;

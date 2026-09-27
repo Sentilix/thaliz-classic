@@ -97,6 +97,10 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.6.0b2
+* Fixed game build detection - this also fixed selection of classes in the Priority list.
+* Fixed texture changed on Button: I made some LUA error checks a bit to restrictive!
+
 
 Version 3.6.0b1
 * Added support for World of Warcraft Forever
