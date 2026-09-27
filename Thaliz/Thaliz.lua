@@ -1717,7 +1717,7 @@ end
 function Thaliz.OnGroupRosterUpdate(event, ...)
 	if THALIZ_CURRENT_VERSION > 0 and not THALIZ_UPDATE_MESSAGE_SHOWN then
 		if Thaliz.API.IsInRaid() or Thaliz.lib:isInParty() then
-			Thaliz.lib:sendAddonMessage(string.format("TX_VERCHECK#%s#", lib.addonVersion));
+			Thaliz.lib:sendAddonMessage(string.format("TX_VERCHECK#%s#", Thaliz.lib.addonVersion));
 		end
 	end
 end
@@ -1779,7 +1779,7 @@ end
 	Thaliz:<sender (which is actually the receiver!)>:<version number>
 ]]
 function Thaliz.HandleTXVersion(message, sender)
-	Thaliz.lib:sendAddonMessage("RX_VERSION#".. lib.addonVersion .."#"..sender)
+	Thaliz.lib:sendAddonMessage("RX_VERSION#".. Thaliz.lib.addonVersion .."#"..sender)
 end
 
 function Thaliz.HandleTXResBegin(message, sender)
@@ -1830,7 +1830,7 @@ function Thaliz.HandleThalizMessage(msg, sender)
 		-- with realmname too, even GetUnitName() does not return one:
 		recipient = Thaliz.lib:getFullPlayerName(recipient);
 
-		if recipient ~= lib.localPlayerName then
+		if recipient ~= Thaliz.lib.localPlayerName then
 			return
 		end
 	end
@@ -2389,7 +2389,8 @@ function Thaliz_OnEvent(self, event, ...)
 		local unitCaster, unitTarget, castGUID, spellID = Thaliz.API.On_UNIT_SPELLCAST_SENT(...)
 
 		if unitCaster == "player" and unitTarget and Thaliz.IsResurrectionSpell(spellID) then
-			--	Era: Name is set to the person receiving the heal. Forever: nil ...
+			--	Era: Name is set to the person receiving the heal.
+			--	Forever/Midnight is not setting this.
 			--	Note: unitTarget is "Unknown" when player has released.
 			if unitTarget ~= "Unknown" then
 				unitTarget = Thaliz.lib:getFullPlayerName(unitTarget);
@@ -2405,28 +2406,19 @@ function Thaliz_OnEvent(self, event, ...)
 		end;
 
 	elseif(event == "UNIT_SPELLCAST_START") then
-		 -- This block only runs on Forever/Modern engines.
-		 -- Era is handled by the INCOMING_RESURRECT_CHANGED event.
-		if Thaliz.lib.addonExpansionLevel ~= 60 then
-			return;
-		end
-
 		local unitCaster, castGUID, spellID, castBarID = Thaliz.API.Extract_UNIT_SPELLCAST_START(...);
 		if (unitCaster == "player") and (Thaliz.IsResurrectionSpell(spellID)) then
 			local target = Thaliz.API.Extract_Unit_Target(castGUID);
+			
 			if (target and type(target) == "string") then
 				local unitName = Thaliz.lib:getPlayerAndRealm(target);
-				if not unitName then
-					return;
-				end;
-				
-				-- 2. FOREVER SHORTCUT: Since _CHANGED won't fire for class spells in Forever,
-				-- we run your exact announcement logic right here under START!
-				if Thaliz.IsPlayerBlacklisted(unitName) then
-					Thaliz.lib:echo(string.format("Note: [%s] is already being resurrected.", unitName));
-				else
-					Thaliz.BlacklistPlayer(unitName, Thaliz.BlacklistSpellcastTime);
-					Thaliz.AnnounceResurrection(unitName, "mouseover"); -- Uses active mouseover or unit
+				if unitName then				
+					if Thaliz.IsPlayerBlacklisted(unitName) then
+						Thaliz.lib:echo(string.format("Note: [%s] is already being resurrected.", unitName));
+					else
+						Thaliz.BlacklistPlayer(unitName, Thaliz.BlacklistSpellcastTime);
+						Thaliz.AnnounceResurrection(unitName, "mouseover"); -- Uses active mouseover or unit
+					end;
 				end;
 			end;
 		end
@@ -2438,38 +2430,6 @@ function Thaliz_OnEvent(self, event, ...)
 			if targetInfo and targetInfo.target then
 				local unitName = Thaliz.lib:getPlayerAndRealm(targetInfo.target);				
 				Thaliz.WhitelistPlayer(unitName);
-			end;
-		end;
-
-	elseif (event == "INCOMING_RESURRECT_CHANGED") then
-		--	This is only triggered in Era. Forever and Midnight does not support this event.
-		local unitTarget = Thaliz.API.Extract_INCOMING_RESURRECT_CHANGED(...);
-		local unitName = Thaliz.lib:getPlayerAndRealm(unitTarget);
-
-		if not unitTarget or not unitName then
-			return;
-		end;
-
-		--	Note: Unknown (released) players are not in the SpellcastTargets cache
-		--	so for them the timeDiff is exactly -999:
-		local timeDiff = -999;
-		for k, v in next, SpellcastTargets do
-			if v.target == unitName then
-				timeDiff = timerTick - v.timer;
-				break;
-			end
-		end;
-
-		if (timeDiff < 0.1) and Thaliz.API.UnitIsDeadOrGhost(unitTarget) then
-			if Thaliz.IsPlayerBlacklisted(unitName) then
-				--	If timer is stil -999 then the player did not exist in the cache. It is most likely a released player.
-				--	And because this event is called twice we will automatically call this message if we cancel the spell.
-				if timeDiff ~= -999 then
-					Thaliz.lib:echo(string.format("Note: [%s] is already being resurrected.", unitName));
-				end;
-			else
-				Thaliz.BlacklistPlayer(unitName, Thaliz.BlacklistSpellcastTime);
-				Thaliz.AnnounceResurrection(unitName, unitTarget);
 			end;
 		end;
 
@@ -2496,9 +2456,9 @@ function Thaliz_OnLoad(addonFrame)
 		
 	addonFrame:RegisterEvent("CHAT_MSG_ADDON");
 	addonFrame:RegisterEvent("GROUP_ROSTER_UPDATE");		
-	addonFrame:RegisterEvent("UNIT_SPELLCAST_START");
 	addonFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
 	addonFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
+	addonFrame:RegisterEvent("UNIT_SPELLCAST_START");	
 
 	Thaliz.API.RegisterAddonMessagePrefix(Thaliz.lib.addonPrefix);
 
