@@ -175,13 +175,9 @@ function API.UnitBuff(unitId, index, filter)
         end
     end
 
-    if UnitAffectingCombat("player") then
-        return nil;
-    end;
-
-    -- Directly request data by its sequential index within the filtered range
-    local aura = C_UnitAuras.GetAuraDataByIndex(unitId, index, foreverFilter)
-    if not aura then
+    -- Wrap the API call in a pcall to catch "secret while tainted" errors gracefully
+    local success, aura = pcall(C_UnitAuras.GetAuraDataByIndex, unitId, index, foreverFilter)
+    if not success or not aura then
         return nil
     end
     
