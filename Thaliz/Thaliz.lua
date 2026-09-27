@@ -79,63 +79,63 @@ Thaliz.ClassMatrix = {
 	["DRUID"] = {
 		["class"] = "Druid",
 		["sortorder"] = 10,
-		["priority"] = Thaliz.Configuration_Default_Priority.Druid,
+		["Priority"] = Thaliz.Configuration_Default_Priority.Druid.Priority,
 		["spellid"] = 20747,
 		["color"] = { 255, 125, 10 },
 	},
 	["HUNTER"] = {
 		["class"] = "Hunter",
 		["sortorder"] = 20,
-		["priority"] = Thaliz.Configuration_Default_Priority.Hunter,
+		["Priority"] = Thaliz.Configuration_Default_Priority.Hunter.Priority,
 		["spellid"] = nil,
 		["color"] = { 171, 212, 115 },
 	},
 	["MAGE"] = {
 		["class"] = "Mage",
 		["sortorder"] = 30,
-		["priority"] = Thaliz.Configuration_Default_Priority.Mage,
+		["Priority"] = Thaliz.Configuration_Default_Priority.Mage.Priority,
 		["spellid"] = nil,
 		["color"] = { 105, 204, 240 },
 	},
 	["PALADIN"] = {
 		["class"] = "Paladin",
 		["sortorder"] = 40,
-		["priority"] = Thaliz.Configuration_Default_Priority.Paladin,
+		["Priority"] = Thaliz.Configuration_Default_Priority.Paladin.Priority,
 		["spellid"] = 7328,
 		["color"] = { 245, 140, 186 },
 	},
 	["PRIEST"] = {
 		["class"] = "Priest",
 		["sortorder"] = 50,
-		["priority"] = Thaliz.Configuration_Default_Priority.Priest,
+		["Priority"] = Thaliz.Configuration_Default_Priority.Priest.Priority,
 		["spellid"] = 2006,
 		["color"] = { 255, 255, 255 },
 	},
 	["ROGUE"] = {
 		["class"] = "Rogue",
 		["sortorder"] = 60,
-		["priority"] = Thaliz.Configuration_Default_Priority.Rogue,
+		["Priority"] = Thaliz.Configuration_Default_Priority.Rogue.Priority,
 		["spellid"] = nil,
 		["color"] = { 255, 245, 105 },
 	},
 	["SHAMAN"] = {
 		["class"] = "Shaman",
 		["sortorder"] = 70,
-		["priority"] = Thaliz.Configuration_Default_Priority.Shaman,
+		["Priority"] = Thaliz.Configuration_Default_Priority.Shaman.Priority,
 		["spellid"] = 2008,
 		["color"] = { 0, 112, 221 },
 	},
 	["WARLOCK"] = {
 		["class"] = "Warlock",
 		["sortorder"] = 80,
-		["priority"] = Thaliz.Configuration_Default_Priority.Warlock,
+		["Priority"] = Thaliz.Configuration_Default_Priority.Warlock.Priority,
 		["spellid"] = nil,
 		["color"] = { 148, 130, 201 },
 	},
 	["WARRIOR"] = {
 		["class"] = "Warrior",
 		["sortorder"] = 90,
-		["priority"] = Thaliz.Configuration_Default_Priority.Warrior,
+		["Priority"] = Thaliz.Configuration_Default_Priority.Warrior.Priority,
 		["spellid"] = nil,
 		["color"] = { 199, 156, 110 },
 	},
@@ -144,7 +144,7 @@ Thaliz.ClassMatrix = {
 		["class"] = "Death Knight",
 		["sortorder"] = 5,
 		["expansion"] = 3,
-		["priority"] = Thaliz.Configuration_Default_Priority.DeathKnight,
+		["Priority"] = Thaliz.Configuration_Default_Priority.DeathKnight.Priority,
 		["spellid"] = nil,
 		["color"] = { 196, 30, 58 },
 	},
@@ -153,7 +153,7 @@ Thaliz.ClassMatrix = {
 		["class"] = "Monk",
 		["sortorder"] = 35,
 		["expansion"] = 5,
-		["priority"] = Thaliz.Configuration_Default_Priority.Monk,
+		["Priority"] = Thaliz.Configuration_Default_Priority.Monk.Priority,
 		["spellid"] = 115178,
 		["color"] = { 0, 255, 152 },
 	},
@@ -162,7 +162,7 @@ Thaliz.ClassMatrix = {
 		["class"] = "Demon Hunter",
 		["sortorder"] = 8,
 		["expansion"] = 7,
-		["priority"] = Thaliz.Configuration_Default_Priority.DemonHunter,
+		["Priority"] = Thaliz.Configuration_Default_Priority.DemonHunter.Priority,
 		["spellid"] = nil,
 		["color"] = { 163, 48, 201 },
 	},
@@ -171,7 +171,7 @@ Thaliz.ClassMatrix = {
 		["class"] = "Evoker",
 		["sortorder"] = 15,
 		["expansion"] = 10,
-		["priority"] = Thaliz.Configuration_Default_Priority.Evoker,
+		["Priority"] = Thaliz.Configuration_Default_Priority.Evoker.Priority,
 		["spellid"] = 361227,
 		["color"] = { 51, 147, 127 },
 	},
@@ -180,21 +180,21 @@ Thaliz.ClassMatrix = {
 	["TARGET"] = {
 		["class"] = "Current Target",
 		["sortorder"] = 1010,
-		["priority"] = Thaliz.Configuration_Default_Priority.CurrentTarget,
+		["Priority"] = Thaliz.Configuration_Default_Priority.CurrentTarget.Priority,
 		["spellid"] = nil,
 		["color"] = { 230, 204, 51 },
 	},
 	["MASTER"] = {
 		["class"] = "Master Looter",
 		["sortorder"] = 1020,
-		["priority"] = Thaliz.Configuration_Default_Priority.MasterLooter,
+		["Priority"] = Thaliz.Configuration_Default_Priority.MasterLooter.Priority,
 		["spellid"] = nil,
 		["color"] = { 230, 204, 51 },
 	},
 	["FIRSTLOCK"] = {
 		["class"] = "First Warlock",
 		["sortorder"] = 1030,
-		["priority"] = Thaliz.Configuration_Default_Priority.FirstWarlock,
+		["Priority"] = Thaliz.Configuration_Default_Priority.FirstWarlock.Priority,
 		["spellid"] = nil,
 		["color"] = { 230, 204, 51 },
 	},
@@ -1045,7 +1045,7 @@ function Thaliz.InitializeConfigSettings()
 	local priorities = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionPriority, Thaliz.Configuration_Default_Priority);
 
 	if	not priorities or 
-		not priorities.Druid or not priorities.Druid.Priority or
+		not priorities.Druid or type(priorities.Druid) ~= "table" or not priorities.Druid.Priority or
 		not priorities.Hunter or not priorities.Hunter.Priority or
 		not priorities.Mage or not priorities.Mage.Priority or
 		not priorities.Paladin or not priorities.Paladin.Priority or
@@ -1067,23 +1067,23 @@ function Thaliz.InitializeConfigSettings()
 	end;
 	Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionPriority, priorities);
 
-	Thaliz.ClassMatrix.DRUID.priority		= priorities.Druid.Priority;
-	Thaliz.ClassMatrix.HUNTER.priority		= priorities.Hunter.Priority;
-	Thaliz.ClassMatrix.MAGE.priority		= priorities.Mage.Priority;
-	Thaliz.ClassMatrix.PALADIN.priority		= priorities.Paladin.Priority;
-	Thaliz.ClassMatrix.PRIEST.priority		= priorities.Priest.Priority;
-	Thaliz.ClassMatrix.ROGUE.priority		= priorities.Rogue.Priority;
-	Thaliz.ClassMatrix.SHAMAN.priority		= priorities.Shaman.Priority;
-	Thaliz.ClassMatrix.WARLOCK.priority		= priorities.Warlock.Priority;
-	Thaliz.ClassMatrix.WARRIOR.priority		= priorities.Warrior.Priority;
-	Thaliz.ClassMatrix.DEATHKNIGHT.priority	= priorities.DeathKnight.Priority;
-	Thaliz.ClassMatrix.MONK.priority		= priorities.Monk.Priority;
-	Thaliz.ClassMatrix.DEMONHUNTER.priority	= priorities.DemonHunter.Priority;
-	Thaliz.ClassMatrix.EVOKER.priority		= priorities.Evoker.Priority;
+	Thaliz.ClassMatrix.DRUID.Priority		= priorities.Druid.Priority;
+	Thaliz.ClassMatrix.HUNTER.Priority		= priorities.Hunter.Priority;
+	Thaliz.ClassMatrix.MAGE.Priority		= priorities.Mage.Priority;
+	Thaliz.ClassMatrix.PALADIN.Priority		= priorities.Paladin.Priority;
+	Thaliz.ClassMatrix.PRIEST.Priority		= priorities.Priest.Priority;
+	Thaliz.ClassMatrix.ROGUE.Priority		= priorities.Rogue.Priority;
+	Thaliz.ClassMatrix.SHAMAN.Priority		= priorities.Shaman.Priority;
+	Thaliz.ClassMatrix.WARLOCK.Priority		= priorities.Warlock.Priority;
+	Thaliz.ClassMatrix.WARRIOR.Priority		= priorities.Warrior.Priority;
+	Thaliz.ClassMatrix.DEATHKNIGHT.Priority	= priorities.DeathKnight.Priority;
+	Thaliz.ClassMatrix.MONK.Priority		= priorities.Monk.Priority;
+	Thaliz.ClassMatrix.DEMONHUNTER.Priority	= priorities.DemonHunter.Priority;
+	Thaliz.ClassMatrix.EVOKER.Priority		= priorities.Evoker.Priority;
 
-	Thaliz.ClassMatrix.TARGET.priority		= priorities.CurrentTarget.Priority;
-	Thaliz.ClassMatrix.MASTER.priority		= priorities.MasterLooter.Priority;
-	Thaliz.ClassMatrix.FIRSTLOCK.priority	= priorities.FirstWarlock.Priority;
+	Thaliz.ClassMatrix.TARGET.Priority		= priorities.CurrentTarget.Priority;
+	Thaliz.ClassMatrix.MASTER.Priority		= priorities.MasterLooter.Priority;
+	Thaliz.ClassMatrix.FIRSTLOCK.Priority	= priorities.FirstWarlock.Priority;
 
 
 	local x,y = RezButton:GetPoint();
@@ -1525,9 +1525,9 @@ function Thaliz.ScanRaid()
 
 	local spellnameStr = Thaliz.API.GetSpellName(classinfo["spellid"]);
 
-	local PriorityToCurrentTarget = Thaliz.ClassMatrix.TARGET.priority;			-- Prio over all if target i selected
-	local PriorityToMasterLooter  = Thaliz.ClassMatrix.MASTER.priority;			-- Prio above ressers if master looter
-	local PriorityToFirstWarlock  = Thaliz.ClassMatrix.FIRSTLOCK.priority;		-- Prio below ressers if no warlocks are alive
+	local PriorityToCurrentTarget = Thaliz.ClassMatrix.TARGET.Priority;			-- Prio over all if target i selected
+	local PriorityToMasterLooter  = Thaliz.ClassMatrix.MASTER.Priority;			-- Prio above ressers if master looter
+	local PriorityToFirstWarlock  = Thaliz.ClassMatrix.FIRSTLOCK.Priority;		-- Prio below ressers if no warlocks are alive
 
 
 	--Fetch current assigned target (if any):
@@ -1574,7 +1574,7 @@ function Thaliz.ScanRaid()
 			Thaliz.API.IsSpellInRange(spellnameStr, unitid) 
 		then
 			classinfo = Thaliz.GetClassInfo(Thaliz.lib:unitClass(unitid));
-			targetprio = classinfo["priority"];
+			targetprio = classinfo["Priority"];
 			if Thaliz.lib:getPlayerAndRealm("playertarget") == playername then
 				targetprio = PriorityToCurrentTarget;
 			end
@@ -2071,7 +2071,7 @@ function Thaliz.UpdatePriorityFrameValues()
 	for className, classInfo in next, Thaliz.ClassMatrix do
 		local frame = _G["ThalizPriorityFrame".. className];
 		if frame then
-			frame:SetValue(classInfo.priority);	
+			frame:SetValue(classInfo.Priority);	
 		end;
 	end;
 end;
@@ -2084,27 +2084,27 @@ function ThalizPriorityFrame_OnPriorityChanged(object, className)
 	object:SetValue(value);
 
 	local uClassName = string.upper(className);
-	if value ~= Thaliz.ClassMatrix[uClassName].priority then
-		Thaliz.ClassMatrix[uClassName].priority = value;
+	if value ~= Thaliz.ClassMatrix[uClassName].Priority then
+		Thaliz.ClassMatrix[uClassName].Priority = value;
 
 		local priorities = Thaliz.Configuration_Default_Priority;
-		priorities.Druid.Priority			= Thaliz.ClassMatrix.DRUID.priority;
-		priorities.Hunter.Priority			= Thaliz.ClassMatrix.HUNTER.priority;
-		priorities.Mage.Priority			= Thaliz.ClassMatrix.MAGE.priority;
-		priorities.Paladin.Priority			= Thaliz.ClassMatrix.PALADIN.priority;
-		priorities.Priest.Priority			= Thaliz.ClassMatrix.PRIEST.priority;
-		priorities.Rogue.Priority			= Thaliz.ClassMatrix.ROGUE.priority;
-		priorities.Shaman.Priority			= Thaliz.ClassMatrix.SHAMAN.priority;
-		priorities.Warlock.Priority			= Thaliz.ClassMatrix.WARLOCK.priority;
-		priorities.Warrior.Priority			= Thaliz.ClassMatrix.WARRIOR.priority;
-		priorities.DeathKnight.Priority		= Thaliz.ClassMatrix.DEATHKNIGHT.priority;
-		priorities.Monk.Priority			= Thaliz.ClassMatrix.MONK.priority;
-		priorities.DemonHunter.Priority		= Thaliz.ClassMatrix.DEMONHUNTER.priority;
-		priorities.Evoker.Priority			= Thaliz.ClassMatrix.EVOKER.priority;
+		priorities.Druid.Priority			= Thaliz.ClassMatrix.DRUID.Priority;
+		priorities.Hunter.Priority			= Thaliz.ClassMatrix.HUNTER.Priority;
+		priorities.Mage.Priority			= Thaliz.ClassMatrix.MAGE.Priority;
+		priorities.Paladin.Priority			= Thaliz.ClassMatrix.PALADIN.Priority;
+		priorities.Priest.Priority			= Thaliz.ClassMatrix.PRIEST.Priority;
+		priorities.Rogue.Priority			= Thaliz.ClassMatrix.ROGUE.Priority;
+		priorities.Shaman.Priority			= Thaliz.ClassMatrix.SHAMAN.Priority;
+		priorities.Warlock.Priority			= Thaliz.ClassMatrix.WARLOCK.Priority;
+		priorities.Warrior.Priority			= Thaliz.ClassMatrix.WARRIOR.Priority;
+		priorities.DeathKnight.Priority		= Thaliz.ClassMatrix.DEATHKNIGHT.Priority;
+		priorities.Monk.Priority			= Thaliz.ClassMatrix.MONK.Priority;
+		priorities.DemonHunter.Priority		= Thaliz.ClassMatrix.DEMONHUNTER.Priority;
+		priorities.Evoker.Priority			= Thaliz.ClassMatrix.EVOKER.Priority;
 		
-		priorities.CurrentTarget.Priority	= Thaliz.ClassMatrix.TARGET.priority;
-		priorities.MasterLooter.Priority	= Thaliz.ClassMatrix.MASTER.priority;
-		priorities.FirstWarlock.Priority	= Thaliz.ClassMatrix.FIRSTLOCK.priority;
+		priorities.CurrentTarget.Priority	= Thaliz.ClassMatrix.TARGET.Priority;
+		priorities.MasterLooter.Priority	= Thaliz.ClassMatrix.MASTER.Priority;
+		priorities.FirstWarlock.Priority	= Thaliz.ClassMatrix.FIRSTLOCK.Priority;
 
 		Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionPriority, priorities);
 	end;

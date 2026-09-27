@@ -98,10 +98,10 @@ RIP Thaliz.
 Thaliz Versions
 ---------------
 
-Version 3.6.0
+Version 3.6.0b1
 * Added support for World of Warcraft Forever
 * Removed SAY and YELL: they are no longer supported by the Blizzard API.
-* Re-grouped and added new macro categories + more bad jokes
+* Re-grouped and added new macro categories + more bad jokes: more than 800 messages.
 
 
 Version 3.5.2
