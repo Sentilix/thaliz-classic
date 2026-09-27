@@ -5,7 +5,6 @@
 ## Interface: 16001
 ## IconTexture: Interface\Icons\Spell_holy_resurrection
 ## SavedVariables: Thaliz_Options
-## X-Expansion-Level: 60
 ## X-Curse-Project-ID: 346116
 ## X-WoWI-ID: 25437
 ## X-Wago-ID: ZQ6aoqGW

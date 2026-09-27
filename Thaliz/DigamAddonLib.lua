@@ -11,7 +11,7 @@
 
 
 local DIGAM_IsDebugBuild					= false;
-local DIGAM_BuildVersion					= 10.002;
+local DIGAM_BuildVersion					= 10.003;
 
 local DIGAM_COLOR_BEGIN						= "|c80";
 local DIGAM_CHAT_END						= "|r";
@@ -60,13 +60,27 @@ function DigamAddonLib:new(addonSettings)
 	local _addonPrefix = addonSettings["PREFIX"] or _addonShortName;
 	local _addonVersion = self.API.GetAddOnMetadata(_addonName, "Version") or 0;
 
+	--	WoW Forever is 1.60, force expac version to 60:
+	local clientBuildVersion, clientBuildNumber, clientBuildDate, clientInterfaceVersion = GetBuildInfo();
+	local major, minor, build = string.match("1.60.1", "(%d+)%.(%d+)%.(%d+)")
+
+	major = tonumber(major) or 1;
+	minor = tonumber(minor) or 1;
+
+	if major == 1 and minor == 60 then
+		--	forever: vi swapper major og minor:
+		local temp = major;
+		major = minor;
+		minor = major;
+	end;
+
 	local parent = {
 		addonName = _addonName,
 		addonShortName = _addonShortName,
 		addonPrefix = _addonPrefix,
 		addonVersion = _addonVersion,
 		addonAuthor = self.API.GetAddOnMetadata(_addonName, "Author") or "",
-		addonExpansionLevel = tonumber(self.API.GetAddOnMetadata(_addonName, "X-Expansion-Level")),
+		addonExpansionLevel = major,
 
 		localPlayerName = self:getPlayerAndRealm("player"),
 		localPlayerClass = self:getUnitClass("player"),
@@ -97,7 +111,6 @@ function DigamAddonLib:initialize()
 
 	self.API.RegisterAddonMessagePrefix(self.addonPrefix);
 end;
-
 
 
 --

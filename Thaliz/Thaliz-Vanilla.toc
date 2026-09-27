@@ -1,11 +1,10 @@
-## Title: Thaliz - One-button resurrection (Classic Progression)
+## Title: Thaliz - One-button resurrection (Classic Era)
 ## Notes: Smart addon to handle ressing party / raid members
 ## Version: 3.6.0b1
 ## Author: Mimma @ <EU-Pyrewood Village>
-## Interface: 50504
+## Interface: 11509
 ## IconTexture: Interface\Icons\Spell_holy_resurrection
 ## SavedVariables: Thaliz_Options
-## X-Expansion-Level: 5
 ## X-Curse-Project-ID: 346116
 ## X-WoWI-ID: 25437
 ## X-Wago-ID: ZQ6aoqGW

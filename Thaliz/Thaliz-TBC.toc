@@ -1,16 +1,15 @@
-## Title: Thaliz - One-button resurrection (Modern WoW)
+## Title: Thaliz - One-button resurrection (TBC Anniversary)
 ## Notes: Smart addon to handle ressing party / raid members
 ## Version: 3.6.0b1
 ## Author: Mimma @ <EU-Pyrewood Village>
-## Interface: 120100
+## Interface: 20506
 ## IconTexture: Interface\Icons\Spell_holy_resurrection
 ## SavedVariables: Thaliz_Options
-## X-Expansion-Level: 60
 ## X-Curse-Project-ID: 346116
 ## X-WoWI-ID: 25437
 ## X-Wago-ID: ZQ6aoqGW
 
 DigamAddonLib.lua
-DigamAddonLib-Forever.lua
+DigamAddonLib-Era.lua
 ThalizPresets.lua
 Thaliz.xml

@@ -14,6 +14,10 @@ function API.GetAddOnMetadata(addonName, keyName)
     return C_AddOns.GetAddOnMetadata(addonName, keyName);
 end;
 
+function API.GetBuildInfo()
+    return GetBuildInfo();
+end;
+
 function API.GetGuildInfo(unitid)
     return GetGuildInfo(unitid);
 end;

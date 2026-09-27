@@ -44,84 +44,160 @@ local EMOTE_GROUP_CHARACTER					= "Name";
 local EMOTE_GROUP_CLASS						= "Class";
 local EMOTE_GROUP_RACE						= "Race";
 
+
+
+Thaliz.Configuration_Default_Priority = {
+	["Druid"]			= { ["Priority"] = 50 },
+	["Hunter"]			= { ["Priority"] = 40 },
+	["Mage"]			= { ["Priority"] = 50 },
+	["Paladin"]			= { ["Priority"] = 80 },
+	["Priest"]			= { ["Priority"] = 80 },
+	["Rogue"]			= { ["Priority"] = 20 },
+	["Shaman"]			= { ["Priority"] = 80 },
+	["Warlock"]			= { ["Priority"] = 40 },
+	["Warrior"]			= { ["Priority"] = 30 },
+	["DeathKnight"]		= { ["Priority"] = 30 },
+	["Monk"]			= { ["Priority"] = 80 },
+	["DemonHunter"]		= { ["Priority"] = 30 },
+	["Evoker"]			= { ["Priority"] = 80 },
+
+	["CurrentTarget"]	= { ["Priority"] = 100 },
+	["MasterLooter"]	= { ["Priority"] = 70 },
+	["FirstWarlock"]	= { ["Priority"] = 60 },
+}
+
+--	Druids can ress in WotLK and Forever, so set to same as other ressers:
+if Thaliz.lib.addonExpansionLevel >= 3 then
+	Thaliz.Configuration_Default_Priority.Druid.Priority = Thaliz.Configuration_Default_Priority.Priest.Priority;
+end;
+
+
 --	List of valid class names with priority and resurrection spell name (if any)
 --	classname, priority, spellname (translated runtime), spellID
 
 Thaliz.ClassMatrix = {
 	["DRUID"] = {
 		["class"] = "Druid",
-		["priority"] = 40,
+		["sortorder"] = 10,
+		["priority"] = Thaliz.Configuration_Default_Priority.Druid,
 		["spellid"] = 20747,
 		["color"] = { 255, 125, 10 },
 	},
 	["HUNTER"] = {
 		["class"] = "Hunter",
-		["priority"] = 30,
+		["sortorder"] = 20,
+		["priority"] = Thaliz.Configuration_Default_Priority.Hunter,
 		["spellid"] = nil,
 		["color"] = { 171, 212, 115 },
 	},
 	["MAGE"] = {
 		["class"] = "Mage",
-		["priority"] = 40,
+		["sortorder"] = 30,
+		["priority"] = Thaliz.Configuration_Default_Priority.Mage,
 		["spellid"] = nil,
 		["color"] = { 105, 204, 240 },
 	},
 	["PALADIN"] = {
 		["class"] = "Paladin",
-		["priority"] = 50,
+		["sortorder"] = 40,
+		["priority"] = Thaliz.Configuration_Default_Priority.Paladin,
 		["spellid"] = 7328,
 		["color"] = { 245, 140, 186 },
 	},
 	["PRIEST"] = {
 		["class"] = "Priest",
-		["priority"] = 50,
+		["sortorder"] = 50,
+		["priority"] = Thaliz.Configuration_Default_Priority.Priest,
 		["spellid"] = 2006,
 		["color"] = { 255, 255, 255 },
 	},
 	["ROGUE"] = {
 		["class"] = "Rogue",
-		["priority"] = 10,
+		["sortorder"] = 60,
+		["priority"] = Thaliz.Configuration_Default_Priority.Rogue,
 		["spellid"] = nil,
 		["color"] = { 255, 245, 105 },
 	},
 	["SHAMAN"] = {
 		["class"] = "Shaman",
-		["priority"] = 50,
+		["sortorder"] = 70,
+		["priority"] = Thaliz.Configuration_Default_Priority.Shaman,
 		["spellid"] = 2008,
 		["color"] = { 0, 112, 221 },
 	},
 	["WARLOCK"] = {
 		["class"] = "Warlock",
-		["priority"] = 30,
+		["sortorder"] = 80,
+		["priority"] = Thaliz.Configuration_Default_Priority.Warlock,
 		["spellid"] = nil,
 		["color"] = { 148, 130, 201 },
 	},
 	["WARRIOR"] = {
 		["class"] = "Warrior",
-		["priority"] = 20,
+		["sortorder"] = 90,
+		["priority"] = Thaliz.Configuration_Default_Priority.Warrior,
 		["spellid"] = nil,
 		["color"] = { 199, 156, 110 },
 	},
+	--	Wrath of the Lich King - expac 3: 
+	["DEATHKNIGHT"] = {
+		["class"] = "Death Knight",
+		["sortorder"] = 5,
+		["expansion"] = 3,
+		["priority"] = Thaliz.Configuration_Default_Priority.DeathKnight,
+		["spellid"] = nil,
+		["color"] = { 196, 30, 58 },
+	},
+	--	Mists of Pandaria - expac 5: 
+	["MONK"] = {
+		["class"] = "Monk",
+		["sortorder"] = 35,
+		["expansion"] = 5,
+		["priority"] = Thaliz.Configuration_Default_Priority.Monk,
+		["spellid"] = 115178,
+		["color"] = { 0, 255, 152 },
+	},
+	--	Legion - expac 7: 
+	["DEMONHUNTER"] = {
+		["class"] = "Demon Hunter",
+		["sortorder"] = 8,
+		["expansion"] = 7,
+		["priority"] = Thaliz.Configuration_Default_Priority.DemonHunter,
+		["spellid"] = nil,
+		["color"] = { 163, 48, 201 },
+	},
+	--	Dragonflight - expac 10
+	["EVOKER"] = {
+		["class"] = "Evoker",
+		["sortorder"] = 15,
+		["expansion"] = 10,
+		["priority"] = Thaliz.Configuration_Default_Priority.Evoker,
+		["spellid"] = 361227,
+		["color"] = { 51, 147, 127 },
+	},
+
 	--	Non-playable classes:
 	["TARGET"] = {
 		["class"] = "Current Target",
-		["priority"] = 100,
+		["sortorder"] = 1010,
+		["priority"] = Thaliz.Configuration_Default_Priority.CurrentTarget,
 		["spellid"] = nil,
-		["color"] = { 0, 0, 0 },
+		["color"] = { 230, 204, 51 },
 	},
 	["MASTER"] = {
 		["class"] = "Master Looter",
-		["priority"] = 60,
+		["sortorder"] = 1020,
+		["priority"] = Thaliz.Configuration_Default_Priority.MasterLooter,
 		["spellid"] = nil,
-		["color"] = { 0, 0, 0 },
+		["color"] = { 230, 204, 51 },
 	},
 	["FIRSTLOCK"] = {
 		["class"] = "First Warlock",
-		["priority"] = 45,
+		["sortorder"] = 1030,
+		["priority"] = Thaliz.Configuration_Default_Priority.FirstWarlock,
 		["spellid"] = nil,
-		["color"] = { 0, 0, 0 },
+		["color"] = { 230, 204, 51 },
 	},
-
 }
 
 
@@ -213,25 +289,6 @@ Thaliz.OPTION_RezButtonVisible					= "ResurrectionButtonVisible";
 
 Thaliz.OPTION_ResurrectionPriority				= "ResurrectionPriority";
 
-local druidResPrio = 40;
-if Thaliz.lib.addonExpansionLevel == 60 then
-	druidResPrio = 60;
-end;
-
-Thaliz.Configuration_Default_Priority = {
-	["Druid"]			= { ["Priority"] = druidResPrio },
-	["Hunter"]			= { ["Priority"] = 30 },
-	["Mage"]			= { ["Priority"] = 40 },
-	["Paladin"]			= { ["Priority"] = 60 },
-	["Priest"]			= { ["Priority"] = 60 },
-	["Rogue"]			= { ["Priority"] = 10 },
-	["Shaman"]			= { ["Priority"] = 60 },
-	["Warlock"]			= { ["Priority"] = 30 },
-	["Warrior"]			= { ["Priority"] = 20 },
-	["CurrentTarget"]	= { ["Priority"] = 100 },
-	["MasterLooter"]	= { ["Priority"] = 50 },
-	["FirstWarlock"]	= { ["Priority"] = 50 },
-}
 
 Thaliz.DebugFunction = nil;
 
@@ -543,18 +600,26 @@ function Thaliz.RefreshVisibleMessageList(offset)
 				prio = 122
 			elseif prm == "Zandalari Troll" then
 				prio = 123
-			-- Forever:
-			elseif prm == "Skyborne" then
+			elseif prm == "Dracthyr" then
 				prio = 124
+			elseif prm == "Earthen" then
+				prio = 125
+			elseif prm == "Haranir" then
+				prio = 126
+			elseif prm == "Skyborne" then
+				prio = 127
 			end;			
 		elseif grp == EMOTE_GROUP_CLASS then
 			-- Class names are listed alphabetically:
 			prio = 200
+
 			if prm == "Death Knight" then
-				prio = 212
+				prio = 213
 			elseif prm == "Demon Hunter" then
-				prio = 211
+				prio = 212
 			elseif prm == "Druid" then
+				prio = 211
+			elseif prm == "Evoker" then
 				prio = 210
 			elseif prm == "Hunter" then
 				prio = 209
@@ -656,6 +721,69 @@ function Thaliz.InitializeListElements()
 		entry:SetID(n);
 		entry:SetPoint("TOP", "$parentEntry"..(n-1), "BOTTOM");
 	end
+
+	local XOffset = 130;
+	local YOffset = -40;
+	local YAdd = -30;
+	local XPos = XOffset;
+	local YPos = YOffset;
+
+	--	Current expansion level.
+	--	Note that Foreve (60) acts like Classic here.
+	local expLevel = Thaliz.lib.addonExpansionLevel;
+	if expLevel == 60 then
+		expLevel = 1;
+	end;
+
+	local sortedMatrix = {}
+	for classKey, classInfo in pairs(Thaliz.ClassMatrix) do
+		if expLevel >= (classInfo.expansion or 1) then
+			classInfo.keyname = classKey
+			table.insert(sortedMatrix, classInfo)
+		end
+	end
+
+	table.sort(sortedMatrix, function(a, b)
+		return a.sortorder < b.sortorder
+	end)	
+	
+	for i, classInfo in ipairs(sortedMatrix) do	
+		local className = classInfo.keyname;
+
+		-- 1. Create the Slider:
+		local sliderName = "ThalizPriorityFrame" .. className;
+		local slider = CreateFrame("Slider", sliderName, ThalizPriorityFrame, "UISliderTemplate");
+		slider:SetSize(250, 20);
+		slider:EnableMouse(true);
+		slider:SetMinMaxValues(0, 100);
+		slider:SetValueStep(5);
+		slider:SetObeyStepOnDrag(true); -- Ensures smooth snapping to intervals of 5	
+		slider:SetPoint("TOPLEFT", ThalizPriorityFrame, "TOPLEFT", XPos, YPos)
+		
+		slider:SetScript("OnValueChanged", function(self, value, isUserInput)
+			if ThalizPriorityFrame_OnPriorityChanged then
+				ThalizPriorityFrame_OnPriorityChanged(self, className)
+			end
+		end)
+		
+		-- 2. Create the Left side label: Class name
+		local caption = slider:CreateFontString(sliderName .. "Caption", "ARTWORK", "GameFontNormal")
+		caption:SetPoint("LEFT", slider, "LEFT", -100, 0)
+		caption:SetText(classInfo.class)
+		caption:SetTextColor(classInfo.color[1]/255, classInfo.color[2]/255, classInfo.color[3]/255, 1.0)
+
+		-- 3. Create the right side label: Percent
+		local percent = slider:CreateFontString(sliderName .. "Percent", "ARTWORK", "GameFontNormal")
+		percent:SetPoint("LEFT", slider, "LEFT", 256, 0)
+		percent:SetText("0%")
+		percent:SetTextColor(0.9, 0.8, 0.2, 1.0)
+
+		YPos = YPos + YAdd;
+	end;
+
+	-- Room for Close button:
+	ThalizPriorityFrame:SetHeight(abs(YPos) + 50)
+
 end
 
 local currentObjectId;	-- A small hack: the object ID is lost when using own frame
@@ -926,6 +1054,11 @@ function Thaliz.InitializeConfigSettings()
 		not priorities.Shaman or not priorities.Shaman.Priority or
 		not priorities.Warlock or not priorities.Warlock.Priority or
 		not priorities.Warrior or not priorities.Warrior.Priority or
+		not priorities.DeathKnight or not priorities.DeathKnight.Priority or
+		not priorities.Monk or not priorities.Monk.Priority or
+		not priorities.DemonHunter or not priorities.DemonHunter.Priority or
+		not priorities.Evoker or not priorities.Evoker.Priority or
+
 		not priorities.CurrentTarget or not priorities.CurrentTarget.Priority or
 		not priorities.MasterLooter or not priorities.MasterLooter.Priority or
 		not priorities.FirstWarlock or not priorities.FirstWarlock.Priority then
@@ -934,18 +1067,23 @@ function Thaliz.InitializeConfigSettings()
 	end;
 	Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionPriority, priorities);
 
-	Thaliz.ClassMatrix.DRUID.priority	= priorities.Druid.Priority;
-	Thaliz.ClassMatrix.HUNTER.priority	= priorities.Hunter.Priority;
-	Thaliz.ClassMatrix.MAGE.priority	= priorities.Mage.Priority;
-	Thaliz.ClassMatrix.PALADIN.priority= priorities.Paladin.Priority;
-	Thaliz.ClassMatrix.PRIEST.priority	= priorities.Priest.Priority;
-	Thaliz.ClassMatrix.ROGUE.priority	= priorities.Rogue.Priority;
-	Thaliz.ClassMatrix.SHAMAN.priority	= priorities.Shaman.Priority;
-	Thaliz.ClassMatrix.WARLOCK.priority= priorities.Warlock.Priority;
-	Thaliz.ClassMatrix.WARRIOR.priority= priorities.Warrior.Priority;
-	Thaliz.ClassMatrix.TARGET.priority	= priorities.CurrentTarget.Priority;
-	Thaliz.ClassMatrix.MASTER.priority	= priorities.MasterLooter.Priority;
-	Thaliz.ClassMatrix.FIRSTLOCK.priority= priorities.FirstWarlock.Priority;
+	Thaliz.ClassMatrix.DRUID.priority		= priorities.Druid.Priority;
+	Thaliz.ClassMatrix.HUNTER.priority		= priorities.Hunter.Priority;
+	Thaliz.ClassMatrix.MAGE.priority		= priorities.Mage.Priority;
+	Thaliz.ClassMatrix.PALADIN.priority		= priorities.Paladin.Priority;
+	Thaliz.ClassMatrix.PRIEST.priority		= priorities.Priest.Priority;
+	Thaliz.ClassMatrix.ROGUE.priority		= priorities.Rogue.Priority;
+	Thaliz.ClassMatrix.SHAMAN.priority		= priorities.Shaman.Priority;
+	Thaliz.ClassMatrix.WARLOCK.priority		= priorities.Warlock.Priority;
+	Thaliz.ClassMatrix.WARRIOR.priority		= priorities.Warrior.Priority;
+	Thaliz.ClassMatrix.DEATHKNIGHT.priority	= priorities.DeathKnight.Priority;
+	Thaliz.ClassMatrix.MONK.priority		= priorities.Monk.Priority;
+	Thaliz.ClassMatrix.DEMONHUNTER.priority	= priorities.DemonHunter.Priority;
+	Thaliz.ClassMatrix.EVOKER.priority		= priorities.Evoker.Priority;
+
+	Thaliz.ClassMatrix.TARGET.priority		= priorities.CurrentTarget.Priority;
+	Thaliz.ClassMatrix.MASTER.priority		= priorities.MasterLooter.Priority;
+	Thaliz.ClassMatrix.FIRSTLOCK.priority	= priorities.FirstWarlock.Priority;
 
 
 	local x,y = RezButton:GetPoint();
@@ -1872,34 +2010,6 @@ function Thaliz.IsResurrectionSpell(spellId)
 end;
 
 
---[[
-	Return # of seconds left of blacklist timer, nil if not blacklisted
---]]
---function Thaliz.IsPlayerBlacklisted(playername)
---
---	for b=1, #blacklistedTable, 1 do
---		local blacklistInfo = blacklistedTable[b];
---		if blacklistInfo[1] == playername then
---			return (blacklistInfo[2] - Thaliz.TimerTick);
---		end
---	end
---	return nil;
---end;
-
-
---Thaliz.CurrentRessedTarget = nil;
---function Thaliz.ClearCurrentResurrectedTarget()
---	Thaliz.SetCurrentResurrectedTarget(nil);
---end;
---
---function Thaliz.GetCurrentResurrectedTarget()
---	return CurrentRessedTarget;
---end;
---
---function Thaliz.SetCurrentResurrectedTarget(target)
---	CurrentRessedTarget = target;
---end;
-
 
 --[[
 	UI events
@@ -1958,22 +2068,13 @@ function Thaliz_PriorityButton_OnClick()
 end;
 
 function Thaliz.UpdatePriorityFrameValues()
-	ThalizPriorityFrameDruid:SetValue(Thaliz.ClassMatrix.DRUID.priority);
-	ThalizPriorityFrameHunter:SetValue(Thaliz.ClassMatrix.HUNTER.priority);
-	ThalizPriorityFrameMage:SetValue(Thaliz.ClassMatrix.MAGE.priority);
-	ThalizPriorityFramePaladin:SetValue(Thaliz.ClassMatrix.PALADIN.priority);
-	ThalizPriorityFramePriest:SetValue(Thaliz.ClassMatrix.PRIEST.priority);
-	ThalizPriorityFrameRogue:SetValue(Thaliz.ClassMatrix.ROGUE.priority);
-	ThalizPriorityFrameShaman:SetValue(Thaliz.ClassMatrix.SHAMAN.priority);
-	ThalizPriorityFrameWarlock:SetValue(Thaliz.ClassMatrix.WARLOCK.priority);
-	ThalizPriorityFrameWarrior:SetValue(Thaliz.ClassMatrix.WARRIOR.priority);
-
-	ThalizPriorityFrameTarget:SetValue(Thaliz.ClassMatrix.TARGET.priority);
-	ThalizPriorityFrameMaster:SetValue(Thaliz.ClassMatrix.MASTER.priority);
-	ThalizPriorityFrameFirstLock:SetValue(Thaliz.ClassMatrix.FIRSTLOCK.priority);
+	for className, classInfo in next, Thaliz.ClassMatrix do
+		local frame = _G["ThalizPriorityFrame".. className];
+		if frame then
+			frame:SetValue(classInfo.priority);	
+		end;
+	end;
 end;
-
-
 
 function ThalizPriorityFrame_OnPriorityChanged(object, className)
 	local value = math.floor(object:GetValue());
@@ -1996,6 +2097,11 @@ function ThalizPriorityFrame_OnPriorityChanged(object, className)
 		priorities.Shaman.Priority			= Thaliz.ClassMatrix.SHAMAN.priority;
 		priorities.Warlock.Priority			= Thaliz.ClassMatrix.WARLOCK.priority;
 		priorities.Warrior.Priority			= Thaliz.ClassMatrix.WARRIOR.priority;
+		priorities.DeathKnight.Priority		= Thaliz.ClassMatrix.DEATHKNIGHT.priority;
+		priorities.Monk.Priority			= Thaliz.ClassMatrix.MONK.priority;
+		priorities.DemonHunter.Priority		= Thaliz.ClassMatrix.DEMONHUNTER.priority;
+		priorities.Evoker.Priority			= Thaliz.ClassMatrix.EVOKER.priority;
+		
 		priorities.CurrentTarget.Priority	= Thaliz.ClassMatrix.TARGET.priority;
 		priorities.MasterLooter.Priority	= Thaliz.ClassMatrix.MASTER.priority;
 		priorities.FirstWarlock.Priority	= Thaliz.ClassMatrix.FIRSTLOCK.priority;
