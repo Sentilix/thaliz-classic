@@ -44,6 +44,8 @@ local EMOTE_GROUP_CHARACTER					= "Name";
 local EMOTE_GROUP_CLASS						= "Class";
 local EMOTE_GROUP_RACE						= "Race";
 
+local KnownRessedTargetName = nil;
+local SpellcastTargets = { };
 
 
 Thaliz.Configuration_Default_Priority = {
@@ -1177,7 +1179,7 @@ end
 --	Resurrect message functions
 --
 --  *******************************************************
-function Thaliz.AnnounceResurrection(playername, unitid)
+function Thaliz.AnnounceResurrection(playername)
 
 	if not Thaliz.Enabled then
 		return;
@@ -1187,8 +1189,9 @@ function Thaliz.AnnounceResurrection(playername, unitid)
 		return;
 	end;
 
-	playername = Thaliz.lib:getFullPlayerName(playername) or Thaliz.lib:getUnitidFromName(playername);
+	playername = Thaliz.lib:getFullPlayerName(playername);
 
+	local unitid = Thaliz.lib:getUnitidFromName(playername);
 	if not unitid then
 		return;
 	end
@@ -1638,11 +1641,18 @@ end;
 
 
 function Thaliz_OnRezClick(self, buttonName)
---	local buttonName = Thaliz.API.GetMouseButtonClicked();
 	if buttonName == "RightButton" then
 		Thaliz.OpenConfigurationDialogue();
 	else
-		Thaliz.BroadcastResurrection(self);
+		local unitid = RezButton:GetAttribute("unit");
+		if unitid then
+			local firstName, lastName = Thaliz.API.UnitName(unitid);
+			KnownRessedTargetName = firstName;
+			if lastName then
+				KnownRessedTargetName = KnownRessedTargetName ..' '.. lastName;
+			end;
+			Thaliz.BroadcastResurrection(self);
+		end;
 	end;
 end;
 
@@ -1775,6 +1785,10 @@ end
 	Remove player from Blacklist (if any)
 ]]
 function Thaliz.WhitelistPlayer(playername)
+	if playername == nil then
+		return;
+	end;
+
 	local WhitelistTable = { }
 
 	for n=1, #blacklistedTable, 1 do
@@ -1788,7 +1802,6 @@ end
 
 
 function Thaliz.IsPlayerBlacklisted(playername)
-
 	Thaliz.CleanupBlacklistedPlayers();
 
 	for n=1, #blacklistedTable, 1 do		 
@@ -1796,9 +1809,9 @@ function Thaliz.IsPlayerBlacklisted(playername)
 			return true;
 		end
 	end
+
 	return false;
 end
-
 
 function Thaliz.CleanupBlacklistedPlayers()
 	local BlacklistedTableNew = { }
@@ -1821,7 +1834,7 @@ end
 --
 --  *******************************************************
 function Thaliz.StripRealmName(playername)
-	return string.gsub(playername, "(.*)-.*", "%1");
+	return (string.gsub(playername, "(.*)-.*", "%1"));	
 end;
 
 function Thaliz.SortTableDescending(sourcetable, index)
@@ -2486,45 +2499,52 @@ end;
 --	Event handlers
 --
 --  *******************************************************
-
-local SpellcastTargets = { };
 function Thaliz_OnEvent(self, event, ...)
 	local timerTick = Thaliz.GetTimerTick();
 
 	if(event == "UNIT_SPELLCAST_SENT") then		
 		local unitCaster, unitTarget, castGUID, spellID = Thaliz.API.On_UNIT_SPELLCAST_SENT(...)
 
-		if unitCaster == "player" and unitTarget and Thaliz.IsResurrectionSpell(spellID) then
+		if unitCaster == "player" and Thaliz.IsResurrectionSpell(spellID) then
 			--	Era: Name is set to the person receiving the heal.
 			--	Forever/Midnight is not setting this.
-			--	Note: unitTarget is "Unknown" when player has released.
-			if unitTarget ~= "Unknown" then
-				unitTarget = Thaliz.lib:getFullPlayerName(unitTarget);
+			--	Note: unitTarget is "Unknown" when player has released. 
+			--	Therefore try to set it to the name on the RezButton as a last resort.
+			if not unitTarget or unitTarget == "Unknown" or unitTarget == "" then
+				unitTarget = KnownRessedTargetName;
+				KnownRessedTargetName = nil;
 
-				SpellcastTargets[castGUID] = { target = unitTarget, timer = timerTick }
+				--	Last resort: check mouse-over etc:
+				if not unitTarget then
+					unitTarget = Thaliz.API.Extract_Unit_Target();
 
-				C_Timer.After(11, function()
-					if SpellcastTargets[castGUID] then
-						SpellcastTargets[castGUID] = nil;
-					end
-				end);			
+					if not unitTarget then
+						return;
+					end;
+				end;
 			end;
+
+			unitTarget = Thaliz.lib:getFullPlayerName(unitTarget);
+
+			SpellcastTargets[castGUID] = { target = unitTarget, timer = timerTick }
+
+			C_Timer.After(11, function()
+				if SpellcastTargets[castGUID] then
+					SpellcastTargets[castGUID] = nil;
+				end
+			end);			
 		end;
 
 	elseif(event == "UNIT_SPELLCAST_START") then
 		local unitCaster, castGUID, spellID, castBarID = Thaliz.API.Extract_UNIT_SPELLCAST_START(...);
 		if (unitCaster == "player") and (Thaliz.IsResurrectionSpell(spellID)) then
-			local target = Thaliz.API.Extract_Unit_Target(castGUID);
-			
-			if (target and type(target) == "string") then
-				local unitName = Thaliz.lib:getPlayerAndRealm(target);
-				if unitName then				
-					if Thaliz.IsPlayerBlacklisted(unitName) then
-						Thaliz.lib:echo(string.format("Note: [%s] is already being resurrected.", unitName));
-					else
-						Thaliz.BlacklistPlayer(unitName, Thaliz.BlacklistSpellcastTime);
-						Thaliz.AnnounceResurrection(unitName, "mouseover"); -- Uses active mouseover or unit
-					end;
+			local targetInfo = SpellcastTargets[castGUID];
+			if targetInfo and targetInfo.target then
+				if Thaliz.IsPlayerBlacklisted(targetInfo.target) then
+					Thaliz.lib:echo(string.format("Note: [%s] is already being resurrected.", targetInfo.target));
+				else
+					Thaliz.BlacklistPlayer(targetInfo.target, Thaliz.BlacklistSpellcastTime);
+					Thaliz.AnnounceResurrection(targetInfo.target);
 				end;
 			end;
 		end
@@ -2534,8 +2554,7 @@ function Thaliz_OnEvent(self, event, ...)
 		if(unitCaster == "player") then
 			local targetInfo = SpellcastTargets[castGUID];
 			if targetInfo and targetInfo.target then
-				local unitName = Thaliz.lib:getPlayerAndRealm(targetInfo.target);				
-				Thaliz.WhitelistPlayer(unitName);
+				Thaliz.WhitelistPlayer(targetInfo.target);
 			end;
 		end;
 

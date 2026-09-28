@@ -100,6 +100,7 @@ Thaliz Versions
 Version 3.6.0b2
 * Fixed game build detection - this also fixed selection of classes in the Priority list.
 * Fixed texture changed on Button: I made some LUA error checks a bit to restrictive!
+* Fixed resurrection detection: due to new Blizzard API behaviour this is not foolproof - but almost!
 
 
 Version 3.6.0b1

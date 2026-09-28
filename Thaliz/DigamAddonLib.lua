@@ -11,7 +11,7 @@
 
 
 local DIGAM_IsDebugBuild					= false;
-local DIGAM_BuildVersion					= 10.004;
+local DIGAM_BuildVersion					= 10.005;
 
 local DIGAM_COLOR_BEGIN						= "|c80";
 local DIGAM_CHAT_END						= "|r";
@@ -36,6 +36,7 @@ DigamAddonLib = CreateFrame("Frame");
 DigamAddonLib.Locales = { };
 DigamAddonLib.API = { };
 
+DigamAddonLib._addonExpansionLevel = nil;
 
 function DigamAddonLib:createLocale(languageCode)
 	DigamAddonLib.Locales[languageCode] = { };
@@ -73,6 +74,8 @@ function DigamAddonLib:new(addonSettings)
 		major = minor;
 		minor = major;
 	end;
+
+	self._addonExpansionLevel = major;
 
 	local parent = {
 		addonName = _addonName,
@@ -305,6 +308,11 @@ function DigamAddonLib:stripRealmName(nameAndRealm)
 end;
 
 function DigamAddonLib:getFullPlayerName(playerName)
+	--	Forever: pass through; we cannot add last name!!
+	if self._addonExpansionLevel == 60 then
+		return playerName;
+	end;
+
 	local _, _, name, realm = string.find(playerName, "([^-]*)-([%S ]*)");
 	
 	if realm then
@@ -324,6 +332,10 @@ function DigamAddonLib:getPlayerAndRealm(unitid, keepRealmnameSpaces)
 	local playername, realmname = UnitName(unitid);
 
 	if not playername then return nil; end;
+
+	if self._addonExpansionLevel == 60 then
+		return playername ..' '.. realmname;
+	end;
 
 	if not realmname or realmname == "" then
 		realmname = self.API.GetRealmName();
@@ -381,40 +393,34 @@ function DigamAddonLib:unitClass(unitid)
 end;
 
 function DigamAddonLib:getUnitidFromName(playerName, keepRealmnameSpaces)
-	local unitid, unitname;
+	if playerName == self.localPlayerName then
+		return "player"
+	end
+
 	if self.API.IsInRaid() then
-		for n = 1, 40, 1 do
-			unitid = "raid"..n;
-			unitname = UnitName(unitid);
-			if not unitname then return nil; end;
-
-			unitname = self:getPlayerAndRealm(unitid, keepRealmnameSpaces);
-			if playerName == unitname then
-				return unitid;
-			end;
-		end;
-	elseif self.API.GetNumGroupMembers() > 0 then
-		for n = 1, self.API.GetNumGroupMembers(), 1 do
-			unitid = "party"..n;
-			unitname = UnitName(unitid);
-			if not unitname then 
-				unitid = "player"; 
-			end;
+		for n = 1, 40 do
+			local unitid = "raid"..n
+			local unitname = self:getPlayerAndRealm(unitid, keepRealmnameSpaces)
+			
+			if unitname and playerName == unitname then
+				return unitid
+			end
+		end
 		
-			unitname = self:getPlayerAndRealm(unitid, keepRealmnameSpaces);
-			if playerName == unitname then
-				return unitid;
-			end;
-		end;
-	else
-		--	Solo:
-		if playerName == self.localPlayerName then
-			return "player";
-		end;
-	end;
+	elseif self.API.GetNumGroupMembers() > 0 then
+		for n = 1, 4 do
+			local unitid = "party"..n
+			local unitname = self:getPlayerAndRealm(unitid, keepRealmnameSpaces)
+			
+			if unitname and playerName == unitname then
+				return unitid
+			end
+		end
+	end
 
-	return nil;
-end;
+	return nil
+end
+
 
 
 

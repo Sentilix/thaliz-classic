@@ -295,11 +295,9 @@ function API.Extract_INCOMING_RESURRECT_CHANGED(...)
 end
 
 
---
---  Forever Only:
---
 
-function API.Extract_Unit_Target(castGUID)
+
+function API.Extract_Unit_Target()
     local name = nil
     
     if UnitExists("mouseover") then
@@ -308,7 +306,6 @@ function API.Extract_Unit_Target(castGUID)
         name = GetUnitName("target")
     end
     
-    -- Returns the string name or nil if empty/not found
     if name == "" then
         name = nil;
     end
