@@ -333,9 +333,10 @@ function DigamAddonLib:getPlayerAndRealm(unitid, keepRealmnameSpaces)
 
 	if not playername then return nil; end;
 
-	if self._addonExpansionLevel == 60
+	if self._addonExpansionLevel == 60 then
 		if realmname then
 			playername = playername ..' '.. realmname;
+		end;
 		return playername;
 	end;
 
