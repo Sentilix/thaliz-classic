@@ -2549,15 +2549,6 @@ function Thaliz_OnEvent(self, event, ...)
 			end;
 		end
 
-	elseif(event == "UNIT_SPELLCAST_STOP") then
-		local unitCaster, castGUID, spellID, castBarID = Thaliz.API.Extract_UNIT_SPELLCAST_STOP(...);
-		if(unitCaster == "player") then
-			local targetInfo = SpellcastTargets[castGUID];
-			if targetInfo and targetInfo.target then
-				Thaliz.WhitelistPlayer(targetInfo.target);
-			end;
-		end;
-
 	elseif (event == "CHAT_MSG_ADDON") then
 		Thaliz.OnChatMsgAddon(event, ...)
 
@@ -2582,7 +2573,6 @@ function Thaliz_OnLoad(addonFrame)
 	addonFrame:RegisterEvent("CHAT_MSG_ADDON");
 	addonFrame:RegisterEvent("GROUP_ROSTER_UPDATE");		
 	addonFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
-	addonFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
 	addonFrame:RegisterEvent("UNIT_SPELLCAST_START");	
 
 	Thaliz.API.RegisterAddonMessagePrefix(Thaliz.lib.addonPrefix);

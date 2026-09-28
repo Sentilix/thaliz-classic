@@ -99,6 +99,7 @@ Thaliz Versions
 ---------------
 Version 3.6.0b3
 * Fixed a LUA error in Forever during game load.
+* Fixed a problem with targets being whitelisted after 10 seconds instead of 40.
 
 
 Version 3.6.0b2
