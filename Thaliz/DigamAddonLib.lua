@@ -11,7 +11,7 @@
 
 
 local DIGAM_IsDebugBuild					= false;
-local DIGAM_BuildVersion					= 10.005;
+local DIGAM_BuildVersion					= 10.006;
 
 local DIGAM_COLOR_BEGIN						= "|c80";
 local DIGAM_CHAT_END						= "|r";
@@ -333,8 +333,10 @@ function DigamAddonLib:getPlayerAndRealm(unitid, keepRealmnameSpaces)
 
 	if not playername then return nil; end;
 
-	if self._addonExpansionLevel == 60 then
-		return playername ..' '.. realmname;
+	if self._addonExpansionLevel == 60
+		if realmname then
+			playername = playername ..' '.. realmname;
+		return playername;
 	end;
 
 	if not realmname or realmname == "" then

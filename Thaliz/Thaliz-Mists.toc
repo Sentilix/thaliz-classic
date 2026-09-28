@@ -1,6 +1,6 @@
 ## Title: Thaliz - One-button resurrection (Mist of Pandaria Classic)
 ## Notes: Smart addon to handle ressing party / raid members
-## Version: 3.6.0b2
+## Version: 3.6.0b3
 ## Author: Mimma @ <EU-Pyrewood Village>
 ## Interface: 50504
 ## IconTexture: Interface\Icons\Spell_holy_resurrection
