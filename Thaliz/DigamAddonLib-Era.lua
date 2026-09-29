@@ -100,6 +100,10 @@ function API.InCombatLockdown()
     return InCombatLockdown();
 end;
 
+function API.IsInGroup()
+    return IsInGroup();
+end;
+
 function API.IsInInstance()
     return IsInInstance();
 end;
@@ -144,6 +148,10 @@ function API.UnitFactionGroup(unitId)
     return UnitFactionGroup(unitId);
 end;
 
+function API.UnitGUID(unitId)
+    return UnitGUID(unitId);
+end;
+
 function API.UnitHasIncomingResurrection(unitid)
     return UnitHasIncomingResurrection(unitid)
 end;
@@ -184,32 +192,6 @@ function API.UnitSex(unitid)
     return UnitSex(unitid);
 end;
 
-
-
---
---  Helpers:
---
-
---  Return PlayerName inclusive realm; aka full unique name.
-function API.FullUnitName(unitId)
-    local playername, realmname = API.UnitName(unitId);
-
-    if playername then
-        if not realmname or realmname == "" then
-            realmname = GetRealmName();
-        end;
-
-        playername = playername ..'-'.. (realmname or '');    
-    end;
-
-    return playername;
-end;
-
---  Return PlayerName esclusive realm; aka short but not unique name.
-function API.ShortUnitName(unitId)
-    local playername = API.UnitName(unitId);
-    return playername;
-end;
 
 
 --

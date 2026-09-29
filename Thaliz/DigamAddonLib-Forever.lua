@@ -127,15 +127,12 @@ function API.InCombatLockdown()
     return InCombatLockdown();
 end;
 
+function API.IsInGroup()
+    return IsInGroup();
+end;
+
 function API.IsInInstance()
-    local inInstance, instanceType = IsInInstance()
-    
-    -- Hvis Forever returnerer den boolske værdi 'true', konverterer vi det til tallet 1
-    if inInstance == true then
-        inInstance = 1
-    end
-    
-    return inInstance, instanceType
+    return IsInInstance();
 end
 
 function API.IsInRaid()
@@ -208,6 +205,10 @@ function API.UnitFactionGroup(unitId)
     return UnitFactionGroup(unitId);
 end;
 
+function API.UnitGUID(unitId)
+    return UnitGUID(unitId);
+end;
+
 function API.UnitHasIncomingResurrection(unitid)
     return UnitHasIncomingResurrection(unitid)
 end;
@@ -255,6 +256,11 @@ function API.UnitSex(unitid)
     return sex or 1
 end
 
+
+
+--
+--  UNIT_SPELLCAST_* functions:
+--
 
 --[[
 Convert output from UNIT_SPELLCAST_START event in Forever to

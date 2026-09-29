@@ -20,7 +20,7 @@ local addonMetadata = {
 };
 
 Thaliz = select(2, ...)
-Thaliz.lib = DigamAddonLib:new(addonMetadata);
+Thaliz.lib = DigamAddonLib:New(addonMetadata);
 Thaliz.API = Thaliz.lib.API;
 
 
@@ -69,7 +69,7 @@ Thaliz.Configuration_Default_Priority = {
 }
 
 --	Druids can ress in WotLK and Forever, so set to same as other ressers:
-if Thaliz.lib.addonExpansionLevel >= 3 then
+if Thaliz.lib.addonExpansionLevel >= 3 or Thaliz.lib.ForeverEngine then
 	Thaliz.Configuration_Default_Priority.Druid.Priority = Thaliz.Configuration_Default_Priority.Priest.Priority;
 end;
 
@@ -302,17 +302,6 @@ Thaliz_Options = { }
 Thaliz.DefaultPresetGroup							= 5;		
 
 
---[[
-	Echo in raid chat (if in raid) or party chat (if not)
-]]
-function Thaliz.partyEcho(msg)
-	if Thaliz.API.IsInRaid() then
-		Thaliz.API.SendChatMessage(msg, RAID_CHANNEL)
-	elseif Thaliz.lib:isInParty() then
-		Thaliz.API.SendChatMessage(msg, PARTY_CHANNEL)
-	end
-end
-
 
 
 --  *******************************************************
@@ -353,7 +342,7 @@ SlashCmdList["THALIZ_THALIZ"] = function(msg)
 	elseif option == "VERSION" then
 		SlashCmdList["THALIZ_VERSION"]();
 	else
-		Thaliz.lib:echo(string.format("Unknown command: %s", option));
+		Thaliz.lib:Echo(string.format("Unknown command: %s", option));
 	end
 end
 
@@ -390,10 +379,10 @@ end
 ]]
 SLASH_THALIZ_VERSION1 = "/thalizversion"
 SlashCmdList["THALIZ_VERSION"] = function(msg)
-	if Thaliz.API.IsInRaid() or Thaliz.lib:isInParty() then
-		Thaliz.lib:sendAddonMessage("TX_VERSION##");
+	if Thaliz.API.IsInGroup() then
+		Thaliz.lib:SendAddonMessage("TX_VERSION##");
 	else
-		Thaliz.lib:echo(string.format("%s is using Thaliz version %s", Thaliz.lib.localPlayerName, Thaliz.lib.addonVersion));
+		Thaliz.lib:Echo(string.format("%s is using Thaliz version %s", Thaliz.lib.localPlayerName, Thaliz.lib.addonVersion));
 	end
 end
 
@@ -417,7 +406,7 @@ end
 SLASH_THALIZ_DISABLE1 = "/thalizdisable"
 SlashCmdList["THALIZ_DISABLE"] = function(msg)
 	Thaliz.Enabled = false;
-	Thaliz.lib:echo("Resurrection announcements has been disabled.");
+	Thaliz.lib:Echo("Resurrection announcements has been disabled.");
 end
 
 --[[
@@ -428,7 +417,7 @@ end
 SLASH_THALIZ_ENABLE1 = "/thalizenable"
 SlashCmdList["THALIZ_ENABLE"] = function(msg)
 	Thaliz.Enabled = true;
-	Thaliz.lib:echo("Resurrection announcements has been enabled.");
+	Thaliz.lib:Echo("Resurrection announcements has been enabled.");
 end
 
 --[[
@@ -450,7 +439,7 @@ SlashCmdList["THALIZ_RESETBUTTON"] = function(msg)
 	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonPosX, 0);
 	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonPosY, 0);
 
-	Thaliz.lib:echo("The Resurrection button has been reset.");
+	Thaliz.lib:Echo("The Resurrection button has been reset.");
 end
 
 
@@ -465,11 +454,11 @@ SlashCmdList["THALIZ_DEBUG"] = function(msg)
 	local _, _, dbgfunc = string.find(msg, "(%S*)");
 
 	if dbgfunc and dbgfunc ~= '' then
-		Thaliz.lib:echo(string.format("Enabling debug for %s", dbgfunc));
+		Thaliz.lib:Echo(string.format("Enabling debug for %s", dbgfunc));
 		Thaliz.ScanFrequency = 1.0;
 		Thaliz.DebugFunction = dbgfunc;
 	else
-		Thaliz.lib:echo("Disabling debug");
+		Thaliz.lib:Echo("Disabling debug");
 		Thaliz.ScanFrequency = 0.2;
 		Thaliz.DebugFunction = nil;
 	end;
@@ -485,18 +474,18 @@ end
 ]]
 SLASH_THALIZ_HELP1 = "/thalizhelp"
 SlashCmdList["THALIZ_HELP"] = function(msg)
-	Thaliz.lib:echo(string.format("Thaliz version %s options:", Thaliz.lib.addonVersion));
-	Thaliz.lib:echo("Syntax:");
-	Thaliz.lib:echo("    /thaliz [option]");
-	Thaliz.lib:echo("Where options can be:");
-	Thaliz.lib:echo("    Config       (default) Open the configuration dialogue,");
-	Thaliz.lib:echo("    Disable      Disable Thaliz resurrection messages.");
-	Thaliz.lib:echo("    Enable       Enable Thaliz resurrection messages again.");
-	Thaliz.lib:echo("    ResetButton  Resets the position of the Rez Button.");
-	Thaliz.lib:echo("    Help         This help.");
-	Thaliz.lib:echo("    Show         Shows the resurrection button.");
-	Thaliz.lib:echo("    Hide         Hides the resurrection button.");
-	Thaliz.lib:echo("    Version      Request version info from all clients.");
+	Thaliz.lib:Echo(string.format("Thaliz version %s options:", Thaliz.lib.addonVersion));
+	Thaliz.lib:Echo("Syntax:");
+	Thaliz.lib:Echo("    /thaliz [option]");
+	Thaliz.lib:Echo("Where options can be:");
+	Thaliz.lib:Echo("    Config       (default) Open the configuration dialogue,");
+	Thaliz.lib:Echo("    Disable      Disable Thaliz resurrection messages.");
+	Thaliz.lib:Echo("    Enable       Enable Thaliz resurrection messages again.");
+	Thaliz.lib:Echo("    ResetButton  Resets the position of the Rez Button.");
+	Thaliz.lib:Echo("    Help         This help.");
+	Thaliz.lib:Echo("    Show         Shows the resurrection button.");
+	Thaliz.lib:Echo("    Hide         Hides the resurrection button.");
+	Thaliz.lib:Echo("    Version      Request version info from all clients.");
 end
 
 
@@ -731,11 +720,8 @@ function Thaliz.InitializeListElements()
 	local YPos = YOffset;
 
 	--	Current expansion level.
-	--	Note that Foreve (60) acts like Classic here.
+	--	Note that Forever acts like Classic here (expac level 1)
 	local expLevel = Thaliz.lib.addonExpansionLevel;
-	if expLevel == 60 then
-		expLevel = 1;
-	end;
 
 	local sortedMatrix = {}
 	for classKey, classInfo in pairs(Thaliz.ClassMatrix) do
@@ -1189,9 +1175,7 @@ function Thaliz.AnnounceResurrection(playername)
 		return;
 	end;
 
-	playername = Thaliz.lib:getFullPlayerName(playername);
-
-	local unitid = Thaliz.lib:getUnitidFromName(playername);
+	local unitid = Thaliz.lib:GetUnitIdFromName(playername);
 	if not unitid then
 		return;
 	end
@@ -1199,10 +1183,10 @@ function Thaliz.AnnounceResurrection(playername)
 	-- 3.4.0: Supports RANDOM and SEQUENTIAL:
 	local messageOrder = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageOrder, "RANDOM");
 
-	local playershortname = Thaliz.StripRealmName(playername);
+	local playershortname = Thaliz.API.StripRealmName(playername);
 	local guildname = Thaliz.API.GetGuildInfo(unitid);
 	local race = string.upper(Thaliz.API.UnitRace(unitid));
-	local class = Thaliz.lib:unitClass(unitid);
+	local class = Thaliz.lib:GetUnitClass(unitid);
 	local charname = string.upper(playershortname);
 
 	if guildname then
@@ -1358,7 +1342,7 @@ function Thaliz.AnnounceResurrection(playername)
 	message = string.gsub(message, "%%g", guildname);
 	message = string.gsub(message, "%%s", playershortname);
 
-	Thaliz.partyEcho(message);
+	Thaliz.lib:PartyEcho(message);
 
 	if Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageTargetWhisper) == 1 and not InCombatLockdown() then
 		local whisperMsg = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionWhisperMessage);
@@ -1516,7 +1500,7 @@ function Thaliz.ScanRaid()
 	local warlocksAlive = false;
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
-		if not Thaliz.API.UnitIsDeadOrGhost(unitid) and Thaliz.API.UnitIsConnected(unitid) and Thaliz.API.UnitIsVisible(unitid) and Thaliz.lib:unitClass(unitid) == "WARLOCK" then
+		if not Thaliz.API.UnitIsDeadOrGhost(unitid) and Thaliz.API.UnitIsConnected(unitid) and Thaliz.API.UnitIsVisible(unitid) and Thaliz.lib:GetUnitClass(unitid) == "WARLOCK" then
 			warlocksAlive = true;
 			break;
 		end
@@ -1540,14 +1524,14 @@ function Thaliz.ScanRaid()
 	local currentTarget = "";
 	unitid = RezButton:GetAttribute("unit");
 	if unitid then
-		currentTarget = Thaliz.lib:getPlayerAndRealm(unitid);
+		currentTarget = Thaliz.lib:GetFullName(unitid);
 	end;
 
 	local masterLooter = nil;
 	if Thaliz.API.IsInRaid() then
 		local lootMethod, _, raidIndex = Thaliz.API.GetLootMethod();
 		if lootMethod == 2 then
-			masterLooter = Thaliz.lib:getPlayerAndRealm("raid"..raidIndex);
+			masterLooter = Thaliz.lib:GetFullName("raid"..raidIndex);
 		end;
 	end;
 
@@ -1556,7 +1540,7 @@ function Thaliz.ScanRaid()
 	local playername, classinfo, isBlacklisted;
 	for n=1, groupsize, 1 do
 		unitid = grouptype..n
-		playername = Thaliz.lib:getPlayerAndRealm(unitid);
+		playername = Thaliz.lib:GetFullName(unitid);
 		isBlacklisted = false;
 
 		for b=1, #blacklistedTable, 1 do
@@ -1576,9 +1560,9 @@ function Thaliz.ScanRaid()
 			Thaliz.API.UnitIsVisible(unitid) and 
 			Thaliz.API.IsSpellInRange(spellnameStr, unitid) 
 		then
-			classinfo = Thaliz.GetClassInfo(Thaliz.lib:unitClass(unitid));
+			classinfo = Thaliz.GetClassInfo(Thaliz.lib:GetUnitClass(unitid));
 			targetprio = classinfo["Priority"];
-			if Thaliz.lib:getPlayerAndRealm("playertarget") == playername then
+			if Thaliz.lib:GetFullName("playertarget") == playername then
 				targetprio = PriorityToCurrentTarget;
 			end
 
@@ -1635,7 +1619,7 @@ function Thaliz.ScanRaid()
 		end;
 	end;
 
-	Thaliz.SetRezTargetText(Thaliz.lib:getPlayerAndRealm(unitid));
+	Thaliz.SetRezTargetText(Thaliz.lib:GetFullName(unitid));
 	Thaliz.SetRezButtonTexture(Thaliz.Icon_RezBtn_Active, true);
 end;
 
@@ -1663,7 +1647,7 @@ function Thaliz.BroadcastResurrection(self)
 		return; 
 	end;
 
-	Thaliz.lib:sendAddonMessage(string.format("TX_RESBEGIN#%s#", Thaliz.lib:getPlayerAndRealm(unitid)));
+	Thaliz.lib:SendAddonMessage(string.format("TX_RESBEGIN#%s#", Thaliz.lib:GetFullName(unitid)));
 end;
 
 
@@ -1833,10 +1817,6 @@ end
 --	Helper functions
 --
 --  *******************************************************
-function Thaliz.StripRealmName(playername)
-	return (string.gsub(playername, "(.*)-.*", "%1"));	
-end;
-
 function Thaliz.SortTableDescending(sourcetable, index)
 	local doSort = true
 	while doSort do
@@ -1867,21 +1847,21 @@ end
 ]]
 function Thaliz.OnGroupRosterUpdate(event, ...)
 	if THALIZ_CURRENT_VERSION > 0 and not THALIZ_UPDATE_MESSAGE_SHOWN then
-		if Thaliz.API.IsInRaid() or Thaliz.lib:isInParty() then
-			Thaliz.lib:sendAddonMessage(string.format("TX_VERCHECK#%s#", Thaliz.lib.addonVersion));
+		if Thaliz.API.IsInGroup() then
+			Thaliz.lib:SendAddonMessage(string.format("TX_VERCHECK#%s#", Thaliz.lib.addonVersion));
 		end
 	end
 end
 
 function Thaliz.CheckIsNewVersion(versionstring)
-	local incomingVersion = Thaliz.lib:calculateVersion( versionstring );
+	local incomingVersion = Thaliz.lib:CalculateVersion( versionstring );
 
 	if (THALIZ_CURRENT_VERSION > 0 and incomingVersion > 0) then
 		if incomingVersion > THALIZ_CURRENT_VERSION then
 			if not THALIZ_UPDATE_MESSAGE_SHOWN then
 				THALIZ_UPDATE_MESSAGE_SHOWN = true;
-				Thaliz.lib:echo(string.format("NOTE: A newer version of ".. Thaliz.lib.chatColorHot .."THALIZ".. Thaliz.lib.chatColorNormal .."! is available (version %s)!", versionstring));
-				Thaliz.lib:echo("You can download latest version from https://www.curseforge.com/ or https://github.com/Sentilix/thaliz-classic.");
+				Thaliz.lib:Echo(string.format("NOTE: A newer version of ".. Thaliz.lib.chatColorHot .."THALIZ".. Thaliz.lib.chatColorNormal .."! is available (version %s)!", versionstring));
+				Thaliz.lib:Echo("You can download latest version from https://www.curseforge.com/ or https://github.com/Sentilix/thaliz-classic.");
 			end
 		end	
 	end
@@ -1930,7 +1910,7 @@ end
 	Thaliz:<sender (which is actually the receiver!)>:<version number>
 ]]
 function Thaliz.HandleTXVersion(message, sender)
-	Thaliz.lib:sendAddonMessage("RX_VERSION#".. Thaliz.lib.addonVersion .."#"..sender)
+	Thaliz.lib:SendAddonMessage("RX_VERSION#".. Thaliz.lib.addonVersion .."#"..sender)
 end
 
 function Thaliz.HandleTXResBegin(message, sender)
@@ -1945,7 +1925,7 @@ end
 	A version response (RX) was received. The version information is displayed locally.
 ]]
 function Thaliz.HandleRXVersion(message, sender)
-	Thaliz.lib:echo(string.format("[%s] is using Thaliz version %s", sender, message))
+	Thaliz.lib:Echo(string.format("[%s] is using Thaliz version %s", sender, message))
 end
 
 function Thaliz.HandleTXVerCheck(message, sender)
@@ -1960,27 +1940,12 @@ function Thaliz.OnChatMsgAddon(event, ...)
 	end
 end
 
-function Thaliz.GetMyRealm()
-	local realmname = Thaliz.API.GetRealmName();
-	
-	if string.find(realmname, " ") then
-		local _, _, name1, name2 = string.find(realmname, "([a-zA-Z]*) ([a-zA-Z]*)");
-		realmname = name1 .. name2; 
-	end;
-
-	return realmname;
-end;
-
 function Thaliz.HandleThalizMessage(msg, sender)
 	local _, _, cmd, message, recipient = string.find(msg, "([^#]*)#([^#]*)#([^#]*)");	
 
 	--	Ignore message if it is not for me. 
 	--	Receipient can be blank, which means it is for everyone.
 	if recipient ~= "" then
-		-- Note: recipient comes with realmname. We need to compare
-		-- with realmname too, even GetUnitName() does not return one:
-		recipient = Thaliz.lib:getFullPlayerName(recipient);
-
 		if recipient ~= Thaliz.lib.localPlayerName then
 			return
 		end
@@ -2438,14 +2403,14 @@ function Thaliz.ImportProfile(keepExistingMessages)
 	if messageAddedCounter > 0 then
 		Thaliz.SetResurrectionMessages(resurrectionMessages);
 		if keepExistingMessages then
-			Thaliz.lib:echo(string.format("%d message(s) was merged from %s's profile.", messageAddedCounter, profile["fullname"]));
+			Thaliz.lib:Echo(string.format("%d message(s) was merged from %s's profile.", messageAddedCounter, profile["fullname"]));
 		else
-			Thaliz.lib:echo(string.format("%d message(s) was imported from %s's profile.", messageAddedCounter, profile["fullname"]));
+			Thaliz.lib:Echo(string.format("%d message(s) was imported from %s's profile.", messageAddedCounter, profile["fullname"]));
 		end;
 
 		Thaliz_UpdateMessageList();
 	else
-		Thaliz.lib:echo(string.format("No messages was imported from %s's profile.", profile["fullname"]));
+		Thaliz.lib:Echo(string.format("No messages was imported from %s's profile.", profile["fullname"]));
 	end;
 end;
 
@@ -2481,14 +2446,14 @@ function Thaliz.ImportPreset(keepExistingMessages)
 	if messageAddedCounter > 0 then
 		Thaliz.SetResurrectionMessages(resurrectionMessages);
 		if keepExistingMessages then
-			Thaliz.lib:echo(string.format("%d message(s) was merged from presets.", messageAddedCounter));
+			Thaliz.lib:Echo(string.format("%d message(s) was merged from presets.", messageAddedCounter));
 		else
-			Thaliz.lib:echo(string.format("%d message(s) was imported from presets.", messageAddedCounter));
+			Thaliz.lib:Echo(string.format("%d message(s) was imported from presets.", messageAddedCounter));
 		end;
 
 		Thaliz_UpdateMessageList();
 	else
-		Thaliz.lib:echo("No messages was imported from preset.");
+		Thaliz.lib:Echo("No messages was imported from preset.");
 	end;
 end;
 
@@ -2524,7 +2489,7 @@ function Thaliz_OnEvent(self, event, ...)
 				end;
 			end;
 
-			unitTarget = Thaliz.lib:getFullPlayerName(unitTarget);
+			unitTarget = Thaliz.lib:ApplyRealmName(unitTarget);
 
 			SpellcastTargets[castGUID] = { target = unitTarget, timer = timerTick }
 
@@ -2541,7 +2506,7 @@ function Thaliz_OnEvent(self, event, ...)
 			local targetInfo = SpellcastTargets[castGUID];
 			if targetInfo and targetInfo.target then
 				if Thaliz.IsPlayerBlacklisted(targetInfo.target) then
-					Thaliz.lib:echo(string.format("Note: [%s] is already being resurrected.", targetInfo.target));
+					Thaliz.lib:Echo(string.format("Note: [%s] is already being resurrected.", targetInfo.target));
 				else
 					Thaliz.BlacklistPlayer(targetInfo.target, Thaliz.BlacklistSpellcastTime);
 					Thaliz.AnnounceResurrection(targetInfo.target);
@@ -2562,11 +2527,11 @@ end
 function Thaliz_OnLoad(addonFrame)
 	msgEditorIsOpen = false;
 
-	THALIZ_CURRENT_VERSION = Thaliz.lib:calculateVersion(Thaliz.lib.addonVersion);
+	THALIZ_CURRENT_VERSION = Thaliz.lib:CalculateVersion(Thaliz.lib.addonVersion);
 
 	_G["ThalizVersionString"]:SetText(string.format("Thaliz version %s by %s", Thaliz.lib.addonVersion, Thaliz.lib.addonAuthor));
 
-	Thaliz.lib:echo(string.format("Type %s/thaliz%s to configure the addon, or right-click the Thaliz button.", Thaliz.lib.chatColorHot, Thaliz.lib.chatColorNormal));
+	Thaliz.lib:Echo(string.format("Type %s/thaliz%s to configure the addon, or right-click the Thaliz button.", Thaliz.lib.chatColorHot, Thaliz.lib.chatColorNormal));
 
 	Thaliz.InitializeConfigSettings();
 		
