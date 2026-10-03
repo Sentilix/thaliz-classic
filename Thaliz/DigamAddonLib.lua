@@ -11,7 +11,7 @@
 
 
 local DIGAM_IsDebugBuild					= false;
-local DIGAM_BuildVersion					= 10.100;
+local DIGAM_BuildVersion					= 10.102;
 
 local DIGAM_COLOR_BEGIN						= "|c80";
 local DIGAM_CHAT_END						= "|r";
@@ -19,6 +19,7 @@ local DIGAM_DEFAULT_ColorNormal				= "40A0F8"
 local DIGAM_DEFAULT_ColorHot				= "B0F0F0"
 
 local RAID_CHANNEL							= "RAID"
+local PARTY_CHANNEL							= "PARTY"
 local YELL_CHANNEL							= "YELL"
 local SAY_CHANNEL							= "SAY"
 local WARN_CHANNEL							= "RAID_WARNING"
@@ -100,6 +101,7 @@ function DigamAddonLib:New(addonSettings)
 		ForeverEngine = _isForeverEngine,
 
 		localPlayerName = self:GetFullName("player"),
+		localPlayerNameNoSpaces = self:StripRealmSpaces(self:GetFullName("player")),
 		localPlayerClass = self:GetUnitClass("player"),
 		localPlayerRealm = self:GetPlayerRealm("player"),
 		localPlayerGUID = self.API.UnitGUID("player"),
@@ -442,6 +444,10 @@ Era: Mimma
 Forever: Mimma
 --]]
 function DigamAddonLib:GetShortName(unitId)
+	if not unitId then
+		unitId = "player";
+	end;
+
 	local firstName, lastName = self.API.UnitName(unitId);
 
 	return firstName;
@@ -455,6 +461,10 @@ Forever: Mimma
 --]]
 function DigamAddonLib:GetNormalName(unitId)
 	--	The Forever engine have Firstname + Lastname: we only return Firstname:
+	if not unitId then
+		unitId = "player";
+	end;
+
 	local firstName, lastName = self.API.UnitName(unitId);
 
 	if self.ForeverEngine then
@@ -473,19 +483,23 @@ Era: Mimma Forever
 Forever: Mimma-Pyrewood Village
 --]]
 function DigamAddonLib:GetFullName(unitId)
+	if not unitId then
+		unitId = "player";
+	end;
 	local firstName, lastName = self.API.UnitName(unitId);
-
-	--	The Forever engine have Firstname + Lastname: we only return Firstname:
-	if self.ForeverEngine then
-		if lastName and lastName ~= "" then
-			firstName = firstName .." ".. lastName;
+	if firstName then
+		--	The Forever engine have Firstname + Lastname: we only return Firstname:
+		if self.ForeverEngine then
+			if lastName and lastName ~= "" then
+				firstName = firstName .." ".. lastName;
+			end;
+		else
+			--	Era: LastName is the RealmName
+			if not lastName or lastName == "" then
+				lastName = self.API.GetRealmName();
+			end;
+			firstName = firstName .."-".. lastName;
 		end;
-	else
-		--	Era: LastName is the RealmName
-		if not lastName or lastName == "" then
-			lastName = self.API.GetRealmName();
-		end;
-		firstName = firstName .."-".. lastName;
 	end;
 
 	return firstName;
@@ -539,9 +553,19 @@ function DigamAddonLib:StripRealmName(playerName)
 end;
 
 --[[
+Strip spaces in eventual realm name:
+--]]
+function DigamAddonLib:StripRealmSpaces(playername)
+    local name, realm = string.match(playername, "([^-]+)%-(.*)")   
+    if name and realm then
+        return name .. "-" .. string.gsub(realm, " ", "")
+    end
+    return playername
+end
+
+--[[
 ApplyRealmName to current name. Usefull on Era only.
 --]]
-
 function DigamAddonLib:ApplyRealmName(playerName)
 	--	Forever: pass through; we cannot add last name!!
 	if self.ForeverEngine then
@@ -549,8 +573,12 @@ function DigamAddonLib:ApplyRealmName(playerName)
 	end;
 
 	local _, _, name, realm = string.find(playerName, "([^-]*)-([%S ]*)");
-	if not realm then
-		name = name .."-"..  self.localPlayerRealm;
+	name = name or playerName;
+	if name then
+		if not realm then
+			realm = self.localPlayerRealm;
+		end;
+		name = name ..'-'.. realm;
 	end;
 
 	return name;

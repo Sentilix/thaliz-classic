@@ -1,6 +1,6 @@
 ## Title: Thaliz - One-button resurrection (Modern WoW)
 ## Notes: Smart addon to handle ressing party / raid members
-## Version: 3.6.0b3
+## Version: 3.6.0
 ## Author: Mimma @ <EU-Pyrewood Village>
 ## Interface: 120100
 ## IconTexture: Interface\Icons\Spell_holy_resurrection

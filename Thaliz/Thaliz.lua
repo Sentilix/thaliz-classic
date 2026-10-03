@@ -1183,7 +1183,7 @@ function Thaliz.AnnounceResurrection(playername)
 	-- 3.4.0: Supports RANDOM and SEQUENTIAL:
 	local messageOrder = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionMessageOrder, "RANDOM");
 
-	local playershortname = Thaliz.API.StripRealmName(playername);
+	local playershortname = Thaliz.lib:StripRealmName(playername);
 	local guildname = Thaliz.API.GetGuildInfo(unitid);
 	local race = string.upper(Thaliz.API.UnitRace(unitid));
 	local class = Thaliz.lib:GetUnitClass(unitid);
@@ -1946,11 +1946,10 @@ function Thaliz.HandleThalizMessage(msg, sender)
 	--	Ignore message if it is not for me. 
 	--	Receipient can be blank, which means it is for everyone.
 	if recipient ~= "" then
-		if recipient ~= Thaliz.lib.localPlayerName then
+		if recipient ~= Thaliz.lib.localPlayerName and recipient ~= Thaliz.lib.localPlayerNameNoSpaces then
 			return
 		end
 	end
-
 
 	if cmd == "TX_VERSION" then
 		Thaliz.HandleTXVersion(message, sender)
@@ -2475,6 +2474,7 @@ function Thaliz_OnEvent(self, event, ...)
 			--	Forever/Midnight is not setting this.
 			--	Note: unitTarget is "Unknown" when player has released. 
 			--	Therefore try to set it to the name on the RezButton as a last resort.
+
 			if not unitTarget or unitTarget == "Unknown" or unitTarget == "" then
 				unitTarget = KnownRessedTargetName;
 				KnownRessedTargetName = nil;
@@ -2514,6 +2514,15 @@ function Thaliz_OnEvent(self, event, ...)
 			end;
 		end
 
+	elseif(event == "UNIT_SPELLCAST_STOP") then
+		local unitCaster, castGUID, spellID, castBarID = Thaliz.API.Extract_UNIT_SPELLCAST_STOP(...);
+		if(unitCaster == "player") then
+			local targetInfo = SpellcastTargets[castGUID];
+			if targetInfo and targetInfo.target and targetInfo.timer + 9.5 > timerTick then
+				Thaliz.WhitelistPlayer(targetInfo.target);
+			end;
+		end;
+
 	elseif (event == "CHAT_MSG_ADDON") then
 		Thaliz.OnChatMsgAddon(event, ...)
 
@@ -2538,7 +2547,8 @@ function Thaliz_OnLoad(addonFrame)
 	addonFrame:RegisterEvent("CHAT_MSG_ADDON");
 	addonFrame:RegisterEvent("GROUP_ROSTER_UPDATE");		
 	addonFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
-	addonFrame:RegisterEvent("UNIT_SPELLCAST_START");	
+	addonFrame:RegisterEvent("UNIT_SPELLCAST_START");
+	addonFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
 
 	Thaliz.API.RegisterAddonMessagePrefix(Thaliz.lib.addonPrefix);
 
