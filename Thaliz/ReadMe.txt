@@ -97,6 +97,11 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.6.0
+* Fixed whitelisting of players if resurrection was interrupted.
+* Fixed addon communication on clustered servers: realm name was sometimes wrong.
+
+
 Version 3.6.0b3
 * Fixed a LUA error in Forever during game load.
 * Fixed a problem with targets being whitelisted after 10 seconds instead of 40.
