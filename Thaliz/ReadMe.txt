@@ -97,6 +97,11 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.6.1
+* Rez button can now be resized from the UI.
+* Configuration frames are now closed when entering combat.
+
+
 Version 3.6.0
 * Fixed whitelisting of players if resurrection was interrupted.
 * Fixed addon communication on clustered servers: realm name was sometimes wrong.
