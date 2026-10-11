@@ -274,6 +274,7 @@ Thaliz.Target_Whisper_Default					= "0";
 Thaliz.Resurrection_Whisper_Message_Default		= "Resurrection incoming in 10 seconds!";
 Thaliz.Include_Default_Group_Default			= "1";
 Thaliz.OPTION_RezButtonVisible_Default			= "1";
+Thaliz.OPTION_RezButtonSize_Default				= "32";
 
 Thaliz.ConfigurationLevel						= Thaliz.Configuration_Default_Level;
 
@@ -288,6 +289,7 @@ Thaliz.OPTION_ResurrectionMessages				= "ResurrectionMessages";
 Thaliz.OPTION_RezButtonPosX						= "RezButtonPosX";
 Thaliz.OPTION_RezButtonPosY						= "RezButtonPosY";
 Thaliz.OPTION_RezButtonVisible					= "ResurrectionButtonVisible";
+Thaliz.OPTION_RezButtonSize						= "RezButtonSize";
 
 Thaliz.OPTION_ResurrectionPriority				= "ResurrectionPriority";
 
@@ -430,8 +432,8 @@ SlashCmdList["THALIZ_RESETBUTTON"] = function(msg)
 
 	RezButton:ClearAllPoints();
 	RezButton:SetPoint("CENTER", "UIParent", "CENTER", 0, 0);
-	RezButton:SetSize(THALIZ_REZBUTTON_SIZE, THALIZ_REZBUTTON_SIZE);
-
+	Thaliz.UpdateButtonSize();
+		
 	if Thaliz.OPTION_RezButtonVisible_Default == "1" then
 		RezButton:Show();
 	end;
@@ -923,6 +925,27 @@ function Thaliz_HandleCheckbox(checkbox)
 	end;
 end
 
+function Thaliz_onButtonSizeChanged(object)
+	local value = math.floor(object:GetValue());
+	object:SetValueStep(1);
+	object:SetValue(value);
+
+	--	Size works from 16x16 to 64x64 pixels:
+	if value ~= THALIZ_REZBUTTON_SIZE then
+		THALIZ_REZBUTTON_SIZE = value;
+		Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonSize, THALIZ_REZBUTTON_SIZE);
+		Thaliz.UpdateButtonSize();
+	end;
+end;
+
+function Thaliz.UpdateButtonSize()
+	RezButton:SetSize(THALIZ_REZBUTTON_SIZE, THALIZ_REZBUTTON_SIZE);
+	local fs = _G["ThalizButtonSizeString"];
+	if fs then
+		fs:SetText(string.format("Button size: %sx%s", THALIZ_REZBUTTON_SIZE, THALIZ_REZBUTTON_SIZE));
+	end;
+end;
+
 function Thaliz.GetRootConfigOption(parameter, defaultValue)
 	if Thaliz_Options then
 		if Thaliz_Options[parameter] then
@@ -1017,7 +1040,9 @@ function Thaliz.InitializeConfigSettings()
 
 	Thaliz.SetConfigOption(Thaliz.OPTION_AlwaysIncludeDefaultGroup, Thaliz.GetConfigOption(Thaliz.OPTION_AlwaysIncludeDefaultGroup, Thaliz.Include_Default_Group_Default))
 
-	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonVisible, Thaliz.GetConfigOption(Thaliz.OPTION_RezButtonVisible, Thaliz.OPTION_RezButtonVisible_Default))
+	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonVisible, Thaliz.GetConfigOption(Thaliz.OPTION_RezButtonVisible, Thaliz.OPTION_RezButtonVisible_Default));
+	THALIZ_REZBUTTON_SIZE = Thaliz.GetConfigOption(Thaliz.OPTION_RezButtonSize, Thaliz.OPTION_RezButtonSize_Default);
+	Thaliz.SetConfigOption(Thaliz.OPTION_RezButtonSize, THALIZ_REZBUTTON_SIZE);
 
 	Thaliz.SetConfigOption(Thaliz.OPTION_ResurrectionNameEnclosure, Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionNameEnclosure, "NONE"));
 	Thaliz.InitializeNameEnclosures();
@@ -1092,9 +1117,12 @@ function Thaliz.InitializeConfigSettings()
 	else
 		RezButton:Hide()
 	end
-	
-	Thaliz.ParseProfileNames();
 
+	local slider = _G["ThalizFrameSliderButtonSize"];
+	slider:SetValue(THALIZ_REZBUTTON_SIZE)
+	
+	Thaliz.UpdateButtonSize();
+	Thaliz.ParseProfileNames();
 	Thaliz.ValidateResurrectionMessages();
 end
 

@@ -121,6 +121,19 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<Slider name="ThalizFrameSliderButtonSize" minValue="16" maxValue="64" defaultValue="32" valueStep="1" inherits="UISliderTemplate, BackdropTemplate" enableMouse="true">
+				<Size x="190" y="20" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="396" y="-354" />
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if Thaliz_onButtonSizeChanged then
+						Thaliz_onButtonSizeChanged(self);
+						end;
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
 			<!-- 2nd line options: msg options -->
 			<CheckButton name="$parentCheckbuttonPerCharacter" inherits="ChatConfigCheckButtonTemplate">
 				<Anchors>
@@ -322,12 +335,21 @@
 					</Anchors>
 					<Color r="0.3" g="0.3" b="0.3" a="1.0"/>
 				</FontString>
+				<FontString name="ThalizButtonSizeString" inherits="GameFontNormal" text="Button size: 32x32">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="276" y="-358"/>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
+				</FontString>
 				<FontString inherits="GameFontNormal" text="Resurrection target layout">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="276" y="-392"/>
 						</Anchor>
 					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
 				</FontString>
 				<FontString inherits="GameFontNormal" text="Message order">
 					<Anchors>
@@ -335,6 +357,7 @@
 							<Offset x="675" y="-392"/>
 						</Anchor>
 					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
 				</FontString>
 				<!-- Whisper EditBox border -->
 				<Texture name="$parentTextureLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left">
