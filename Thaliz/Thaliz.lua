@@ -2584,6 +2584,12 @@ function Thaliz_OnLoad(addonFrame)
 	Thaliz.InitializeListElements();
 	Thaliz.RefreshProfileButtons();
 
+	RegisterStateDriver(ThalizFrame, "visibility", "[combat] hide; [status] status")
+	RegisterStateDriver(ThalizMsgEditorFrame, "visibility", "[combat] hide; [status] status")
+	RegisterStateDriver(ThalizProfileFrame, "visibility", "[combat] hide; [status] status")
+	RegisterStateDriver(ThalizPresetFrame, "visibility", "[combat] hide; [status] status")
+	RegisterStateDriver(ThalizPriorityFrame, "visibility", "[combat] hide; [status] status")
+	
 	Thaliz_RepositionateButton(RezButton);
 end
 

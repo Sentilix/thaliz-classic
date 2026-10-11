@@ -68,7 +68,7 @@
 	</Button>
 	
 	<!-- Main configuration frame -->
-	<Frame name="ThalizFrame" parent="UIParent" inherits="BackdropTemplate" hidden="true" frameStrata="HIGH">
+	<Frame name="ThalizFrame" parent="UIParent" inherits="SecureFrameTemplate, BackdropTemplate" hidden="true" frameStrata="HIGH">
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_ARENA_32_32" type="global"/>
 			<KeyValue key="backdropColor" value="BLACK" type="global"/>
@@ -414,7 +414,7 @@
 	</Frame>
 
 	<!-- Message editor frame -->
-	<Frame name="ThalizMsgEditorFrame" parent="UIParent" inherits="BackdropTemplate" toplevel="true" hidden="true" frameStrata="HIGH">
+	<Frame name="ThalizMsgEditorFrame" parent="UIParent" inherits="SecureFrameTemplate, BackdropTemplate" toplevel="true" hidden="true" frameStrata="HIGH">
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
 			<KeyValue key="backdropColor" value="BLACK" type="global"/>
@@ -666,7 +666,7 @@
 	</Frame>
 
 	<!-- Profile management frame -->
-	<Frame name="ThalizProfileFrame" parent="UIParent" inherits="BackdropTemplate" toplevel="true" hidden="true" frameStrata="HIGH">
+	<Frame name="ThalizProfileFrame" parent="UIParent" inherits="SecureFrameTemplate, BackdropTemplate" toplevel="true" hidden="true" frameStrata="HIGH">
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
 			<KeyValue key="backdropColor" value="BLACK" type="global"/>
@@ -754,7 +754,7 @@
 	</Frame>
 
 	<!-- Preset management frame -->
-	<Frame name="ThalizPresetFrame" parent="UIParent" inherits="BackdropTemplate" toplevel="true" hidden="true" frameStrata="HIGH">
+	<Frame name="ThalizPresetFrame" parent="UIParent" inherits="SecureFrameTemplate, BackdropTemplate" toplevel="true" hidden="true" frameStrata="HIGH">
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
 			<KeyValue key="backdropColor" value="BLACK" type="global"/>
@@ -843,7 +843,7 @@
 	</Frame>
 
 	<!-- Priority editor frame -->
-	<Frame name="ThalizPriorityFrame" parent="UIParent" inherits="BackdropTemplate" toplevel="true" hidden="true" frameStrata="HIGH">
+	<Frame name="ThalizPriorityFrame" parent="UIParent" inherits="SecureFrameTemplate, BackdropTemplate" toplevel="true" hidden="true" frameStrata="HIGH">
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
 			<KeyValue key="backdropColor" value="BLACK" type="global"/>
