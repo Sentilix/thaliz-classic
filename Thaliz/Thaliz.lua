@@ -507,6 +507,10 @@ function Thaliz.ToggleConfigurationDialogue()
 end
 
 function Thaliz.OpenConfigurationDialogue()
+	if Thaliz.API.InCombatLockdown() then
+		return;
+	end;
+
 	local whisperMsg = Thaliz.GetConfigOption(Thaliz.OPTION_ResurrectionWhisperMessage);
 
 	if not whisperMsg then whisperMsg = ""; end;
@@ -523,8 +527,10 @@ function Thaliz.CloseConfigurationDialogue()
 	Thaliz_ClosePresetButton_OnClick();
 	Thaliz_ClosePriorityButton_OnClick();
 
-	ThalizConfigDialogOpen = false;
-	ThalizFrame:Hide();
+	if not Thaliz.API.InCombatLockdown() then
+		ThalizConfigDialogOpen = false;
+		ThalizFrame:Hide();
+	end;
 end
 
 

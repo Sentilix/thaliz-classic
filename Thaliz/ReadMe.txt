@@ -97,6 +97,10 @@ RIP Thaliz.
 
 Thaliz Versions
 ---------------
+Version 3.6.2
+* Fixed dialogs throwing a LUA error when attempt to open in combat.
+
+
 Version 3.6.1
 * Rez button can now be resized from the UI.
 * Configuration frames are now closed when entering combat.
